@@ -1,0 +1,375 @@
+{
+  "deck_meta": {
+    "version": "1.0",
+    "source_metrics": "station_metrics_tokyo.json",
+    "deck_size": 40,
+    "rarity_distribution": {
+      "S": 5,
+      "A": 10,
+      "B": 15,
+      "C": 10
+    }
+  },
+  "cards": [
+    {
+      "card_id": "card_001",
+      "station_global_id": "ST_356842_1397630",
+      "station_name": "大手町",
+      "station_slug": "otemachi",
+      "score_total": 18.3609,
+      "rarity": "S",
+      "rank": 1
+    },
+    {
+      "card_id": "card_002",
+      "station_global_id": "ST_356582_1397016",
+      "station_name": "渋谷",
+      "station_slug": "shibuya",
+      "score_total": 12.9084,
+      "rarity": "S",
+      "rank": 2
+    },
+    {
+      "card_id": "card_003",
+      "station_global_id": "ST_356826_1397745",
+      "station_name": "日本橋",
+      "station_slug": "nihombashi",
+      "score_total": 12.794,
+      "rarity": "S",
+      "rank": 3
+    },
+    {
+      "card_id": "card_004",
+      "station_global_id": "ST_356944_1397503",
+      "station_name": "九段下",
+      "station_slug": "kudanshita",
+      "score_total": 12.3145,
+      "rarity": "S",
+      "rank": 4
+    },
+    {
+      "card_id": "card_005",
+      "station_global_id": "ST_356920_1397711",
+      "station_name": "神田",
+      "station_slug": "kanda",
+      "score_total": 12.2837,
+      "rarity": "S",
+      "rank": 5
+    },
+    {
+      "card_id": "card_006",
+      "station_global_id": "ST_357127_1397036",
+      "station_name": "高田馬場",
+      "station_slug": "takadanobaba",
+      "score_total": 12.1229,
+      "rarity": "A",
+      "rank": 6
+    },
+    {
+      "card_id": "card_007",
+      "station_global_id": "ST_356813_1397666",
+      "station_name": "東京",
+      "station_slug": "tokyo",
+      "score_total": 12.0549,
+      "rarity": "A",
+      "rank": 7
+    },
+    {
+      "card_id": "card_008",
+      "station_global_id": "ST_356839_1397739",
+      "station_name": "三越前",
+      "station_slug": "mitsukoshi-mae",
+      "score_total": 12.0087,
+      "rarity": "A",
+      "rank": 8
+    },
+    {
+      "card_id": "card_009",
+      "station_global_id": "ST_356714_1397649",
+      "station_name": "銀座",
+      "station_slug": "ginza",
+      "score_total": 11.9526,
+      "rarity": "A",
+      "rank": 9
+    },
+    {
+      "card_id": "card_010",
+      "station_global_id": "ST_357140_1397764",
+      "station_name": "上野",
+      "station_slug": "ueno",
+      "score_total": 11.4479,
+      "rarity": "A",
+      "rank": 10
+    },
+    {
+      "card_id": "card_011",
+      "station_global_id": "ST_356659_1397582",
+      "station_name": "新橋",
+      "station_slug": "shimbashi",
+      "score_total": 11.3781,
+      "rarity": "A",
+      "rank": 11
+    },
+    {
+      "card_id": "card_012",
+      "station_global_id": "ST_356896_1397002",
+      "station_name": "新宿",
+      "station_slug": "shinjuku",
+      "score_total": 11.2868,
+      "rarity": "A",
+      "rank": 12
+    },
+    {
+      "card_id": "card_013",
+      "station_global_id": "ST_356796_1397361",
+      "station_name": "赤坂見附",
+      "station_slug": "akasaka-mitsuke",
+      "score_total": 11.2068,
+      "rarity": "A",
+      "rank": 13
+    },
+    {
+      "card_id": "card_014",
+      "station_global_id": "ST_357299_1397107",
+      "station_name": "池袋",
+      "station_slug": "ikebukuro",
+      "score_total": 9.9849,
+      "rarity": "A",
+      "rank": 14
+    },
+    {
+      "card_id": "card_015",
+      "station_global_id": "ST_356720_1397161",
+      "station_name": "青山一丁目",
+      "station_slug": "aoyama-itchome",
+      "score_total": 9.9799,
+      "rarity": "A",
+      "rank": 15
+    },
+    {
+      "card_id": "card_016",
+      "station_global_id": "ST_356652_1397123",
+      "station_name": "表参道",
+      "station_slug": "omotesando",
+      "score_total": 8.6849,
+      "rarity": "B",
+      "rank": 16
+    },
+    {
+      "card_id": "card_017",
+      "station_global_id": "ST_356786_1397797",
+      "station_name": "茅場町",
+      "station_slug": "kayabacho",
+      "score_total": 7.4538,
+      "rarity": "B",
+      "rank": 17
+    },
+    {
+      "card_id": "card_018",
+      "station_global_id": "ST_356717_1397952",
+      "station_name": "門前仲町",
+      "station_slug": "monzen-nakacho",
+      "score_total": 7.2801,
+      "rarity": "B",
+      "rank": 18
+    },
+    {
+      "card_id": "card_019",
+      "station_global_id": "ST_356718_1398175",
+      "station_name": "木場",
+      "station_slug": "kiba",
+      "score_total": 7.1008,
+      "rarity": "B",
+      "rank": 19
+    },
+    {
+      "card_id": "card_020",
+      "station_global_id": "ST_356753_1398278",
+      "station_name": "東陽町",
+      "station_slug": "toyocho",
+      "score_total": 6.916,
+      "rarity": "B",
+      "rank": 20
+    },
+    {
+      "card_id": "card_021",
+      "station_global_id": "ST_356697_1398378",
+      "station_name": "南砂町",
+      "station_slug": "minami-sunacho",
+      "score_total": 6.7255,
+      "rarity": "B",
+      "rank": 21
+    },
+    {
+      "card_id": "card_022",
+      "station_global_id": "ST_357020_1397456",
+      "station_name": "飯田橋",
+      "station_slug": "iidabashi",
+      "score_total": 6.5574,
+      "rarity": "B",
+      "rank": 22
+    },
+    {
+      "card_id": "card_023",
+      "station_global_id": "ST_356583_1398694",
+      "station_name": "西葛西",
+      "station_slug": "nishi-kasai",
+      "score_total": 6.5294,
+      "rarity": "B",
+      "rank": 23
+    },
+    {
+      "card_id": "card_024",
+      "station_global_id": "ST_357083_1397199",
+      "station_name": "早稲田",
+      "station_slug": "waseda",
+      "score_total": 6.4624,
+      "rarity": "B",
+      "rank": 24
+    },
+    {
+      "card_id": "card_025",
+      "station_global_id": "ST_356556_1398786",
+      "station_name": "葛西",
+      "station_slug": "kasai",
+      "score_total": 6.3277,
+      "rarity": "B",
+      "rank": 25
+    },
+    {
+      "card_id": "card_026",
+      "station_global_id": "ST_357014_1397003",
+      "station_name": "新大久保",
+      "station_slug": "shin-okubo",
+      "score_total": 6.1811,
+      "rarity": "B",
+      "rank": 26
+    },
+    {
+      "card_id": "card_027",
+      "station_global_id": "ST_356556_1398944",
+      "station_name": "浦安",
+      "station_slug": "urayasu",
+      "score_total": 6.1204,
+      "rarity": "B",
+      "rank": 27
+    },
+    {
+      "card_id": "card_028",
+      "station_global_id": "ST_356898_1397583",
+      "station_name": "竹橋",
+      "station_slug": "takebashi",
+      "score_total": 6.0406,
+      "rarity": "B",
+      "rank": 28
+    },
+    {
+      "card_id": "card_029",
+      "station_global_id": "ST_356958_1397577",
+      "station_name": "神保町",
+      "station_slug": "jimbocho",
+      "score_total": 6.0406,
+      "rarity": "B",
+      "rank": 29
+    },
+    {
+      "card_id": "card_030",
+      "station_global_id": "ST_356742_1397498",
+      "station_name": "霞ケ関",
+      "station_slug": "kasumigaseki",
+      "score_total": 5.9412,
+      "rarity": "B",
+      "rank": 30
+    },
+    {
+      "card_id": "card_031",
+      "station_global_id": "ST_357210_1397064",
+      "station_name": "目白",
+      "station_slug": "mejiro",
+      "score_total": 5.9282,
+      "rarity": "C",
+      "rank": 31
+    },
+    {
+      "card_id": "card_032",
+      "station_global_id": "ST_356694_1399064",
+      "station_name": "南行徳",
+      "station_slug": "minami-gyotoku",
+      "score_total": 5.9076,
+      "rarity": "C",
+      "rank": 32
+    },
+    {
+      "card_id": "card_033",
+      "station_global_id": "ST_356826_1397837",
+      "station_name": "水天宮前",
+      "station_slug": "suitengumae",
+      "score_total": 5.9076,
+      "rarity": "C",
+      "rank": 33
+    },
+    {
+      "card_id": "card_034",
+      "station_global_id": "ST_356985_1397730",
+      "station_name": "秋葉原",
+      "station_slug": "akihabara",
+      "score_total": 5.9037,
+      "rarity": "C",
+      "rank": 34
+    },
+    {
+      "card_id": "card_035",
+      "station_global_id": "ST_357026_1397726",
+      "station_name": "末広町",
+      "station_slug": "suehirocho",
+      "score_total": 5.9037,
+      "rarity": "C",
+      "rank": 35
+    },
+    {
+      "card_id": "card_036",
+      "station_global_id": "ST_356550_1397570",
+      "station_name": "浜松町",
+      "station_slug": "hamamatsucho",
+      "score_total": 5.8565,
+      "rarity": "C",
+      "rank": 36
+    },
+    {
+      "card_id": "card_037",
+      "station_global_id": "ST_356939_1397671",
+      "station_name": "淡路町",
+      "station_slug": "awajicho",
+      "score_total": 5.8527,
+      "rarity": "C",
+      "rank": 37
+    },
+    {
+      "card_id": "card_038",
+      "station_global_id": "ST_356742_1397401",
+      "station_name": "国会議事堂前",
+      "station_slug": "kokkai-gijidomae",
+      "score_total": 5.8488,
+      "rarity": "C",
+      "rank": 38
+    },
+    {
+      "card_id": "card_039",
+      "station_global_id": "ST_356762_1397713",
+      "station_name": "京橋",
+      "station_slug": "kyobashi",
+      "score_total": 5.795,
+      "rarity": "C",
+      "rank": 39
+    },
+    {
+      "card_id": "card_040",
+      "station_global_id": "ST_357071_1397747",
+      "station_name": "御徒町",
+      "station_slug": "okachimachi",
+      "score_total": 5.7403,
+      "rarity": "C",
+      "rank": 40
+    }
+  ]
+}
