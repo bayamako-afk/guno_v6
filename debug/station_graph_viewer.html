@@ -367,7 +367,7 @@ function renderEdges() {
     const color = LINE_COLORS[e.line_id] || DEFAULT_COLOR;
     const pl = L.polyline(
       [[fromNode.lat, fromNode.lon], [toNode.lat, toNode.lon]],
-      { color, weight: 2.5, opacity: 0.8 }
+      { color, weight: 2.5, opacity: 0.8, interactive: false }
     ).addTo(map);
 
     edgePolylines.push(pl);
