@@ -320,7 +320,7 @@ function renderNodes() {
 
   graph.nodes.forEach(n => {
     const isHub = n.hub_degree_global > 1;
-    const radius = isHub ? 8 : 5;
+    const radius = isHub ? 10 : 7;
     const color  = isHub ? '#e879f9' : '#f1f5f9';
 
     const marker = L.circleMarker([n.lat, n.lon], {
@@ -329,9 +329,10 @@ function renderNodes() {
       color: '#111827',
       weight: isHub ? 2 : 1,
       fillOpacity: 0.95,
+      bubblingMouseEvents: false,
     }).addTo(map);
 
-    marker.on('click', () => inspectStation(n));
+    marker.on('click', (e) => { L.DomEvent.stopPropagation(e); inspectStation(n); });
     nodeMarkers.push({ marker, node: n });
 
     // Label (hidden by default)
