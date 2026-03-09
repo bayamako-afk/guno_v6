@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GUNO V6 — Station Metrics Viewer</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; font-family: 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #e2e8f0; }
+
+  /* ── Layout ── */
+  #app { display: flex; flex-direction: column; height: 100vh; }
+  #toolbar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px; background: #1e293b;
+    border-bottom: 1px solid #334155; flex-shrink: 0; flex-wrap: wrap;
+  }
+  #main { display: flex; flex: 1; overflow: hidden; }
+  #map { flex: 1; background: #0f172a; }
+  #sidebar {
+    width: 240px; flex-shrink: 0;
+    background: #1e293b; border-left: 1px solid #334155;
+    overflow-y: auto; padding: 10px 8px; display: flex; flex-direction: column; gap: 10px;
+  }
+
+  /* ── Toolbar ── */
+  #toolbar .title { font-size: 12px; font-weight: 700; color: #94a3b8; letter-spacing: .05em; text-transform: uppercase; margin-right: 4px; }
+  #toolbar .badge { font-size: 10px; background: #334155; color: #94a3b8; padding: 2px 6px; border-radius: 3px; }
+  .btn {
+    padding: 4px 10px; font-size: 11px; font-weight: 600;
+    background: #334155; color: #cbd5e1; border: 1px solid #475569;
+    border-radius: 4px; cursor: pointer; white-space: nowrap;
+  }
+  .btn:hover { background: #475569; }
+  .btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+  #status { font-size: 10px; color: #64748b; margin-left: auto; }
+
+  /* ── Metric selector ── */
+  #metric-select {
+    padding: 3px 6px; font-size: 11px; background: #0f172a;
+    color: #e2e8f0; border: 1px solid #475569; border-radius: 4px; cursor: pointer;
+  }
+  #metric-select:focus { outline: none; border-color: #3b82f6; }
+
+  /* ── Sidebar sections ── */
+  .section-title {
+    font-size: 9px; font-weight: 700; color: #64748b;
+    letter-spacing: .08em; text-transform: uppercase;
+    border-bottom: 1px solid #334155; padding-bottom: 4px; margin-bottom: 6px;
+  }
+  .stat-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; }
+  .stat-label { color: #94a3b8; }
+  .stat-value { color: #f1f5f9; font-weight: 600; }
+
+  /* ── Inspector ── */
+  #inspector { background: #0f172a; border-radius: 5px; padding: 8px; font-size: 11px; }
+  #inspector .field { display: flex; justify-content: space-between; margin-bottom: 3px; }
+  #inspector .fname { color: #64748b; }
+  #inspector .fval  { color: #f1f5f9; font-weight: 600; text-align: right; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #inspector .fval.highlight { color: #fbbf24; }
+  #inspector-placeholder { color: #475569; font-size: 11px; }
+
+  /* ── Ranking list ── */
+  #ranking-list { list-style: none; }
+  #ranking-list li {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 5px; border-radius: 3px; cursor: pointer; font-size: 11px;
+  }
+  #ranking-list li:hover { background: #334155; }
+  #ranking-list li.selected { background: #1d4ed8; }
+  #ranking-list .rank-num { color: #64748b; font-size: 10px; width: 18px; text-align: right; flex-shrink: 0; }
+  #ranking-list .rank-name { flex: 1; color: #e2e8f0; }
+  #ranking-list .rank-val { color: #fbbf24; font-size: 10px; flex-shrink: 0; }
+
+  /* ── Heat legend ── */
+  #heat-legend { display: flex; align-items: center; gap: 6px; font-size: 10px; color: #94a3b8; }
+  #heat-bar {
+    flex: 1; height: 8px; border-radius: 4px;
+    background: linear-gradient(to right, #3b82f6, #eab308, #ef4444);
+  }
+
+  /* ── Error ── */
+  #error-banner {
+    display: none; position: fixed; top: 40px; left: 50%; transform: translateX(-50%);
+    background: #7f1d1d; color: #fca5a5; padding: 8px 16px; border-radius: 5px;
+    font-size: 12px; z-index: 9999; border: 1px solid #ef4444;
+  }
+
+  /* ── Leaflet overrides ── */
+  .leaflet-container { background: #0f172a !important; }
+  .leaflet-tile { filter: brightness(0.55) saturate(0.6); }
+  .leaflet-control-zoom a { background: #1e293b !important; color: #94a3b8 !important; border-color: #334155 !important; }
+  .leaflet-control-attribution { background: rgba(15,23,42,0.7) !important; color: #475569 !important; font-size: 9px !important; }
+  .leaflet-control-attribution a { color: #475569 !important; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Toolbar -->
+  <div id="toolbar">
+    <span class="title">GUNO V6</span>
+    <span class="badge">METRICS</span>
+    <button class="btn" id="btn-fit">Fit to Graph</button>
+    <button class="btn active" id="btn-edges">Toggle Edges</button>
+    <button class="btn" id="btn-labels">Toggle Labels</button>
+    <label style="font-size:11px;color:#94a3b8;margin-left:8px;">Metric:</label>
+    <select id="metric-select">
+      <option value="score_total" selected>score_total</option>
+      <option value="degree">degree</option>
+      <option value="line_count">line_count</option>
+      <option value="hub_score">hub_score</option>
+      <option value="betweenness">betweenness</option>
+    </select>
+    <span id="status">Loading...</span>
+  </div>
+
+  <div id="main">
+    <!-- Map -->
+    <div id="map"></div>
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+
+      <!-- Dataset summary -->
+      <div id="section-summary">
+        <div class="section-title">Dataset</div>
+        <div class="stat-row"><span class="stat-label">Stations</span><span class="stat-value" id="s-nodes">—</span></div>
+        <div class="stat-row"><span class="stat-label">Edges</span><span class="stat-value" id="s-edges">—</span></div>
+        <div class="stat-row"><span class="stat-label">Top station</span><span class="stat-value" id="s-top">—</span></div>
+      </div>
+
+      <!-- Metric summary -->
+      <div id="section-metric">
+        <div class="section-title">Metric</div>
+        <div class="stat-row"><span class="stat-label">Selected</span><span class="stat-value" id="s-metric">score_total</span></div>
+        <div class="stat-row"><span class="stat-label">Max</span><span class="stat-value" id="s-max">—</span></div>
+        <div class="stat-row"><span class="stat-label">Min</span><span class="stat-value" id="s-min">—</span></div>
+        <div id="heat-legend">
+          <span>low</span><div id="heat-bar"></div><span>high</span>
+        </div>
+      </div>
+
+      <!-- Station inspector -->
+      <div>
+        <div class="section-title">Station Inspector</div>
+        <div id="inspector">
+          <div id="inspector-placeholder">Click a station to inspect</div>
+        </div>
+      </div>
+
+      <!-- Ranking list -->
+      <div>
+        <div class="section-title">Top 20 — <span id="ranking-label">score_total</span></div>
+        <ul id="ranking-list"></ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="error-banner"></div>
+
+<script>
+// ── Constants ──────────────────────────────────────────────────────────────
+const GRAPH_URL   = '../data/graph/station_graph_tokyo.json';
+const METRICS_URL = '../data/derived/station_metrics_tokyo.json';
+
+const LINE_COLORS = {
+  JY: '#86efac', G: '#f97316', M: '#f87171',
+  T:  '#67e8f9', Z: '#c084fc',
+};
+const DEFAULT_EDGE_COLOR = '#475569';
+
+// ── State ──────────────────────────────────────────────────────────────────
+let graph        = null;
+let metricsData  = null;
+let metricsIndex = new Map();   // station_global_id → metrics record
+let nodeIndex    = new Map();   // node_id → node
+let nodeMarkers  = [];          // { marker, node, metrics }
+let edgePolylines = [];
+let labelMarkers  = [];
+let showEdges     = true;
+let showLabels    = false;
+let currentMetric = 'score_total';
+let selectedId    = null;
+let allLatLngs    = [];
+
+// ── Map init ───────────────────────────────────────────────────────────────
+const map = L.map('map', { zoomControl: true, preferCanvas: false })
+  .setView([35.68, 139.77], 11);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+  subdomains: 'abcd', maxZoom: 19,
+}).addTo(map);
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function showError(msg) {
+  const el = document.getElementById('error-banner');
+  el.textContent = msg;
+  el.style.display = 'block';
+  console.error('[Viewer]', msg);
+}
+
+function heatColor(t) {
+  // t in [0,1]: blue → yellow → red
+  if (t < 0.5) {
+    const r = Math.round(59  + (234 - 59)  * (t * 2));
+    const g = Math.round(130 + (179 - 130) * (t * 2));
+    const b = Math.round(246 + (8   - 246) * (t * 2));
+    return `rgb(${r},${g},${b})`;
+  } else {
+    const u = (t - 0.5) * 2;
+    const r = Math.round(234 + (239 - 234) * u);
+    const g = Math.round(179 + (68  - 179) * u);
+    const b = Math.round(8   + (68  - 8)   * u);
+    return `rgb(${r},${g},${b})`;
+  }
+}
+
+function metricValue(m, key) {
+  return m ? (m[key] ?? 0) : 0;
+}
+
+function getMetricRange(metric) {
+  const vals = [...metricsIndex.values()].map(m => metricValue(m, metric));
+  return { min: Math.min(...vals), max: Math.max(...vals) };
+}
+
+function normalizeMetric(val, min, max) {
+  if (max === min) return 0.5;
+  return (val - min) / (max - min);
+}
+
+function markerRadius(t) {
+  return 5 + t * 12;   // 5px (low) → 17px (high)
+}
+
+// ── Render nodes ───────────────────────────────────────────────────────────
+function renderNodes() {
+  nodeMarkers.forEach(nm => nm.marker.remove());
+  labelMarkers.forEach(lm => lm.remove());
+  nodeMarkers = [];
+  labelMarkers = [];
+  allLatLngs = [];
+
+  const { min, max } = getMetricRange(currentMetric);
+
+  graph.nodes.forEach(n => {
+    const m   = metricsIndex.get(n.node_id);
+    const val = metricValue(m, currentMetric);
+    const t   = normalizeMetric(val, min, max);
+    const color  = heatColor(t);
+    const radius = markerRadius(t);
+
+    const marker = L.circleMarker([n.lat, n.lon], {
+      radius,
+      fillColor: color,
+      color: '#0f172a',
+      weight: 1.5,
+      fillOpacity: 0.9,
+      bubblingMouseEvents: false,
+    }).addTo(map);
+
+    marker.on('click', (e) => {
+      L.DomEvent.stopPropagation(e);
+      selectStation(n.node_id);
+    });
+
+    nodeMarkers.push({ marker, node: n, metrics: m });
+    allLatLngs.push([n.lat, n.lon]);
+
+    // Label
+    const icon = L.divIcon({
+      className: '',
+      html: `<div style="
+        background:rgba(15,23,42,0.85);color:#f1f5f9;
+        font-size:9px;padding:1px 4px;border-radius:2px;
+        white-space:nowrap;border:1px solid #334155;pointer-events:none;
+      ">${n.station_name}</div>`,
+      iconAnchor: [-10, 8],
+    });
+    const lm = L.marker([n.lat, n.lon], { icon, interactive: false, zIndexOffset: -100 });
+    if (showLabels) lm.addTo(map);
+    labelMarkers.push(lm);
+  });
+}
+
+// ── Render edges ───────────────────────────────────────────────────────────
+function renderEdges() {
+  edgePolylines.forEach(p => p.remove());
+  edgePolylines = [];
+
+  graph.edges.forEach(e => {
+    const from = nodeIndex.get(e.from);
+    const to   = nodeIndex.get(e.to);
+    if (!from || !to) return;
+    const color = LINE_COLORS[e.line_id] || DEFAULT_EDGE_COLOR;
+    const pl = L.polyline(
+      [[from.lat, from.lon], [to.lat, to.lon]],
+      { color, weight: 2, opacity: 0.6, interactive: false }
+    );
+    if (showEdges) pl.addTo(map);
+    edgePolylines.push(pl);
+  });
+}
+
+// ── Update node colors/sizes without full re-render ───────────────────────
+function updateNodeAppearance() {
+  const { min, max } = getMetricRange(currentMetric);
+  nodeMarkers.forEach(nm => {
+    const val = metricValue(nm.metrics, currentMetric);
+    const t   = normalizeMetric(val, min, max);
+    nm.marker.setStyle({ fillColor: heatColor(t), radius: markerRadius(t) });
+    nm.marker.setRadius(markerRadius(t));
+  });
+}
+
+// ── Sidebar stats ──────────────────────────────────────────────────────────
+function updateSidebarStats() {
+  const { min, max } = getMetricRange(currentMetric);
+  const topStation = [...metricsIndex.values()].sort((a, b) => b[currentMetric] - a[currentMetric])[0];
+
+  document.getElementById('s-nodes').textContent  = graph.nodes.length;
+  document.getElementById('s-edges').textContent  = graph.edges.length;
+  document.getElementById('s-top').textContent    = topStation ? topStation.station_name : '—';
+  document.getElementById('s-metric').textContent = currentMetric;
+  document.getElementById('s-max').textContent    = typeof max === 'number' ? max.toFixed(4) : '—';
+  document.getElementById('s-min').textContent    = typeof min === 'number' ? min.toFixed(4) : '—';
+  document.getElementById('ranking-label').textContent = currentMetric;
+}
+
+// ── Ranking list ───────────────────────────────────────────────────────────
+function updateRankingList() {
+  const sorted = [...metricsIndex.values()]
+    .sort((a, b) => b[currentMetric] - a[currentMetric])
+    .slice(0, 20);
+
+  const ul = document.getElementById('ranking-list');
+  ul.innerHTML = '';
+  sorted.forEach((m, i) => {
+    const li = document.createElement('li');
+    if (m.station_global_id === selectedId) li.classList.add('selected');
+    li.innerHTML = `
+      <span class="rank-num">${i + 1}</span>
+      <span class="rank-name">${m.station_name}</span>
+      <span class="rank-val">${typeof m[currentMetric] === 'number' ? m[currentMetric].toFixed(3) : m[currentMetric]}</span>
+    `;
+    li.addEventListener('click', () => {
+      const node = nodeIndex.get(m.station_global_id);
+      if (node) {
+        map.setView([node.lat, node.lon], 14);
+        selectStation(m.station_global_id);
+      }
+    });
+    ul.appendChild(li);
+  });
+}
+
+// ── Station inspector ──────────────────────────────────────────────────────
+function selectStation(nodeId) {
+  selectedId = nodeId;
+  const m = metricsIndex.get(nodeId);
+  const inspector = document.getElementById('inspector');
+
+  if (!m) {
+    inspector.innerHTML = '<div id="inspector-placeholder">No metrics for this station</div>';
+    return;
+  }
+
+  inspector.innerHTML = `
+    <div class="field"><span class="fname">name</span><span class="fval highlight">${m.station_name}</span></div>
+    <div class="field"><span class="fname">slug</span><span class="fval">${m.station_slug}</span></div>
+    <div class="field"><span class="fname">node_id</span><span class="fval" style="font-size:9px">${m.station_global_id}</span></div>
+    <div class="field"><span class="fname">rank</span><span class="fval">#${m.rank}</span></div>
+    <div class="field"><span class="fname">score_total</span><span class="fval">${m.score_total}</span></div>
+    <div class="field"><span class="fname">degree</span><span class="fval">${m.degree}</span></div>
+    <div class="field"><span class="fname">line_count</span><span class="fval">${m.line_count}</span></div>
+    <div class="field"><span class="fname">hub_score</span><span class="fval">${m.hub_score}</span></div>
+    <div class="field"><span class="fname">betweenness</span><span class="fval">${m.betweenness}</span></div>
+  `;
+
+  // Highlight selected marker
+  nodeMarkers.forEach(nm => {
+    const isSelected = nm.node.node_id === nodeId;
+    nm.marker.setStyle({ weight: isSelected ? 3 : 1.5, color: isSelected ? '#fbbf24' : '#0f172a' });
+  });
+
+  // Update ranking list highlight
+  updateRankingList();
+}
+
+// ── Metric change ──────────────────────────────────────────────────────────
+function onMetricChange() {
+  currentMetric = document.getElementById('metric-select').value;
+  updateNodeAppearance();
+  updateSidebarStats();
+  updateRankingList();
+}
+
+// ── Toolbar buttons ────────────────────────────────────────────────────────
+document.getElementById('btn-fit').addEventListener('click', () => {
+  if (allLatLngs.length) map.fitBounds(L.latLngBounds(allLatLngs).pad(0.05));
+});
+
+document.getElementById('btn-edges').addEventListener('click', function() {
+  showEdges = !showEdges;
+  this.classList.toggle('active', showEdges);
+  edgePolylines.forEach(p => showEdges ? p.addTo(map) : p.remove());
+});
+
+document.getElementById('btn-labels').addEventListener('click', function() {
+  showLabels = !showLabels;
+  this.classList.toggle('active', showLabels);
+  labelMarkers.forEach(lm => showLabels ? lm.addTo(map) : lm.remove());
+});
+
+document.getElementById('metric-select').addEventListener('change', onMetricChange);
+
+// ── Load data ──────────────────────────────────────────────────────────────
+async function loadData() {
+  console.log('[Viewer] Fetching graph:', GRAPH_URL);
+  console.log('[Viewer] Fetching metrics:', METRICS_URL);
+
+  let graphJson, metricsJson;
+
+  try {
+    const res = await fetch(GRAPH_URL);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    graphJson = await res.json();
+  } catch (err) {
+    showError(`Failed to load station graph: ${err.message}`);
+    return;
+  }
+
+  try {
+    const res = await fetch(METRICS_URL);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    metricsJson = await res.json();
+  } catch (err) {
+    showError(`Failed to load station metrics: ${err.message}`);
+    return;
+  }
+
+  graph       = graphJson;
+  metricsData = metricsJson;
+
+  console.log('[Viewer] nodes:', graph.nodes.length);
+  console.log('[Viewer] edges:', graph.edges.length);
+  console.log('[Viewer] metrics stations:', metricsData.stations.length);
+
+  // Build indexes
+  graph.nodes.forEach(n => nodeIndex.set(n.node_id, n));
+  metricsData.stations.forEach(m => metricsIndex.set(m.station_global_id, m));
+
+  // Render
+  renderEdges();
+  renderNodes();
+  updateSidebarStats();
+  updateRankingList();
+
+  // Fit map
+  if (allLatLngs.length) map.fitBounds(L.latLngBounds(allLatLngs).pad(0.05));
+
+  document.getElementById('status').textContent =
+    `Loaded — ${graph.nodes.length} nodes, ${graph.edges.length} edges`;
+
+  console.log('[Viewer] Station metrics loaded successfully');
+}
+
+loadData();
+</script>
+</body>
+</html>
