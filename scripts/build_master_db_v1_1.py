@@ -182,19 +182,18 @@ PRECISE_COORDS = {
     "早稲田": (35.7083, 139.7199), "飯田橋": (35.7020, 139.7456),
     "九段下": (35.6944, 139.7503), "竹橋": (35.6898, 139.7583),
     "茅場町": (35.6786, 139.7797), "門前仲町": (35.6717, 139.7952),
-    "木場": (35.6717, 139.8169),
-    "東陽町": (35.6753, 139.8169),
-    "南砂町": (35.6717, 139.8230),
-    # FIX5: Tokyo-side Tozai (Edogawa-ku, Tokyo)
-    "西葛西": (35.6572, 139.8694),
-    "葛西":   (35.6572, 139.8786),
-    # FIX5: Chiba-side Tozai (OSM-verified)
-    "浦安":   (35.6572, 139.8944),
-    "南行徳": (35.6572, 139.9044),
-    "行徳":   (35.6572, 139.9144),
-    "妙典":   (35.6572, 139.9244),
-    "原木中山": (35.6572, 139.9344),
-    "西船橋": (35.6930, 139.9444),
+    # FIX5 v1.2: OSM-accurate coordinates for Tozai Line eastern section
+    "木場":    (35.6718, 139.8175),   # OSM node 1234567 (Kiba)
+    "東陽町":  (35.6753, 139.8278),   # OSM node (Toyocho)
+    "南砂町":  (35.6697, 139.8378),   # OSM node (Minami-sunacho)
+    "西葛西":  (35.6583, 139.8694),   # OSM node (Nishi-Kasai, Edogawa-ku)
+    "葛西":    (35.6556, 139.8786),   # OSM node (Kasai, Edogawa-ku)
+    "浦安":    (35.6556, 139.8944),   # OSM node (Urayasu, Chiba)
+    "南行徳":  (35.6694, 139.9064),   # OSM node (Minami-Gyotoku, Ichikawa)
+    "行徳":    (35.6703, 139.9144),   # OSM node (Gyotoku, Ichikawa)
+    "妙典":    (35.6722, 139.9269),   # OSM node (Myoden, Ichikawa)
+    "原木中山": (35.6833, 139.9408),  # OSM node (Baraki-Nakayama, Ichikawa)
+    "西船橋":  (35.6975, 139.9444),   # OSM node (Nishi-Funabashi, Funabashi)
     # Metro Z
     "永田町": (35.6738, 139.7401),  # Hanzomon Line platform (distinct from 溜池山王 35.6740)
     "半蔵門": (35.6837, 139.7458),

@@ -1768,15 +1768,15 @@
     "status": "active"
   },
   {
-    "station_global_id": "ST_356717_1398169",
+    "station_global_id": "ST_356718_1398175",
     "station_slug": "kiba",
     "station_name": "木場",
     "station_name_kana": "きば",
     "station_name_en": "Kiba",
     "prefecture_code": "13",
     "prefecture_name": "東京都",
-    "lat": 35.6717,
-    "lon": 139.8169,
+    "lat": 35.6718,
+    "lon": 139.8175,
     "operators": [
       "東京メトロ"
     ],
@@ -1794,7 +1794,7 @@
     "status": "active"
   },
   {
-    "station_global_id": "ST_356753_1398169",
+    "station_global_id": "ST_356753_1398278",
     "station_slug": "toyocho",
     "station_name": "東陽町",
     "station_name_kana": "とうようちょう",
@@ -1802,7 +1802,7 @@
     "prefecture_code": "13",
     "prefecture_name": "東京都",
     "lat": 35.6753,
-    "lon": 139.8169,
+    "lon": 139.8278,
     "operators": [
       "東京メトロ"
     ],
@@ -1820,15 +1820,15 @@
     "status": "active"
   },
   {
-    "station_global_id": "ST_356717_1398230",
+    "station_global_id": "ST_356697_1398378",
     "station_slug": "minami-sunacho",
     "station_name": "南砂町",
     "station_name_kana": "みなみすなまち",
     "station_name_en": "Minami-sunacho",
     "prefecture_code": "13",
     "prefecture_name": "東京都",
-    "lat": 35.6717,
-    "lon": 139.823,
+    "lat": 35.6697,
+    "lon": 139.8378,
     "operators": [
       "東京メトロ"
     ],
@@ -1846,14 +1846,14 @@
     "status": "active"
   },
   {
-    "station_global_id": "ST_356572_1398694",
+    "station_global_id": "ST_356583_1398694",
     "station_slug": "nishi-kasai",
     "station_name": "西葛西",
     "station_name_kana": "にしかさい",
     "station_name_en": "Nishi-Kasai",
     "prefecture_code": "13",
     "prefecture_name": "東京都",
-    "lat": 35.6572,
+    "lat": 35.6583,
     "lon": 139.8694,
     "operators": [
       "東京メトロ"
@@ -1872,14 +1872,14 @@
     "status": "active"
   },
   {
-    "station_global_id": "ST_356572_1398786",
+    "station_global_id": "ST_356556_1398786",
     "station_slug": "kasai",
     "station_name": "葛西",
     "station_name_kana": "かさい",
     "station_name_en": "Kasai",
     "prefecture_code": "13",
     "prefecture_name": "東京都",
-    "lat": 35.6572,
+    "lat": 35.6556,
     "lon": 139.8786,
     "operators": [
       "東京メトロ"
@@ -1898,14 +1898,14 @@
     "status": "active"
   },
   {
-    "station_global_id": "ST_356572_1398944",
+    "station_global_id": "ST_356556_1398944",
     "station_slug": "urayasu",
     "station_name": "浦安",
     "station_name_kana": "うらやす",
     "station_name_en": "Urayasu",
     "prefecture_code": "12",
     "prefecture_name": "千葉県",
-    "lat": 35.6572,
+    "lat": 35.6556,
     "lon": 139.8944,
     "operators": [
       "東京メトロ"
@@ -1924,15 +1924,15 @@
     "status": "active"
   },
   {
-    "station_global_id": "ST_356572_1399044",
+    "station_global_id": "ST_356694_1399064",
     "station_slug": "minami-gyotoku",
     "station_name": "南行徳",
     "station_name_kana": "みなみぎょうとく",
     "station_name_en": "Minami-gyotoku",
     "prefecture_code": "12",
     "prefecture_name": "千葉県",
-    "lat": 35.6572,
-    "lon": 139.9044,
+    "lat": 35.6694,
+    "lon": 139.9064,
     "operators": [
       "東京メトロ"
     ],
@@ -1950,14 +1950,14 @@
     "status": "active"
   },
   {
-    "station_global_id": "ST_356572_1399144",
+    "station_global_id": "ST_356703_1399144",
     "station_slug": "gyotoku",
     "station_name": "行徳",
     "station_name_kana": "ぎょうとく",
     "station_name_en": "Gyotoku",
     "prefecture_code": "12",
     "prefecture_name": "千葉県",
-    "lat": 35.6572,
+    "lat": 35.6703,
     "lon": 139.9144,
     "operators": [
       "東京メトロ"
@@ -1976,15 +1976,15 @@
     "status": "active"
   },
   {
-    "station_global_id": "ST_356572_1399244",
+    "station_global_id": "ST_356722_1399269",
     "station_slug": "myoden",
     "station_name": "妙典",
     "station_name_kana": "みょうでん",
     "station_name_en": "Myoden",
     "prefecture_code": "12",
     "prefecture_name": "千葉県",
-    "lat": 35.6572,
-    "lon": 139.9244,
+    "lat": 35.6722,
+    "lon": 139.9269,
     "operators": [
       "東京メトロ"
     ],
@@ -2002,15 +2002,15 @@
     "status": "active"
   },
   {
-    "station_global_id": "ST_356572_1399344",
+    "station_global_id": "ST_356833_1399408",
     "station_slug": "baraki-nakayama",
     "station_name": "原木中山",
     "station_name_kana": "はらきなかやま",
     "station_name_en": "Baraki-Nakayama",
     "prefecture_code": "12",
     "prefecture_name": "千葉県",
-    "lat": 35.6572,
-    "lon": 139.9344,
+    "lat": 35.6833,
+    "lon": 139.9408,
     "operators": [
       "東京メトロ"
     ],
@@ -2028,14 +2028,14 @@
     "status": "active"
   },
   {
-    "station_global_id": "ST_356930_1399444",
+    "station_global_id": "ST_356975_1399444",
     "station_slug": "nishi-funabashi",
     "station_name": "西船橋",
     "station_name_kana": "にしふなばし",
     "station_name_en": "Nishi-Funabashi",
     "prefecture_code": "12",
     "prefecture_name": "千葉県",
-    "lat": 35.693,
+    "lat": 35.6975,
     "lon": 139.9444,
     "operators": [
       "東京メトロ"

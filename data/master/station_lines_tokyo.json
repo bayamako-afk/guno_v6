@@ -945,10 +945,10 @@
     "is_transfer_station": false,
     "is_terminal": false,
     "adjacent_prev_station_id": "ST_356786_1397797",
-    "adjacent_next_station_id": "ST_356717_1398169"
+    "adjacent_next_station_id": "ST_356718_1398175"
   },
   {
-    "station_global_id": "ST_356717_1398169",
+    "station_global_id": "ST_356718_1398175",
     "line_id": "T",
     "line_name": "東西線",
     "operator_name": "東京メトロ",
@@ -957,10 +957,10 @@
     "is_transfer_station": false,
     "is_terminal": false,
     "adjacent_prev_station_id": "ST_356717_1397952",
-    "adjacent_next_station_id": "ST_356753_1398169"
+    "adjacent_next_station_id": "ST_356753_1398278"
   },
   {
-    "station_global_id": "ST_356753_1398169",
+    "station_global_id": "ST_356753_1398278",
     "line_id": "T",
     "line_name": "東西線",
     "operator_name": "東京メトロ",
@@ -968,11 +968,11 @@
     "order_on_line": 13,
     "is_transfer_station": false,
     "is_terminal": false,
-    "adjacent_prev_station_id": "ST_356717_1398169",
-    "adjacent_next_station_id": "ST_356717_1398230"
+    "adjacent_prev_station_id": "ST_356718_1398175",
+    "adjacent_next_station_id": "ST_356697_1398378"
   },
   {
-    "station_global_id": "ST_356717_1398230",
+    "station_global_id": "ST_356697_1398378",
     "line_id": "T",
     "line_name": "東西線",
     "operator_name": "東京メトロ",
@@ -980,11 +980,11 @@
     "order_on_line": 14,
     "is_transfer_station": false,
     "is_terminal": false,
-    "adjacent_prev_station_id": "ST_356753_1398169",
-    "adjacent_next_station_id": "ST_356572_1398694"
+    "adjacent_prev_station_id": "ST_356753_1398278",
+    "adjacent_next_station_id": "ST_356583_1398694"
   },
   {
-    "station_global_id": "ST_356572_1398694",
+    "station_global_id": "ST_356583_1398694",
     "line_id": "T",
     "line_name": "東西線",
     "operator_name": "東京メトロ",
@@ -992,11 +992,11 @@
     "order_on_line": 15,
     "is_transfer_station": false,
     "is_terminal": false,
-    "adjacent_prev_station_id": "ST_356717_1398230",
-    "adjacent_next_station_id": "ST_356572_1398786"
+    "adjacent_prev_station_id": "ST_356697_1398378",
+    "adjacent_next_station_id": "ST_356556_1398786"
   },
   {
-    "station_global_id": "ST_356572_1398786",
+    "station_global_id": "ST_356556_1398786",
     "line_id": "T",
     "line_name": "東西線",
     "operator_name": "東京メトロ",
@@ -1004,11 +1004,11 @@
     "order_on_line": 16,
     "is_transfer_station": false,
     "is_terminal": false,
-    "adjacent_prev_station_id": "ST_356572_1398694",
-    "adjacent_next_station_id": "ST_356572_1398944"
+    "adjacent_prev_station_id": "ST_356583_1398694",
+    "adjacent_next_station_id": "ST_356556_1398944"
   },
   {
-    "station_global_id": "ST_356572_1398944",
+    "station_global_id": "ST_356556_1398944",
     "line_id": "T",
     "line_name": "東西線",
     "operator_name": "東京メトロ",
@@ -1016,11 +1016,11 @@
     "order_on_line": 17,
     "is_transfer_station": false,
     "is_terminal": false,
-    "adjacent_prev_station_id": "ST_356572_1398786",
-    "adjacent_next_station_id": "ST_356572_1399044"
+    "adjacent_prev_station_id": "ST_356556_1398786",
+    "adjacent_next_station_id": "ST_356694_1399064"
   },
   {
-    "station_global_id": "ST_356572_1399044",
+    "station_global_id": "ST_356694_1399064",
     "line_id": "T",
     "line_name": "東西線",
     "operator_name": "東京メトロ",
@@ -1028,11 +1028,11 @@
     "order_on_line": 18,
     "is_transfer_station": false,
     "is_terminal": false,
-    "adjacent_prev_station_id": "ST_356572_1398944",
-    "adjacent_next_station_id": "ST_356572_1399144"
+    "adjacent_prev_station_id": "ST_356556_1398944",
+    "adjacent_next_station_id": "ST_356703_1399144"
   },
   {
-    "station_global_id": "ST_356572_1399144",
+    "station_global_id": "ST_356703_1399144",
     "line_id": "T",
     "line_name": "東西線",
     "operator_name": "東京メトロ",
@@ -1040,11 +1040,11 @@
     "order_on_line": 19,
     "is_transfer_station": false,
     "is_terminal": false,
-    "adjacent_prev_station_id": "ST_356572_1399044",
-    "adjacent_next_station_id": "ST_356572_1399244"
+    "adjacent_prev_station_id": "ST_356694_1399064",
+    "adjacent_next_station_id": "ST_356722_1399269"
   },
   {
-    "station_global_id": "ST_356572_1399244",
+    "station_global_id": "ST_356722_1399269",
     "line_id": "T",
     "line_name": "東西線",
     "operator_name": "東京メトロ",
@@ -1052,11 +1052,11 @@
     "order_on_line": 20,
     "is_transfer_station": false,
     "is_terminal": false,
-    "adjacent_prev_station_id": "ST_356572_1399144",
-    "adjacent_next_station_id": "ST_356572_1399344"
+    "adjacent_prev_station_id": "ST_356703_1399144",
+    "adjacent_next_station_id": "ST_356833_1399408"
   },
   {
-    "station_global_id": "ST_356572_1399344",
+    "station_global_id": "ST_356833_1399408",
     "line_id": "T",
     "line_name": "東西線",
     "operator_name": "東京メトロ",
@@ -1064,11 +1064,11 @@
     "order_on_line": 21,
     "is_transfer_station": false,
     "is_terminal": false,
-    "adjacent_prev_station_id": "ST_356572_1399244",
-    "adjacent_next_station_id": "ST_356930_1399444"
+    "adjacent_prev_station_id": "ST_356722_1399269",
+    "adjacent_next_station_id": "ST_356975_1399444"
   },
   {
-    "station_global_id": "ST_356930_1399444",
+    "station_global_id": "ST_356975_1399444",
     "line_id": "T",
     "line_name": "東西線",
     "operator_name": "東京メトロ",
@@ -1076,7 +1076,7 @@
     "order_on_line": 22,
     "is_transfer_station": false,
     "is_terminal": true,
-    "adjacent_prev_station_id": "ST_356572_1399344",
+    "adjacent_prev_station_id": "ST_356833_1399408",
     "adjacent_next_station_id": null
   },
   {

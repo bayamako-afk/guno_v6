@@ -16,57 +16,57 @@
     "prefecture_mismatch": [],
     "stations_outside_tokyo": [
       {
-        "station_global_id": "ST_356572_1398944",
+        "station_global_id": "ST_356556_1398944",
         "station_name": "浦安",
         "station_name_en": "Urayasu",
         "prefecture_code": "12",
         "prefecture_name": "千葉県",
-        "lat": 35.6572,
+        "lat": 35.6556,
         "lon": 139.8944
       },
       {
-        "station_global_id": "ST_356572_1399044",
+        "station_global_id": "ST_356694_1399064",
         "station_name": "南行徳",
         "station_name_en": "Minami-gyotoku",
         "prefecture_code": "12",
         "prefecture_name": "千葉県",
-        "lat": 35.6572,
-        "lon": 139.9044
+        "lat": 35.6694,
+        "lon": 139.9064
       },
       {
-        "station_global_id": "ST_356572_1399144",
+        "station_global_id": "ST_356703_1399144",
         "station_name": "行徳",
         "station_name_en": "Gyotoku",
         "prefecture_code": "12",
         "prefecture_name": "千葉県",
-        "lat": 35.6572,
+        "lat": 35.6703,
         "lon": 139.9144
       },
       {
-        "station_global_id": "ST_356572_1399244",
+        "station_global_id": "ST_356722_1399269",
         "station_name": "妙典",
         "station_name_en": "Myoden",
         "prefecture_code": "12",
         "prefecture_name": "千葉県",
-        "lat": 35.6572,
-        "lon": 139.9244
+        "lat": 35.6722,
+        "lon": 139.9269
       },
       {
-        "station_global_id": "ST_356572_1399344",
+        "station_global_id": "ST_356833_1399408",
         "station_name": "原木中山",
         "station_name_en": "Baraki-Nakayama",
         "prefecture_code": "12",
         "prefecture_name": "千葉県",
-        "lat": 35.6572,
-        "lon": 139.9344
+        "lat": 35.6833,
+        "lon": 139.9408
       },
       {
-        "station_global_id": "ST_356930_1399444",
+        "station_global_id": "ST_356975_1399444",
         "station_name": "西船橋",
         "station_name_en": "Nishi-Funabashi",
         "prefecture_code": "12",
         "prefecture_name": "千葉県",
-        "lat": 35.693,
+        "lat": 35.6975,
         "lon": 139.9444
       }
     ]
