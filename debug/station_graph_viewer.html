@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GUNO V6 — Station Graph Viewer (Debug)</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 12px;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    #header {
+      background: #16213e;
+      border-bottom: 1px solid #0f3460;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    #header h1 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e94560;
+      letter-spacing: 0.05em;
+    }
+    #header .badge {
+      background: #0f3460;
+      color: #a0c4ff;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      letter-spacing: 0.04em;
+    }
+    #status-msg {
+      margin-left: auto;
+      font-size: 11px;
+      color: #888;
+    }
+
+    /* ── Main layout ── */
+    #main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Map ── */
+    #map {
+      flex: 1;
+      height: 100%;
+    }
+
+    /* ── Side panel ── */
+    #panel {
+      width: 220px;
+      flex-shrink: 0;
+      background: #16213e;
+      border-left: 1px solid #0f3460;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .panel-section {
+      padding: 10px 12px;
+      border-bottom: 1px solid #0f3460;
+    }
+    .panel-section h2 {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #a0c4ff;
+      margin-bottom: 8px;
+    }
+
+    /* Statistics */
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 3px 0;
+    }
+    .stat-label { color: #888; font-size: 11px; }
+    .stat-value { font-size: 13px; font-weight: 700; color: #e0e0e0; }
+
+    /* Line legend */
+    .line-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 0;
+      cursor: pointer;
+      border-radius: 3px;
+      padding-left: 2px;
+    }
+    .line-row:hover { background: #0f3460; }
+    .line-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .line-label { font-size: 11px; color: #ccc; }
+    .line-count { margin-left: auto; font-size: 10px; color: #666; }
+
+    /* Filter checkboxes */
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 0;
+    }
+    .filter-row label { font-size: 11px; color: #ccc; cursor: pointer; }
+    .filter-row input[type=checkbox] { cursor: pointer; accent-color: #e94560; }
+
+    /* Hub list */
+    #hub-list { list-style: none; }
+    #hub-list li {
+      padding: 3px 0;
+      font-size: 11px;
+      color: #ccc;
+      border-bottom: 1px solid #0f3460;
+      display: flex;
+      justify-content: space-between;
+    }
+    #hub-list li span.hub-lines {
+      color: #a0c4ff;
+      font-size: 10px;
+    }
+
+    /* Loading overlay */
+    #loading {
+      position: fixed;
+      inset: 0;
+      background: rgba(26,26,46,0.92);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      gap: 12px;
+    }
+    #loading p { color: #a0c4ff; font-size: 13px; }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid #0f3460;
+      border-top-color: #e94560;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading.hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div id="loading">
+  <div class="spinner"></div>
+  <p>Loading station graph…</p>
+</div>
+
+<!-- Header -->
+<div id="header">
+  <h1>GUNO V6 — Station Graph Viewer</h1>
+  <span class="badge">DEBUG</span>
+  <span id="status-msg">Initializing…</span>
+</div>
+
+<!-- Main -->
+<div id="main">
+  <div id="map"></div>
+
+  <div id="panel">
+
+    <!-- Graph statistics -->
+    <div class="panel-section">
+      <h2>Graph Statistics</h2>
+      <div class="stat-row">
+        <span class="stat-label">Nodes</span>
+        <span class="stat-value" id="stat-nodes">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Edges</span>
+        <span class="stat-value" id="stat-edges">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Lines</span>
+        <span class="stat-value" id="stat-lines">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Hub nodes</span>
+        <span class="stat-value" id="stat-hubs">—</span>
+      </div>
+    </div>
+
+    <!-- Line legend & toggle -->
+    <div class="panel-section">
+      <h2>Lines</h2>
+      <div id="line-legend"></div>
+    </div>
+
+    <!-- Display options -->
+    <div class="panel-section">
+      <h2>Display</h2>
+      <div class="filter-row">
+        <input type="checkbox" id="chk-labels" />
+        <label for="chk-labels">Station labels</label>
+      </div>
+      <div class="filter-row">
+        <input type="checkbox" id="chk-hubs" checked />
+        <label for="chk-hubs">Highlight hubs</label>
+      </div>
+      <div class="filter-row">
+        <input type="checkbox" id="chk-chiba" checked />
+        <label for="chk-chiba">Show Chiba stations</label>
+      </div>
+    </div>
+
+    <!-- Hub stations -->
+    <div class="panel-section">
+      <h2>Hub Stations</h2>
+      <ul id="hub-list"></ul>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Constants ──────────────────────────────────────────────────────────────
+
+const DATA_PATH = '../data/graph/station_graph_tokyo.json';
+
+const LINE_COLORS = {
+  JY: '#9ACD32',
+  G:  '#FF9500',
+  M:  '#F62E36',
+  T:  '#009BBF',
+  Z:  '#8F76D6',
+};
+
+const LINE_NAMES = {
+  JY: '山手線',
+  G:  '銀座線',
+  M:  '丸ノ内線',
+  T:  '東西線',
+  Z:  '半蔵門線',
+};
+
+// Chiba stations (prefecture_code=12)
+const CHIBA_STATION_NAMES = new Set([
+  '浦安','南行徳','行徳','妙典','原木中山','西船橋'
+]);
+
+// ── State ──────────────────────────────────────────────────────────────────
+
+let map;
+let graphData;
+let nodeMap = {};           // node_id → node
+let markerLayer;            // L.LayerGroup for nodes
+let edgeLayersByLine = {};  // line_id → L.LayerGroup
+let labelLayer;             // L.LayerGroup for labels
+let lineVisible = {};       // line_id → bool
+let labelMarkers = [];
+
+// ── Init map ───────────────────────────────────────────────────────────────
+
+function initMap() {
+  map = L.map('map', {
+    center: [35.6895, 139.6917],
+    zoom: 11,
+    zoomControl: true,
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap contributors © CARTO',
+    maxZoom: 19,
+  }).addTo(map);
+}
+
+// ── Load data ──────────────────────────────────────────────────────────────
+
+async function loadGraph() {
+  setStatus('Fetching station_graph_tokyo.json…');
+  const res = await fetch(DATA_PATH);
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${DATA_PATH}`);
+  graphData = await res.json();
+  setStatus('Rendering…');
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────
+
+function render() {
+  const { nodes, edges, graph_statistics } = graphData;
+
+  // Build node lookup
+  nodes.forEach(n => { nodeMap[n.node_id] = n; });
+
+  // ── Statistics panel ──
+  document.getElementById('stat-nodes').textContent = graph_statistics.total_nodes;
+  document.getElementById('stat-edges').textContent = graph_statistics.total_edges;
+  document.getElementById('stat-lines').textContent = graph_statistics.total_lines;
+  document.getElementById('stat-hubs').textContent  = graph_statistics.hub_nodes;
+
+  // ── Edge layers (one per line) ──
+  const lineIds = Object.keys(LINE_COLORS);
+  lineIds.forEach(lid => {
+    lineVisible[lid] = true;
+    edgeLayersByLine[lid] = L.layerGroup().addTo(map);
+  });
+
+  edges.forEach(e => {
+    const fromNode = nodeMap[e.from];
+    const toNode   = nodeMap[e.to];
+    if (!fromNode || !toNode) return;
+
+    const color = LINE_COLORS[e.line_id] || '#ffffff';
+    const layer = edgeLayersByLine[e.line_id];
+    if (!layer) return;
+
+    L.polyline(
+      [[fromNode.lat, fromNode.lon], [toNode.lat, toNode.lon]],
+      { color, weight: 2.5, opacity: 0.85 }
+    ).addTo(layer);
+  });
+
+  // ── Node markers ──
+  markerLayer = L.layerGroup().addTo(map);
+  labelLayer  = L.layerGroup();  // not added yet (off by default)
+
+  const showHubs = document.getElementById('chk-hubs').checked;
+
+  nodes.forEach(n => {
+    const isHub   = n.hub_degree_global >= 2;
+    const isChiba = CHIBA_STATION_NAMES.has(n.station_name);
+    const radius  = isHub ? 7 : 4;
+    const color   = isHub ? '#e94560' : '#ffffff';
+    const weight  = isHub ? 2 : 1;
+
+    const marker = L.circleMarker([n.lat, n.lon], {
+      radius,
+      fillColor: color,
+      color: '#1a1a2e',
+      weight,
+      fillOpacity: 0.95,
+    });
+
+    // Popup
+    const lineList = (n.line_ids || []).map(l =>
+      `<span style="color:${LINE_COLORS[l] || '#fff'}">${LINE_NAMES[l] || l}</span>`
+    ).join(', ');
+
+    marker.bindPopup(`
+      <div style="font-family:sans-serif;font-size:12px;min-width:140px">
+        <b style="font-size:14px">${n.station_name}</b><br/>
+        <span style="color:#888">${n.station_slug}</span><br/>
+        <hr style="margin:4px 0;border-color:#ddd"/>
+        <div>Lines: <b>${n.line_count}</b></div>
+        <div>Hub degree: <b>${n.hub_degree_global}</b></div>
+        <div style="margin-top:4px">${lineList}</div>
+        ${isChiba ? '<div style="color:#f90;margin-top:4px">📍 千葉県</div>' : ''}
+        <div style="color:#aaa;font-size:10px;margin-top:4px">
+          ${n.lat.toFixed(4)}, ${n.lon.toFixed(4)}
+        </div>
+      </div>
+    `);
+
+    marker._nodeData = n;
+    marker.addTo(markerLayer);
+
+    // Label marker (tooltip-style, hidden by default)
+    const labelIcon = L.divIcon({
+      className: '',
+      html: `<div style="
+        background:rgba(22,33,62,0.85);
+        color:#e0e0e0;
+        font-size:10px;
+        padding:1px 4px;
+        border-radius:3px;
+        white-space:nowrap;
+        pointer-events:none;
+        border:1px solid #0f3460;
+      ">${n.station_name}</div>`,
+      iconAnchor: [-8, 8],
+    });
+    const lm = L.marker([n.lat, n.lon], { icon: labelIcon, interactive: false });
+    labelMarkers.push(lm);
+  });
+
+  // ── Line legend ──
+  const legendEl = document.getElementById('line-legend');
+  const edgesPerLine = graph_statistics.edges_per_line || {};
+
+  lineIds.forEach(lid => {
+    const row = document.createElement('div');
+    row.className = 'line-row';
+    row.innerHTML = `
+      <div class="line-dot" style="background:${LINE_COLORS[lid]}"></div>
+      <span class="line-label">${LINE_NAMES[lid]}</span>
+      <span class="line-count">${edgesPerLine[lid] ?? ''}e</span>
+    `;
+    row.title = `Toggle ${LINE_NAMES[lid]}`;
+    row.addEventListener('click', () => toggleLine(lid, row));
+    legendEl.appendChild(row);
+  });
+
+  // ── Hub list ──
+  const hubList = document.getElementById('hub-list');
+  const hubs = nodes
+    .filter(n => n.hub_degree_global >= 2)
+    .sort((a, b) => b.hub_degree_global - a.hub_degree_global);
+
+  hubs.forEach(n => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span>${n.station_name}</span>
+      <span class="hub-lines">${n.hub_degree_global} lines</span>
+    `;
+    li.style.cursor = 'pointer';
+    li.addEventListener('click', () => {
+      map.setView([n.lat, n.lon], 14);
+    });
+    hubList.appendChild(li);
+  });
+
+  setStatus(`Loaded — ${nodes.length} nodes, ${edges.length} edges`);
+}
+
+// ── Toggle line visibility ─────────────────────────────────────────────────
+
+function toggleLine(lid, rowEl) {
+  lineVisible[lid] = !lineVisible[lid];
+  const layer = edgeLayersByLine[lid];
+  if (lineVisible[lid]) {
+    layer.addTo(map);
+    rowEl.style.opacity = '1';
+  } else {
+    map.removeLayer(layer);
+    rowEl.style.opacity = '0.35';
+  }
+}
+
+// ── Checkbox handlers ──────────────────────────────────────────────────────
+
+document.getElementById('chk-labels').addEventListener('change', function () {
+  if (this.checked) {
+    labelMarkers.forEach(lm => lm.addTo(labelLayer));
+    labelLayer.addTo(map);
+  } else {
+    map.removeLayer(labelLayer);
+    labelMarkers.forEach(lm => labelLayer.removeLayer(lm));
+  }
+});
+
+document.getElementById('chk-hubs').addEventListener('change', function () {
+  if (!markerLayer) return;
+  markerLayer.eachLayer(marker => {
+    if (!marker._nodeData) return;
+    const n = marker._nodeData;
+    const isHub = n.hub_degree_global >= 2;
+    if (!isHub) return;
+    if (this.checked) {
+      marker.setStyle({ fillColor: '#e94560', radius: 7 });
+    } else {
+      marker.setStyle({ fillColor: '#ffffff', radius: 4 });
+    }
+  });
+});
+
+document.getElementById('chk-chiba').addEventListener('change', function () {
+  if (!markerLayer) return;
+  markerLayer.eachLayer(marker => {
+    if (!marker._nodeData) return;
+    const n = marker._nodeData;
+    if (!CHIBA_STATION_NAMES.has(n.station_name)) return;
+    if (this.checked) {
+      marker.setStyle({ opacity: 1, fillOpacity: 0.95 });
+    } else {
+      marker.setStyle({ opacity: 0.15, fillOpacity: 0.15 });
+    }
+  });
+});
+
+// ── Utilities ──────────────────────────────────────────────────────────────
+
+function setStatus(msg) {
+  document.getElementById('status-msg').textContent = msg;
+}
+
+// ── Bootstrap ──────────────────────────────────────────────────────────────
+
+(async () => {
+  try {
+    initMap();
+    await loadGraph();
+    render();
+  } catch (err) {
+    setStatus(`Error: ${err.message}`);
+    console.error(err);
+  } finally {
+    document.getElementById('loading').classList.add('hidden');
+  }
+})();
+</script>
+</body>
+</html>

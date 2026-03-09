@@ -1,0 +1,68 @@
+[
+  {
+    "line_id": "JY",
+    "line_name": "山手線",
+    "line_name_en": "Yamanote Line",
+    "operator_name": "JR東日本",
+    "color": "#9ACD32",
+    "prefectures": [
+      "東京都"
+    ],
+    "station_count": 30,
+    "is_loop": true,
+    "status": "active"
+  },
+  {
+    "line_id": "G",
+    "line_name": "銀座線",
+    "line_name_en": "Ginza Line",
+    "operator_name": "東京メトロ",
+    "color": "#FF9500",
+    "prefectures": [
+      "東京都"
+    ],
+    "station_count": 18,
+    "is_loop": false,
+    "status": "active"
+  },
+  {
+    "line_id": "M",
+    "line_name": "丸ノ内線",
+    "line_name_en": "Marunouchi Line",
+    "operator_name": "東京メトロ",
+    "color": "#F62E36",
+    "prefectures": [
+      "東京都"
+    ],
+    "station_count": 20,
+    "is_loop": false,
+    "status": "active"
+  },
+  {
+    "line_id": "T",
+    "line_name": "東西線",
+    "line_name_en": "Tozai Line",
+    "operator_name": "東京メトロ",
+    "color": "#009BBF",
+    "prefectures": [
+      "東京都",
+      "千葉県"
+    ],
+    "station_count": 22,
+    "is_loop": false,
+    "status": "active"
+  },
+  {
+    "line_id": "Z",
+    "line_name": "半蔵門線",
+    "line_name_en": "Hanzomon Line",
+    "operator_name": "東京メトロ",
+    "color": "#8F76D6",
+    "prefectures": [
+      "東京都"
+    ],
+    "station_count": 14,
+    "is_loop": false,
+    "status": "active"
+  }
+]
