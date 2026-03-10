@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GUNO V6 — Deck Viewer</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      flex-shrink: 0;
+    }
+    header .badge {
+      background: #f0883e;
+      color: #0d1117;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 3px;
+      letter-spacing: 1px;
+    }
+    header h1 { font-size: 14px; font-weight: 600; color: #e6edf3; }
+    header .loaded-msg { font-size: 11px; color: #8b949e; margin-left: auto; }
+
+    /* ── Controls bar ── */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 16px;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .filter-group { display: flex; gap: 4px; }
+    .filter-btn {
+      padding: 3px 12px;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      background: #21262d;
+      color: #8b949e;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .filter-btn:hover { border-color: #58a6ff; color: #58a6ff; }
+    .filter-btn.active { color: #0d1117; border-color: transparent; }
+    .filter-btn[data-rarity="ALL"].active { background: #58a6ff; color: #0d1117; }
+    .filter-btn[data-rarity="S"].active  { background: #d4a017; }
+    .filter-btn[data-rarity="A"].active  { background: #da3633; }
+    .filter-btn[data-rarity="B"].active  { background: #1f6feb; }
+    .filter-btn[data-rarity="C"].active  { background: #6e7681; }
+
+    .sort-group { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+    .sort-group label { font-size: 11px; color: #8b949e; }
+    .sort-group select {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #e6edf3;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    /* ── Main layout ── */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Card grid ── */
+    .card-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 8px;
+    }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 8px 6px 6px;
+      cursor: pointer;
+      transition: transform .12s, box-shadow .12s, border-color .12s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      position: relative;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,.4);
+      border-color: #58a6ff;
+    }
+    .card.selected { border-color: #58a6ff; box-shadow: 0 0 0 2px #1f6feb66; }
+
+    .card-rarity-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 3px;
+      letter-spacing: 1px;
+      align-self: stretch;
+      text-align: center;
+    }
+    .rarity-S .card-rarity-badge { background: #d4a017; color: #0d1117; }
+    .rarity-A .card-rarity-badge { background: #da3633; color: #fff; }
+    .rarity-B .card-rarity-badge { background: #1f6feb; color: #fff; }
+    .rarity-C .card-rarity-badge { background: #6e7681; color: #fff; }
+
+    .rarity-S { border-top: 2px solid #d4a017; }
+    .rarity-A { border-top: 2px solid #da3633; }
+    .rarity-B { border-top: 2px solid #1f6feb; }
+    .rarity-C { border-top: 2px solid #6e7681; }
+
+    .card-name {
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      color: #e6edf3;
+      line-height: 1.3;
+      word-break: break-all;
+    }
+    .card-rank {
+      font-size: 10px;
+      color: #8b949e;
+    }
+    .card-score {
+      font-size: 11px;
+      font-weight: 600;
+      color: #58a6ff;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 220px;
+      background: #161b22;
+      border-left: 1px solid #30363d;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .sidebar-section {
+      padding: 10px 12px;
+      border-bottom: 1px solid #30363d;
+    }
+    .sidebar-section h3 {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #8b949e;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 4px;
+      color: #e6edf3;
+    }
+    .stat-row .val { font-weight: 700; color: #58a6ff; }
+
+    /* Rarity distribution bars */
+    .rarity-bar-row { margin-bottom: 6px; }
+    .rarity-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      margin-bottom: 2px;
+    }
+    .rarity-bar-label .r-name { font-weight: 700; }
+    .rarity-bar-label.S .r-name { color: #d4a017; }
+    .rarity-bar-label.A .r-name { color: #da3633; }
+    .rarity-bar-label.B .r-name { color: #1f6feb; }
+    .rarity-bar-label.C .r-name { color: #6e7681; }
+    .rarity-bar-track {
+      height: 5px;
+      background: #21262d;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .rarity-bar-fill { height: 100%; border-radius: 3px; }
+    .rarity-bar-fill.S { background: #d4a017; }
+    .rarity-bar-fill.A { background: #da3633; }
+    .rarity-bar-fill.B { background: #1f6feb; }
+    .rarity-bar-fill.C { background: #6e7681; }
+
+    /* Inspector */
+    #inspector-content {
+      font-size: 12px;
+      color: #8b949e;
+    }
+    #inspector-content.has-data { color: #e6edf3; }
+    .inspector-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 3px 0;
+      border-bottom: 1px solid #21262d;
+      font-size: 11px;
+    }
+    .inspector-row .i-key { color: #8b949e; }
+    .inspector-row .i-val { font-weight: 600; color: #e6edf3; text-align: right; max-width: 120px; word-break: break-all; }
+    .inspector-rarity {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 8px;
+      border-radius: 3px;
+      margin-top: 6px;
+    }
+    .inspector-rarity.S { background: #d4a017; color: #0d1117; }
+    .inspector-rarity.A { background: #da3633; color: #fff; }
+    .inspector-rarity.B { background: #1f6feb; color: #fff; }
+    .inspector-rarity.C { background: #6e7681; color: #fff; }
+
+    /* Error */
+    .error-msg {
+      padding: 20px;
+      color: #f85149;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0d1117; }
+    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="badge">DECK</span>
+  <h1>GUNO V6 — Deck Viewer</h1>
+  <span class="loaded-msg" id="loaded-msg">Loading…</span>
+</header>
+
+<div class="controls">
+  <div class="filter-group">
+    <button class="filter-btn active" data-rarity="ALL">ALL</button>
+    <button class="filter-btn" data-rarity="S">S</button>
+    <button class="filter-btn" data-rarity="A">A</button>
+    <button class="filter-btn" data-rarity="B">B</button>
+    <button class="filter-btn" data-rarity="C">C</button>
+  </div>
+  <div class="sort-group">
+    <label for="sort-select">Sort by:</label>
+    <select id="sort-select">
+      <option value="rank">rank</option>
+      <option value="score_total">score_total</option>
+      <option value="station_name">station_name</option>
+    </select>
+  </div>
+</div>
+
+<div class="main">
+  <div class="card-area">
+    <div class="card-grid" id="card-grid"></div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <h3>Deck Statistics</h3>
+      <div class="stat-row"><span>Total cards</span><span class="val" id="stat-total">—</span></div>
+      <div class="stat-row"><span>Top card</span><span class="val" id="stat-top">—</span></div>
+      <div class="stat-row"><span>Avg score</span><span class="val" id="stat-avg">—</span></div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Rarity Distribution</h3>
+      <div id="rarity-dist"></div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Station Inspector</h3>
+      <div id="inspector-content">Click a card to inspect</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DECK_URL = '../data/decks/deck_tokyo_v1.json';
+
+let allCards = [];
+let currentFilter = 'ALL';
+let currentSort = 'rank';
+let selectedCardId = null;
+
+// ── Load ──────────────────────────────────────────────
+async function loadDeck() {
+  console.log('[DeckViewer] Fetching deck:', DECK_URL);
+  try {
+    const res = await fetch(DECK_URL);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    allCards = data.cards || [];
+    console.log('[DeckViewer] cards:', allCards.length);
+    console.log('[DeckViewer] deck_meta:', data.deck_meta);
+    document.getElementById('loaded-msg').textContent =
+      `Loaded — ${allCards.length} cards`;
+    renderStats();
+    renderCards();
+    console.log('Deck loaded successfully');
+  } catch (err) {
+    console.error('[DeckViewer] Failed to load deck:', err);
+    document.getElementById('card-grid').innerHTML =
+      `<div class="error-msg">Failed to load deck JSON.<br>${err.message}</div>`;
+    document.getElementById('loaded-msg').textContent = 'Error loading deck';
+  }
+}
+
+// ── Stats ─────────────────────────────────────────────
+function renderStats() {
+  const total = allCards.length;
+  const topCard = allCards.reduce((a, b) => a.score_total > b.score_total ? a : b, allCards[0]);
+  const avg = allCards.reduce((s, c) => s + c.score_total, 0) / total;
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-top').textContent = topCard?.station_name || '—';
+  document.getElementById('stat-avg').textContent = avg.toFixed(2);
+
+  // Rarity distribution
+  const counts = { S: 0, A: 0, B: 0, C: 0 };
+  allCards.forEach(c => counts[c.rarity]++);
+  const distEl = document.getElementById('rarity-dist');
+  distEl.innerHTML = '';
+  ['S', 'A', 'B', 'C'].forEach(r => {
+    const pct = total > 0 ? (counts[r] / total * 100) : 0;
+    distEl.innerHTML += `
+      <div class="rarity-bar-row">
+        <div class="rarity-bar-label ${r}">
+          <span class="r-name">${r}</span>
+          <span>${counts[r]} cards (${pct.toFixed(0)}%)</span>
+        </div>
+        <div class="rarity-bar-track">
+          <div class="rarity-bar-fill ${r}" style="width:${pct}%"></div>
+        </div>
+      </div>`;
+  });
+}
+
+// ── Cards ─────────────────────────────────────────────
+function getFilteredSorted() {
+  let cards = currentFilter === 'ALL'
+    ? [...allCards]
+    : allCards.filter(c => c.rarity === currentFilter);
+
+  cards.sort((a, b) => {
+    if (currentSort === 'rank') return a.rank - b.rank;
+    if (currentSort === 'score_total') return b.score_total - a.score_total;
+    if (currentSort === 'station_name') return a.station_name.localeCompare(b.station_name, 'ja');
+    return 0;
+  });
+  return cards;
+}
+
+function renderCards() {
+  const grid = document.getElementById('card-grid');
+  const cards = getFilteredSorted();
+  grid.innerHTML = '';
+  if (cards.length === 0) {
+    grid.innerHTML = '<div style="color:#8b949e;font-size:12px;padding:12px;">No cards</div>';
+    return;
+  }
+  cards.forEach(card => {
+    const el = document.createElement('div');
+    el.className = `card rarity-${card.rarity}`;
+    if (card.card_id === selectedCardId) el.classList.add('selected');
+    el.dataset.cardId = card.card_id;
+    el.innerHTML = `
+      <div class="card-rarity-badge">${card.rarity}</div>
+      <div class="card-name">${card.station_name}</div>
+      <div class="card-rank">Rank #${card.rank}</div>
+      <div class="card-score">${card.score_total.toFixed(2)}</div>
+    `;
+    el.addEventListener('click', () => inspectCard(card));
+    grid.appendChild(el);
+  });
+}
+
+// ── Inspector ─────────────────────────────────────────
+function inspectCard(card) {
+  selectedCardId = card.card_id;
+  // Re-render to update selected state
+  renderCards();
+
+  const el = document.getElementById('inspector-content');
+  el.className = 'has-data';
+  el.innerHTML = `
+    <div class="inspector-row"><span class="i-key">Name</span><span class="i-val">${card.station_name}</span></div>
+    <div class="inspector-row"><span class="i-key">Slug</span><span class="i-val">${card.station_slug}</span></div>
+    <div class="inspector-row"><span class="i-key">Card ID</span><span class="i-val">${card.card_id}</span></div>
+    <div class="inspector-row"><span class="i-key">Rank</span><span class="i-val">#${card.rank}</span></div>
+    <div class="inspector-row"><span class="i-key">Score</span><span class="i-val">${card.score_total.toFixed(3)}</span></div>
+    <div class="inspector-row"><span class="i-key">GID</span><span class="i-val" style="font-size:9px">${card.station_global_id}</span></div>
+    <span class="inspector-rarity ${card.rarity}">${card.rarity}</span>
+  `;
+}
+
+// ── Controls ──────────────────────────────────────────
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.rarity;
+    renderCards();
+  });
+});
+
+document.getElementById('sort-select').addEventListener('change', e => {
+  currentSort = e.target.value;
+  renderCards();
+});
+
+// ── Init ──────────────────────────────────────────────
+loadDeck();
+</script>
+</body>
+</html>
