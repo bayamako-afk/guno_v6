@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Final Score Viewer — GUNO V6 Debug</title>
+  <style>
+    /* ── Base ─────────────────────────────────────────────────────────────── */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ───────────────────────────────────────────────────────────── */
+    #header {
+      background: #16213e;
+      border-bottom: 2px solid #0f3460;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    #header h1 { font-size: 16px; color: #e94560; font-weight: 700; }
+    #header .subtitle { font-size: 12px; color: #888; }
+    #header .nav-links { margin-left: auto; display: flex; gap: 8px; }
+    #header .nav-links a {
+      font-size: 11px; color: #4ecdc4; text-decoration: none;
+      padding: 3px 8px; border: 1px solid #4ecdc4; border-radius: 3px;
+    }
+    #header .nav-links a:hover { background: #4ecdc4; color: #1a1a2e; }
+
+    /* ── Layout ───────────────────────────────────────────────────────────── */
+    #main { display: flex; flex: 1; overflow: hidden; }
+
+    /* ── Left panel ───────────────────────────────────────────────────────── */
+    #input-panel {
+      width: 280px;
+      background: #16213e;
+      border-right: 1px solid #0f3460;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+    .panel-section {
+      padding: 12px;
+      border-bottom: 1px solid #0f3460;
+    }
+    .panel-section h2 {
+      font-size: 11px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    textarea#station-input {
+      width: 100%;
+      height: 160px;
+      background: #0f3460;
+      border: 1px solid #1a4a7a;
+      color: #e0e0e0;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      padding: 8px;
+      border-radius: 4px;
+      resize: vertical;
+      outline: none;
+    }
+    textarea#station-input:focus { border-color: #4ecdc4; }
+
+    #station-count { font-size: 11px; color: #4ecdc4; margin-top: 6px; }
+
+    #calc-btn {
+      width: 100%;
+      padding: 10px;
+      background: #e94560;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      letter-spacing: 0.5px;
+    }
+    #calc-btn:hover { background: #c73652; }
+
+    .quick-fill-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .quick-btn {
+      padding: 6px 8px;
+      background: #0f3460;
+      color: #4ecdc4;
+      border: 1px solid #1a4a7a;
+      border-radius: 3px;
+      font-size: 11px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .quick-btn:hover { background: #1a4a7a; }
+    .quick-btn.clear-btn { color: #e94560; border-color: #e94560; }
+    .quick-btn.clear-btn:hover { background: #2a1a1a; }
+
+    /* ── Right panel ──────────────────────────────────────────────────────── */
+    #result-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Summary bar ──────────────────────────────────────────────────────── */
+    #summary-bar {
+      background: #16213e;
+      border-bottom: 1px solid #0f3460;
+      padding: 10px 16px;
+      display: flex;
+      gap: 24px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .summary-item { display: flex; flex-direction: column; align-items: center; }
+    .summary-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+    .summary-value { font-size: 22px; font-weight: 700; margin-top: 2px; }
+    #val-final   { color: #e94560; }
+    #val-station { color: #4ecdc4; }
+    #val-route   { color: #a8e063; }
+    #val-hub     { color: #ffd700; }
+    #val-count   { color: #e0e0e0; }
+
+    /* ── Scrollable content area ──────────────────────────────────────────── */
+    #content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ── Section headers ──────────────────────────────────────────────────── */
+    .section-header {
+      font-size: 11px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #0f3460;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-badge {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+    .badge-route  { background: #1a3a00; color: #a8e063; border: 1px solid #a8e063; }
+    .badge-hub    { background: #3a2a00; color: #ffd700; border: 1px solid #ffd700; }
+    .badge-station { background: #003a3a; color: #4ecdc4; border: 1px solid #4ecdc4; }
+
+    /* ── Tables ───────────────────────────────────────────────────────────── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .data-table th {
+      background: #0f3460;
+      color: #888;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 8px 10px;
+      text-align: left;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .data-table th.right { text-align: right; }
+    .data-table th.center { text-align: center; }
+    .data-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #0f3460;
+      vertical-align: middle;
+    }
+    .data-table tr:hover td { background: #1e2a4a; }
+
+    /* ── Route table specific ─────────────────────────────────────────────── */
+    .progress-wrap { display: flex; align-items: center; gap: 8px; }
+    .progress-bg {
+      width: 80px; height: 6px;
+      background: #0f3460; border-radius: 3px; overflow: hidden;
+    }
+    .progress-fill { height: 100%; border-radius: 3px; }
+
+    .status-badge {
+      display: inline-block;
+      padding: 2px 8px; border-radius: 10px;
+      font-size: 10px; font-weight: 700;
+    }
+    .status-complete { background: #1a3a00; color: #a8e063; border: 1px solid #a8e063; }
+    .status-partial  { background: #2a2a00; color: #ffd700; border: 1px solid #ffd700; }
+    .status-none     { background: #1a1a2e; color: #555;    border: 1px solid #333; }
+
+    .route-bonus-badge {
+      display: inline-block;
+      padding: 3px 10px; border-radius: 12px;
+      font-size: 12px; font-weight: 700;
+      min-width: 40px; text-align: center;
+    }
+    .rbadge-20 { background: #1a3a00; color: #a8e063; border: 1px solid #a8e063; }
+    .rbadge-15 { background: #1a3000; color: #7ecf40; border: 1px solid #7ecf40; }
+    .rbadge-10 { background: #1a2800; color: #5eb820; border: 1px solid #5eb820; }
+    .rbadge-5  { background: #2a2a00; color: #ffd700; border: 1px solid #ffd700; }
+    .rbadge-4  { background: #2a2000; color: #e0b000; border: 1px solid #e0b000; }
+    .rbadge-3  { background: #2a1800; color: #c09000; border: 1px solid #c09000; }
+    .rbadge-0  { background: #1a1a2e; color: #555;    border: 1px solid #333; }
+
+    /* ── Hub table specific ───────────────────────────────────────────────── */
+    .station-cell { display: flex; flex-direction: column; gap: 2px; }
+    .station-name-jp { font-size: 13px; font-weight: 600; color: #e0e0e0; }
+    .station-slug    { font-size: 10px; color: #666; }
+
+    .score-bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .score-bar-bg {
+      width: 80px; height: 6px;
+      background: #0f3460; border-radius: 3px; overflow: hidden;
+    }
+    .score-bar-fill { height: 100%; border-radius: 3px; }
+
+    .hub-bonus-badge {
+      display: inline-block;
+      padding: 3px 10px; border-radius: 12px;
+      font-size: 12px; font-weight: 700;
+      min-width: 40px; text-align: center;
+    }
+    .hbadge-5 { background: #3a2a00; color: #ffd700; border: 1px solid #ffd700; }
+    .hbadge-3 { background: #3a1800; color: #ff8c00; border: 1px solid #ff8c00; }
+    .hbadge-1 { background: #003a3a; color: #4ecdc4; border: 1px solid #4ecdc4; }
+
+    /* ── Station score tier ───────────────────────────────────────────────── */
+    .tier-badge {
+      display: inline-block;
+      padding: 2px 7px; border-radius: 3px;
+      font-size: 10px; font-weight: 700;
+    }
+    .tier-s { background: #3a0020; color: #ff6090; border: 1px solid #ff6090; }
+    .tier-a { background: #3a2a00; color: #ffd700; border: 1px solid #ffd700; }
+    .tier-b { background: #003a3a; color: #4ecdc4; border: 1px solid #4ecdc4; }
+    .tier-c { background: #1a1a2e; color: #888;    border: 1px solid #555; }
+
+    /* ── Empty / Error state ──────────────────────────────────────────────── */
+    #empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #444;
+      font-size: 13px;
+      gap: 8px;
+    }
+    #empty-state .hint { font-size: 11px; color: #555; }
+
+    #error-banner {
+      display: none;
+      background: #3a0010;
+      border: 1px solid #e94560;
+      color: #e94560;
+      padding: 10px 16px;
+      font-size: 12px;
+      border-radius: 4px;
+    }
+
+    /* ── Score formula display ────────────────────────────────────────────── */
+    .formula-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      padding: 8px 12px;
+      background: #0f3460;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .formula-term { display: flex; flex-direction: column; align-items: center; }
+    .formula-val  { font-size: 18px; font-weight: 700; }
+    .formula-lbl  { font-size: 9px; color: #888; text-transform: uppercase; }
+    .formula-op   { font-size: 18px; color: #555; }
+    .formula-eq   { font-size: 18px; color: #e94560; }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────────── -->
+<div id="header">
+  <h1>FINAL SCORE VIEWER</h1>
+  <span class="subtitle">GUNO V6 Debug Tools</span>
+  <div class="nav-links">
+    <a href="station_graph_viewer.html">Graph</a>
+    <a href="station_metrics_viewer.html">Metrics</a>
+    <a href="deck_viewer.html">Deck</a>
+    <a href="route_score_viewer.html">Route</a>
+    <a href="hub_bonus_viewer.html">Hub</a>
+  </div>
+</div>
+
+<!-- ── Main ───────────────────────────────────────────────────────────────── -->
+<div id="main">
+
+  <!-- Left panel -->
+  <div id="input-panel">
+
+    <div class="panel-section">
+      <h2>Station Input</h2>
+      <textarea id="station-input" placeholder="Enter station_global_id, one per line&#10;Example:&#10;ST_356842_1397630&#10;ST_356582_1397016"></textarea>
+      <div id="station-count">0 stations</div>
+      <button id="calc-btn">Calculate Final Score</button>
+    </div>
+
+    <div class="panel-section">
+      <h2>Quick Fill</h2>
+      <div class="quick-fill-grid">
+        <button class="quick-btn" id="btn-top5">Top 5 Hubs</button>
+        <button class="quick-btn" id="btn-top10">Top 10 Hubs</button>
+        <button class="quick-btn" id="btn-ginza">Ginza Full</button>
+        <button class="quick-btn" id="btn-hanzomon">Hanzomon Full</button>
+        <button class="quick-btn" id="btn-mixed">Mixed Sample</button>
+        <button class="quick-btn clear-btn" id="btn-clear">Clear</button>
+      </div>
+    </div>
+
+  </div><!-- /input-panel -->
+
+  <!-- Right panel -->
+  <div id="result-panel">
+
+    <!-- Summary bar -->
+    <div id="summary-bar">
+      <div class="summary-item">
+        <span class="summary-label">Final Score</span>
+        <span class="summary-value" id="val-final">—</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Station Score</span>
+        <span class="summary-value" id="val-station">—</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Route Bonus</span>
+        <span class="summary-value" id="val-route">—</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Hub Bonus</span>
+        <span class="summary-value" id="val-hub">—</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Stations Input</span>
+        <span class="summary-value" id="val-count">0</span>
+      </div>
+    </div>
+
+    <!-- Content area -->
+    <div id="content-area">
+
+      <!-- Empty state -->
+      <div id="empty-state">
+        <span>Enter station IDs on the left and press</span>
+        <span class="hint"><strong>Calculate Final Score</strong></span>
+      </div>
+
+      <!-- Results (hidden until calculated) -->
+      <div id="result-content" style="display:none">
+
+        <!-- Error banner -->
+        <div id="error-banner"></div>
+
+        <!-- Score formula -->
+        <div id="formula-section">
+          <div class="section-header">Score Formula</div>
+          <div class="formula-row">
+            <div class="formula-term">
+              <span class="formula-val" id="f-final" style="color:#e94560">—</span>
+              <span class="formula-lbl">Final Score</span>
+            </div>
+            <span class="formula-eq">=</span>
+            <div class="formula-term">
+              <span class="formula-val" id="f-station" style="color:#4ecdc4">—</span>
+              <span class="formula-lbl">Station</span>
+            </div>
+            <span class="formula-op">+</span>
+            <div class="formula-term">
+              <span class="formula-val" id="f-route" style="color:#a8e063">—</span>
+              <span class="formula-lbl">Route</span>
+            </div>
+            <span class="formula-op">+</span>
+            <div class="formula-term">
+              <span class="formula-val" id="f-hub" style="color:#ffd700">—</span>
+              <span class="formula-lbl">Hub</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Route Breakdown -->
+        <div id="route-section">
+          <div class="section-header">
+            Route Breakdown
+            <span class="section-badge badge-route" id="badge-route">+0</span>
+          </div>
+          <div id="route-empty" style="color:#555;font-size:12px;padding:8px 0">No route bonuses earned.</div>
+          <table class="data-table" id="route-table" style="display:none">
+            <thead>
+              <tr>
+                <th>Line</th>
+                <th>Progress</th>
+                <th>Count / Total</th>
+                <th>Threshold</th>
+                <th>Status</th>
+                <th class="center">Bonus</th>
+              </tr>
+            </thead>
+            <tbody id="route-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Hub Breakdown -->
+        <div id="hub-section">
+          <div class="section-header">
+            Hub Breakdown
+            <span class="section-badge badge-hub" id="badge-hub">+0</span>
+          </div>
+          <div id="hub-empty" style="color:#555;font-size:12px;padding:8px 0">No hub bonuses earned.</div>
+          <table class="data-table" id="hub-table" style="display:none">
+            <thead>
+              <tr>
+                <th>Station</th>
+                <th>Score</th>
+                <th>Rank</th>
+                <th>Lines</th>
+                <th>Hub Score</th>
+                <th class="center">Bonus</th>
+              </tr>
+            </thead>
+            <tbody id="hub-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Station Score Breakdown -->
+        <div id="station-section">
+          <div class="section-header">
+            Station Score Breakdown
+            <span class="section-badge badge-station" id="badge-station">0 stations</span>
+          </div>
+          <table class="data-table" id="station-table">
+            <thead>
+              <tr>
+                <th>Station</th>
+                <th>Score Total</th>
+                <th>Rank</th>
+                <th class="center">Tier</th>
+                <th>Station ID</th>
+              </tr>
+            </thead>
+            <tbody id="station-tbody"></tbody>
+          </table>
+        </div>
+
+      </div><!-- /result-content -->
+
+    </div><!-- /content-area -->
+
+  </div><!-- /result-panel -->
+
+</div><!-- /main -->
+
+<script type="module">
+  import { computeFinalScore } from '../src/scoring/final_score_engine.js';
+
+  // ── Constants ──────────────────────────────────────────────────────────────
+  const MAX_SCORE = 20;
+
+  // Preset station lists
+  const PRESETS = {
+    ginza:    ["ST_356582_1397016","ST_356652_1397123","ST_356720_1397161","ST_356796_1397361","ST_356740_1397401","ST_356672_1397497","ST_356659_1397582","ST_356714_1397649","ST_356762_1397713","ST_356826_1397745","ST_356839_1397739","ST_356920_1397711","ST_357026_1397726","ST_357077_1397745","ST_357140_1397764","ST_357165_1397825","ST_357118_1397917","ST_357117_1397985"],
+    hanzomon: ["ST_356582_1397016","ST_356652_1397123","ST_356720_1397161","ST_356738_1397401","ST_356837_1397458","ST_356944_1397503","ST_356958_1397577","ST_356842_1397630","ST_356839_1397739","ST_356826_1397837","ST_356789_1397975","ST_356881_1398175","ST_356963_1398133","ST_357100_1398133"],
+    mixed:    ["ST_356842_1397630","ST_356582_1397016","ST_356826_1397745","ST_356944_1397503","ST_356920_1397711","ST_357127_1397036","ST_356813_1397666","ST_356839_1397739","ST_356714_1397649","ST_356762_1397713"]
+  };
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  let allMetrics = [];
+
+  // ── Load metrics for Quick Fill ────────────────────────────────────────────
+  async function loadMetrics() {
+    try {
+      const metricsUrl = new URL('../data/derived/station_metrics_tokyo.json', location.href).href;
+      const res = await fetch(metricsUrl);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      allMetrics = data.stations || data;
+    } catch (e) {
+      console.warn('[FinalViewer] Could not preload metrics for Quick Fill:', e.message);
+    }
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  function parseInput() {
+    const lines = document.getElementById('station-input').value
+      .split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    document.getElementById('station-count').textContent = `${lines.length} station${lines.length !== 1 ? 's' : ''}`;
+    document.getElementById('val-count').textContent = lines.length;
+    return lines;
+  }
+
+  function fmt(n) {
+    if (n === null || n === undefined) return '—';
+    return typeof n === 'number' ? n.toFixed(2) : n;
+  }
+
+  function tierBadge(score) {
+    if (score >= 12) return '<span class="tier-badge tier-s">S</span>';
+    if (score >= 10) return '<span class="tier-badge tier-a">A</span>';
+    if (score >= 8)  return '<span class="tier-badge tier-b">B</span>';
+    return '<span class="tier-badge tier-c">C</span>';
+  }
+
+  function routeBonusBadgeClass(bonus) {
+    const map = { 20: 'rbadge-20', 15: 'rbadge-15', 10: 'rbadge-10', 5: 'rbadge-5', 4: 'rbadge-4', 3: 'rbadge-3' };
+    return map[bonus] || 'rbadge-0';
+  }
+
+  function hubBonusBadgeClass(bonus) {
+    if (bonus >= 5) return 'hbadge-5';
+    if (bonus >= 3) return 'hbadge-3';
+    return 'hbadge-1';
+  }
+
+  // ── Show / clear error ─────────────────────────────────────────────────────
+  function showError(msg) {
+    const b = document.getElementById('error-banner');
+    b.textContent = msg;
+    b.style.display = 'block';
+    console.error('[FinalViewer]', msg);
+  }
+  function clearError() {
+    document.getElementById('error-banner').style.display = 'none';
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+  function renderResults(result, inputCount) {
+    // Summary bar
+    document.getElementById('val-final').textContent   = fmt(result.final_score);
+    document.getElementById('val-station').textContent = fmt(result.station_score);
+    document.getElementById('val-route').textContent   = `+${result.route_bonus}`;
+    document.getElementById('val-hub').textContent     = `+${result.hub_bonus}`;
+    document.getElementById('val-count').textContent   = inputCount;
+
+    // Formula
+    document.getElementById('f-final').textContent   = fmt(result.final_score);
+    document.getElementById('f-station').textContent = fmt(result.station_score);
+    document.getElementById('f-route').textContent   = `+${result.route_bonus}`;
+    document.getElementById('f-hub').textContent     = `+${result.hub_bonus}`;
+
+    // ── Route Breakdown ──────────────────────────────────────────────────────
+    document.getElementById('badge-route').textContent = `+${result.route_bonus}`;
+    const routeDetails = result.route_details || [];
+    const routeTbody = document.getElementById('route-tbody');
+    routeTbody.innerHTML = '';
+
+    const bonusRoutes = routeDetails.filter(r => r.bonus > 0);
+    const allRoutes   = [...routeDetails].sort((a, b) => b.bonus - a.bonus || b.count - a.count);
+
+    if (allRoutes.length === 0) {
+      document.getElementById('route-empty').style.display = 'block';
+      document.getElementById('route-table').style.display = 'none';
+    } else {
+      document.getElementById('route-empty').style.display = 'none';
+      document.getElementById('route-table').style.display = 'table';
+      for (const r of allRoutes) {
+        const pct = Math.min(100, (r.count / r.route_total) * 100).toFixed(1);
+        const barColor = r.status === 'complete' ? '#a8e063' : r.status === 'partial' ? '#ffd700' : '#555';
+        const statusClass = `status-${r.status}`;
+        const bonusClass = routeBonusBadgeClass(r.bonus);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.line_name}<br><span style="font-size:10px;color:#666">${r.line_name_en}</span></td>
+          <td>
+            <div class="progress-wrap">
+              <div class="progress-bg"><div class="progress-fill" style="width:${pct}%;background:${barColor}"></div></div>
+              <span style="font-size:10px;color:#888">${pct}%</span>
+            </div>
+          </td>
+          <td>${r.count} / ${r.route_total}</td>
+          <td>${r.threshold}</td>
+          <td><span class="status-badge ${statusClass}">${r.status}</span></td>
+          <td style="text-align:center">
+            <span class="route-bonus-badge ${bonusClass}">${r.bonus > 0 ? '+' + r.bonus : '—'}</span>
+          </td>
+        `;
+        routeTbody.appendChild(tr);
+      }
+    }
+
+    // ── Hub Breakdown ────────────────────────────────────────────────────────
+    document.getElementById('badge-hub').textContent = `+${result.hub_bonus}`;
+    const hubStations = result.hub_stations || [];
+    const hubTbody = document.getElementById('hub-tbody');
+    hubTbody.innerHTML = '';
+
+    if (hubStations.length === 0) {
+      document.getElementById('hub-empty').style.display = 'block';
+      document.getElementById('hub-table').style.display = 'none';
+    } else {
+      document.getElementById('hub-empty').style.display = 'none';
+      document.getElementById('hub-table').style.display = 'table';
+      for (const s of hubStations) {
+        const pct = Math.min(100, (s.score_total / MAX_SCORE) * 100).toFixed(1);
+        const barColor = s.bonus >= 5 ? '#ffd700' : s.bonus >= 3 ? '#ff8c00' : '#4ecdc4';
+        const badgeClass = hubBonusBadgeClass(s.bonus);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <div class="station-cell">
+              <span class="station-name-jp">${s.station_name}</span>
+              <span class="station-slug">${s.station_slug || s.station_global_id}</span>
+            </div>
+          </td>
+          <td>
+            <div class="score-bar-wrap">
+              <span>${s.score_total.toFixed(2)}</span>
+              <div class="score-bar-bg"><div class="score-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+            </div>
+          </td>
+          <td>#${s.rank}</td>
+          <td>${s.line_count ?? '—'}</td>
+          <td>${s.hub_score !== undefined ? s.hub_score.toFixed(3) : '—'}</td>
+          <td style="text-align:center"><span class="hub-bonus-badge ${badgeClass}">+${s.bonus}</span></td>
+        `;
+        hubTbody.appendChild(tr);
+      }
+    }
+
+    // ── Station Score Breakdown ──────────────────────────────────────────────
+    const stationDetails = result.station_details || [];
+    document.getElementById('badge-station').textContent = `${stationDetails.length} station${stationDetails.length !== 1 ? 's' : ''}`;
+    const stationTbody = document.getElementById('station-tbody');
+    stationTbody.innerHTML = '';
+
+    for (const s of stationDetails) {
+      const tr = document.createElement('tr');
+      if (s.unknown) {
+        tr.innerHTML = `
+          <td><span style="color:#555">(unknown)</span></td>
+          <td style="color:#555">—</td>
+          <td style="color:#555">—</td>
+          <td style="text-align:center">—</td>
+          <td><span style="font-family:monospace;font-size:10px;color:#555">${s.station_global_id}</span></td>
+        `;
+      } else {
+        const pct = Math.min(100, (s.score_total / MAX_SCORE) * 100).toFixed(1);
+        tr.innerHTML = `
+          <td>
+            <div class="station-cell">
+              <span class="station-name-jp">${s.station_name}</span>
+              <span class="station-slug">${s.station_slug || ''}</span>
+            </div>
+          </td>
+          <td>
+            <div class="score-bar-wrap">
+              <span>${s.score_total.toFixed(2)}</span>
+              <div class="score-bar-bg"><div class="score-bar-fill" style="width:${pct}%;background:#4ecdc4"></div></div>
+            </div>
+          </td>
+          <td>${s.rank !== null ? '#' + s.rank : '—'}</td>
+          <td style="text-align:center">${tierBadge(s.score_total)}</td>
+          <td><span style="font-family:monospace;font-size:10px;color:#666">${s.station_global_id}</span></td>
+        `;
+      }
+      stationTbody.appendChild(tr);
+    }
+
+    // Show results
+    document.getElementById('empty-state').style.display = 'none';
+    document.getElementById('result-content').style.display = 'block';
+  }
+
+  // ── Calculate ──────────────────────────────────────────────────────────────
+  async function calculate() {
+    clearError();
+    const stations = parseInput();
+
+    if (stations.length === 0) {
+      resetSummary();
+      document.getElementById('empty-state').style.display = 'flex';
+      document.getElementById('result-content').style.display = 'none';
+      return;
+    }
+
+    try {
+      // Compute absolute baseUrl from current page location
+      // This file is at debug/final_score_viewer.html → parent is guno_v6/
+      const absBaseUrl = new URL('../', location.href).href;
+      const result = await computeFinalScore(stations, { baseUrl: absBaseUrl });
+      console.log('[FinalViewer] Result:', result);
+      renderResults(result, stations.length);
+    } catch (e) {
+      document.getElementById('empty-state').style.display = 'none';
+      document.getElementById('result-content').style.display = 'block';
+      showError(`Scoring failed: ${e.message}`);
+    }
+  }
+
+  function resetSummary() {
+    ['val-final','val-station','val-route','val-hub'].forEach(id => {
+      document.getElementById(id).textContent = '—';
+    });
+    document.getElementById('val-count').textContent = '0';
+  }
+
+  // ── Quick Fill ─────────────────────────────────────────────────────────────
+  function fillAndCalc(gids) {
+    document.getElementById('station-input').value = gids.join('\n');
+    parseInput();
+    calculate();
+  }
+
+  document.getElementById('btn-top5').addEventListener('click', () => {
+    fillAndCalc(allMetrics.slice(0, 5).map(s => s.station_global_id));
+  });
+  document.getElementById('btn-top10').addEventListener('click', () => {
+    fillAndCalc(allMetrics.slice(0, 10).map(s => s.station_global_id));
+  });
+  document.getElementById('btn-ginza').addEventListener('click', () => fillAndCalc(PRESETS.ginza));
+  document.getElementById('btn-hanzomon').addEventListener('click', () => fillAndCalc(PRESETS.hanzomon));
+  document.getElementById('btn-mixed').addEventListener('click', () => fillAndCalc(PRESETS.mixed));
+  document.getElementById('btn-clear').addEventListener('click', () => {
+    document.getElementById('station-input').value = '';
+    parseInput();
+    resetSummary();
+    clearError();
+    document.getElementById('empty-state').style.display = 'flex';
+    document.getElementById('result-content').style.display = 'none';
+  });
+
+  // ── Events ─────────────────────────────────────────────────────────────────
+  document.getElementById('calc-btn').addEventListener('click', calculate);
+  document.getElementById('station-input').addEventListener('input', parseInput);
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+  (async () => {
+    await loadMetrics();
+    parseInput();
+    console.log('[FinalViewer] Ready. Metrics loaded:', allMetrics.length);
+  })();
+</script>
+</body>
+</html>

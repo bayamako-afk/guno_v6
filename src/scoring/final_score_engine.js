@@ -81,6 +81,22 @@ export function computeFinalScoreSync(playerStations, data) {
   // Hubs are already sorted by computeHubBonusSync (bonus desc, score_total desc)
   const hubs = hubResult.hub_stations.map(h => h.station_name);
 
+  // Build per-station detail list (all input stations, sorted by score_total desc)
+  const station_details = playerStations
+    .map(gid => {
+      const m = metricsMap.get(gid);
+      if (!m) return { station_global_id: gid, station_name: '(unknown)', score_total: 0, rank: null, unknown: true };
+      return {
+        station_global_id: m.station_global_id,
+        station_name:      m.station_name,
+        station_slug:      m.station_slug,
+        score_total:       m.score_total,
+        rank:              m.rank,
+        line_count:        m.line_count
+      };
+    })
+    .sort((a, b) => b.score_total - a.score_total);
+
   const final_score = station_score_sum + routeResult.route_bonus + hubResult.hub_bonus;
 
   return {
@@ -89,7 +105,10 @@ export function computeFinalScoreSync(playerStations, data) {
     route_bonus: routeResult.route_bonus,
     hub_bonus: hubResult.hub_bonus,
     routes,
-    hubs
+    hubs,
+    route_details: routeResult.route_details,
+    hub_stations:  hubResult.hub_stations,
+    station_details
   };
 }
 
@@ -163,6 +182,22 @@ export async function computeFinalScore(playerStations, options = {}) {
 
   const hubs = hubResult.hub_stations.map(h => h.station_name);
 
+  // Build per-station detail list (all input stations, sorted by score_total desc)
+  const station_details = playerStations
+    .map(gid => {
+      const m = metricsMap.get(gid);
+      if (!m) return { station_global_id: gid, station_name: '(unknown)', score_total: 0, rank: null, unknown: true };
+      return {
+        station_global_id: m.station_global_id,
+        station_name:      m.station_name,
+        station_slug:      m.station_slug,
+        score_total:       m.score_total,
+        rank:              m.rank,
+        line_count:        m.line_count
+      };
+    })
+    .sort((a, b) => b.score_total - a.score_total);
+
   const final_score = station_score_sum + routeResult.route_bonus + hubResult.hub_bonus;
 
   return {
@@ -171,6 +206,9 @@ export async function computeFinalScore(playerStations, options = {}) {
     route_bonus: routeResult.route_bonus,
     hub_bonus: hubResult.hub_bonus,
     routes,
-    hubs
+    hubs,
+    route_details: routeResult.route_details,
+    hub_stations:  hubResult.hub_stations,
+    station_details
   };
 }
