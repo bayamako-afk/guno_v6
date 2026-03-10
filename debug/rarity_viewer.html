@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rarity Viewer — GUNO V6 Debug</title>
+  <style>
+    /* ── Base ─────────────────────────────────────────────────────────────── */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ───────────────────────────────────────────────────────────── */
+    #header {
+      background: #16213e;
+      border-bottom: 2px solid #0f3460;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    #header h1 { font-size: 16px; color: #e94560; font-weight: 700; }
+    #header .subtitle { font-size: 12px; color: #888; }
+    #header .nav-links { margin-left: auto; display: flex; gap: 8px; }
+    #header .nav-links a {
+      font-size: 11px; color: #4ecdc4; text-decoration: none;
+      padding: 3px 8px; border: 1px solid #4ecdc4; border-radius: 3px;
+    }
+    #header .nav-links a:hover { background: #4ecdc4; color: #1a1a2e; }
+
+    /* ── Layout ───────────────────────────────────────────────────────────── */
+    #main { display: flex; flex: 1; overflow: hidden; }
+
+    /* ── Left panel ───────────────────────────────────────────────────────── */
+    #left-panel {
+      width: 220px;
+      background: #16213e;
+      border-right: 1px solid #0f3460;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+    .panel-section {
+      padding: 12px;
+      border-bottom: 1px solid #0f3460;
+    }
+    .panel-section h2 {
+      font-size: 11px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    /* ── Summary cards ────────────────────────────────────────────────────── */
+    .summary-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+      border-left: 3px solid transparent;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .summary-card:hover { opacity: 0.85; }
+    .summary-card.legendary { background: rgba(255,215,0,0.12); border-left-color: #ffd700; }
+    .summary-card.epic      { background: rgba(163,73,255,0.12); border-left-color: #a349ff; }
+    .summary-card.rare      { background: rgba(78,140,255,0.12); border-left-color: #4e8cff; }
+    .summary-card.common    { background: rgba(140,140,140,0.12); border-left-color: #8c8c8c; }
+
+    .summary-card .rarity-label {
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .summary-card.legendary .rarity-label { color: #ffd700; }
+    .summary-card.epic      .rarity-label { color: #a349ff; }
+    .summary-card.rare      .rarity-label { color: #4e8cff; }
+    .summary-card.common    .rarity-label { color: #8c8c8c; }
+
+    .summary-card .count-badge {
+      font-size: 18px;
+      font-weight: 700;
+      color: #e0e0e0;
+    }
+
+    /* ── Filter buttons ───────────────────────────────────────────────────── */
+    .filter-btn {
+      display: block;
+      width: 100%;
+      padding: 6px 10px;
+      margin-bottom: 4px;
+      background: #0f3460;
+      border: 1px solid #1a4a7a;
+      border-radius: 4px;
+      color: #e0e0e0;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s;
+    }
+    .filter-btn:hover { background: #1a4a7a; }
+    .filter-btn.active { background: #e94560; border-color: #e94560; color: #fff; }
+
+    /* ── Status ───────────────────────────────────────────────────────────── */
+    #status {
+      font-size: 11px;
+      color: #4ecdc4;
+      padding: 8px 12px;
+    }
+    #status.error { color: #e94560; }
+
+    /* ── Right panel ──────────────────────────────────────────────────────── */
+    #right-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    /* ── Rarity group ─────────────────────────────────────────────────────── */
+    .rarity-group {
+      margin-bottom: 24px;
+    }
+    .rarity-group-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid;
+    }
+    .rarity-group-header .group-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .rarity-group-header .group-count {
+      font-size: 11px;
+      color: #888;
+      background: #0f3460;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .rarity-group.legendary .rarity-group-header { border-color: #ffd700; }
+    .rarity-group.legendary .group-title         { color: #ffd700; }
+    .rarity-group.epic      .rarity-group-header { border-color: #a349ff; }
+    .rarity-group.epic      .group-title         { color: #a349ff; }
+    .rarity-group.rare      .rarity-group-header { border-color: #4e8cff; }
+    .rarity-group.rare      .group-title         { color: #4e8cff; }
+    .rarity-group.common    .rarity-group-header { border-color: #8c8c8c; }
+    .rarity-group.common    .group-title         { color: #8c8c8c; }
+
+    /* ── Table ────────────────────────────────────────────────────────────── */
+    .rarity-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .rarity-table th {
+      background: #0f3460;
+      color: #888;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 6px 10px;
+      text-align: left;
+      position: sticky;
+      top: 0;
+    }
+    .rarity-table td {
+      padding: 6px 10px;
+      border-bottom: 1px solid #0f3460;
+    }
+    .rarity-table tr:hover td { background: rgba(255,255,255,0.04); }
+
+    .rarity-table .col-rank  { width: 48px; color: #888; text-align: center; }
+    .rarity-table .col-name  { font-weight: 600; }
+    .rarity-table .col-slug  { color: #666; font-size: 11px; }
+    .rarity-table .col-score { text-align: right; font-family: monospace; }
+    .rarity-table .col-rarity { text-align: center; }
+
+    /* Score bar */
+    .score-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .score-bar {
+      height: 6px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .score-val { font-family: monospace; font-size: 12px; }
+
+    /* Rarity badge */
+    .rarity-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+    }
+    .rarity-badge.legendary { background: rgba(255,215,0,0.2); color: #ffd700; border: 1px solid #ffd700; }
+    .rarity-badge.epic      { background: rgba(163,73,255,0.2); color: #a349ff; border: 1px solid #a349ff; }
+    .rarity-badge.rare      { background: rgba(78,140,255,0.2); color: #4e8cff; border: 1px solid #4e8cff; }
+    .rarity-badge.common    { background: rgba(140,140,140,0.2); color: #8c8c8c; border: 1px solid #8c8c8c; }
+
+    /* ── Error banner ─────────────────────────────────────────────────────── */
+    #error-banner {
+      display: none;
+      background: #e94560;
+      color: #fff;
+      padding: 10px 16px;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div id="header">
+  <h1>RARITY VIEWER</h1>
+  <span class="subtitle">GUNO V6 Debug Tools</span>
+  <nav class="nav-links">
+    <a href="station_graph_viewer.html">Graph</a>
+    <a href="station_metrics_viewer.html">Metrics</a>
+    <a href="deck_viewer.html">Deck</a>
+    <a href="route_score_viewer.html">Route</a>
+    <a href="hub_bonus_viewer.html">Hub</a>
+    <a href="final_score_viewer.html">Final</a>
+    <a href="game_simulator.html">Sim</a>
+  </nav>
+</div>
+
+<!-- Error banner -->
+<div id="error-banner"></div>
+
+<!-- Main -->
+<div id="main">
+
+  <!-- Left panel -->
+  <div id="left-panel">
+
+    <div class="panel-section">
+      <h2>Summary</h2>
+      <div class="summary-card legendary" onclick="scrollToGroup('legendary')">
+        <span class="rarity-label">Legendary</span>
+        <span class="count-badge" id="count-legendary">—</span>
+      </div>
+      <div class="summary-card epic" onclick="scrollToGroup('epic')">
+        <span class="rarity-label">Epic</span>
+        <span class="count-badge" id="count-epic">—</span>
+      </div>
+      <div class="summary-card rare" onclick="scrollToGroup('rare')">
+        <span class="rarity-label">Rare</span>
+        <span class="count-badge" id="count-rare">—</span>
+      </div>
+      <div class="summary-card common" onclick="scrollToGroup('common')">
+        <span class="rarity-label">Common</span>
+        <span class="count-badge" id="count-common">—</span>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <h2>Filter</h2>
+      <button class="filter-btn active" id="filter-all" onclick="setFilter('all')">All Stations</button>
+      <button class="filter-btn" id="filter-legendary" onclick="setFilter('legendary')">Legendary only</button>
+      <button class="filter-btn" id="filter-epic" onclick="setFilter('epic')">Epic only</button>
+      <button class="filter-btn" id="filter-rare" onclick="setFilter('rare')">Rare only</button>
+      <button class="filter-btn" id="filter-common" onclick="setFilter('common')">Common only</button>
+    </div>
+
+    <div id="status">Loading data…</div>
+
+  </div>
+
+  <!-- Right panel -->
+  <div id="right-panel">
+    <div id="content">Loading…</div>
+  </div>
+
+</div>
+
+<script type="module">
+  import { classifyAllStations } from '../src/scoring/station_rarity.js?v=1';
+
+  const RARITY_ORDER = ['Legendary', 'Epic', 'Rare', 'Common'];
+  const RARITY_KEY   = { Legendary: 'legendary', Epic: 'epic', Rare: 'rare', Common: 'common' };
+
+  // Score bar max reference
+  const MAX_SCORE = 20;
+
+  let allStations = [];
+  let currentFilter = 'all';
+
+  // ── Helpers ──────────────────────────────────────────────────────────────
+
+  function scoreBarColor(rarity) {
+    return { Legendary: '#ffd700', Epic: '#a349ff', Rare: '#4e8cff', Common: '#8c8c8c' }[rarity] || '#888';
+  }
+
+  function renderTable(stations) {
+    if (!stations.length) return '<p style="color:#888;font-size:12px;padding:8px 0">No stations.</p>';
+    const rows = stations.map(s => {
+      const key   = RARITY_KEY[s.rarity];
+      const pct   = Math.min(100, (s.score_total / MAX_SCORE) * 100).toFixed(1);
+      const color = scoreBarColor(s.rarity);
+      return `
+        <tr>
+          <td class="col-rank">${s.rank}</td>
+          <td class="col-name">
+            ${s.station_name}
+            <div class="col-slug">${s.station_slug}</div>
+          </td>
+          <td class="col-score">
+            <div class="score-bar-wrap">
+              <div class="score-bar" style="width:${pct}px;background:${color}"></div>
+              <span class="score-val">${s.score_total.toFixed(2)}</span>
+            </div>
+          </td>
+          <td class="col-rarity">
+            <span class="rarity-badge ${key}">${s.rarity}</span>
+          </td>
+        </tr>`;
+    }).join('');
+    return `
+      <table class="rarity-table">
+        <thead>
+          <tr>
+            <th class="col-rank">Rank</th>
+            <th>Station</th>
+            <th class="col-score">Score</th>
+            <th class="col-rarity">Rarity</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  function renderGroups(filter) {
+    const groups = filter === 'all'
+      ? RARITY_ORDER
+      : [RARITY_ORDER.find(r => r.toLowerCase() === filter)].filter(Boolean);
+
+    return groups.map(rarity => {
+      const key      = RARITY_KEY[rarity];
+      const stations = allStations.filter(s => s.rarity === rarity);
+      return `
+        <div class="rarity-group ${key}" id="group-${key}">
+          <div class="rarity-group-header">
+            <span class="group-title">${rarity}</span>
+            <span class="group-count">${stations.length} stations</span>
+          </div>
+          ${renderTable(stations)}
+        </div>`;
+    }).join('');
+  }
+
+  function updateCounts() {
+    RARITY_ORDER.forEach(r => {
+      const key   = RARITY_KEY[r];
+      const count = allStations.filter(s => s.rarity === r).length;
+      document.getElementById(`count-${key}`).textContent = count;
+    });
+  }
+
+  // ── Public functions (attached to window) ────────────────────────────────
+
+  window.setFilter = function(filter) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`filter-${filter}`).classList.add('active');
+    document.getElementById('content').innerHTML = renderGroups(filter);
+  };
+
+  window.scrollToGroup = function(key) {
+    setFilter('all');
+    requestAnimationFrame(() => {
+      const el = document.getElementById(`group-${key}`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
+  // ── Load ─────────────────────────────────────────────────────────────────
+
+  const statusEl = document.getElementById('status');
+  const errorBanner = document.getElementById('error-banner');
+
+  try {
+    const baseUrl = new URL('../', location.href).href;
+    allStations = await classifyAllStations({ baseUrl });
+
+    updateCounts();
+    document.getElementById('content').innerHTML = renderGroups('all');
+    statusEl.textContent = `Loaded ${allStations.length} stations.`;
+    statusEl.className = '';
+  } catch (err) {
+    console.error('rarity_viewer error:', err);
+    statusEl.textContent = 'Failed to load data.';
+    statusEl.className = 'error';
+    errorBanner.style.display = 'block';
+    errorBanner.textContent = `Error: ${err.message}`;
+    document.getElementById('content').innerHTML = `<p style="color:#e94560;font-size:13px">Failed to load station data. See console for details.</p>`;
+  }
+</script>
+
+</body>
+</html>
