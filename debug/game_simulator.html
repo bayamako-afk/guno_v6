@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Simulator — GUNO V6 Debug</title>
+  <style>
+    /* ── Base ─────────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0a0e1a;
+      color: #c8d8f0;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+      min-height: 100vh;
+    }
+    a { color: #4af; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Top bar ──────────────────────────────────────────────────────── */
+    #topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0d1220;
+      border-bottom: 1px solid #1e2d4a;
+      padding: 6px 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    #topbar .brand {
+      font-size: 13px;
+      font-weight: bold;
+      color: #ff3355;
+      letter-spacing: 1px;
+    }
+    #topbar .subtitle { color: #4a6080; font-size: 11px; margin-left: 10px; }
+    #topbar nav { display: flex; gap: 6px; }
+    #topbar nav a {
+      background: #1a2540;
+      border: 1px solid #2a3a5a;
+      color: #7090c0;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+    }
+    #topbar nav a:hover { background: #243050; color: #a0c0e0; }
+
+    /* ── Main layout ──────────────────────────────────────────────────── */
+    #main {
+      display: flex;
+      height: calc(100vh - 33px);
+    }
+
+    /* ── Left panel ───────────────────────────────────────────────────── */
+    #left-panel {
+      width: 200px;
+      min-width: 200px;
+      background: #0d1220;
+      border-right: 1px solid #1e2d4a;
+      padding: 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .panel-label {
+      font-size: 10px;
+      color: #4a6080;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .ctrl-group { display: flex; flex-direction: column; gap: 4px; }
+    .ctrl-group label { font-size: 11px; color: #7090c0; }
+    select, input[type="number"], input[type="text"] {
+      background: #0a1020;
+      border: 1px solid #2a3a5a;
+      color: #c8d8f0;
+      padding: 4px 6px;
+      border-radius: 3px;
+      font-family: inherit;
+      font-size: 11px;
+      width: 100%;
+    }
+    select:focus, input:focus { outline: none; border-color: #4a7ab0; }
+    .btn {
+      background: #1a2540;
+      border: 1px solid #2a4a7a;
+      color: #80b0e0;
+      padding: 5px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 11px;
+      text-align: center;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: #243050; color: #a0c8f0; }
+    .btn.primary {
+      background: #1a3a6a;
+      border-color: #2a5a9a;
+      color: #60a0e0;
+      font-weight: bold;
+    }
+    .btn.primary:hover { background: #1e4a80; color: #80c0f0; }
+    .btn.danger {
+      background: #2a1020;
+      border-color: #5a2030;
+      color: #c04060;
+    }
+    .btn.danger:hover { background: #3a1828; color: #e05070; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .deck-info {
+      background: #0a1020;
+      border: 1px solid #1e2d4a;
+      border-radius: 3px;
+      padding: 6px;
+      font-size: 10px;
+      color: #4a6080;
+      line-height: 1.6;
+    }
+    .deck-info span { color: #7090b0; }
+
+    /* ── Right panel ──────────────────────────────────────────────────── */
+    #right-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ── Summary cards ────────────────────────────────────────────────── */
+    #summary-cards {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+    .stat-card {
+      background: #0d1220;
+      border: 1px solid #1e2d4a;
+      border-radius: 4px;
+      padding: 8px 10px;
+      text-align: center;
+    }
+    .stat-card .val {
+      font-size: 18px;
+      font-weight: bold;
+      color: #60a0e0;
+      line-height: 1.2;
+    }
+    .stat-card .lbl {
+      font-size: 9px;
+      color: #4a6080;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+    .stat-card.highlight .val { color: #ffd060; }
+    .stat-card.green .val { color: #40c080; }
+    .stat-card.orange .val { color: #f08040; }
+
+    /* ── Section panels ───────────────────────────────────────────────── */
+    .section {
+      background: #0d1220;
+      border: 1px solid #1e2d4a;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .section-header {
+      background: #111828;
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #1e2d4a;
+    }
+    .section-title {
+      font-size: 11px;
+      font-weight: bold;
+      color: #7090c0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge {
+      background: #1a3a6a;
+      color: #60a0e0;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 10px;
+    }
+    .badge.green { background: #0a2a1a; color: #40c080; }
+    .badge.orange { background: #2a1a0a; color: #f08040; }
+    .badge.gold { background: #2a2000; color: #ffd060; }
+    .section-body { padding: 8px 10px; }
+
+    /* ── Tables ───────────────────────────────────────────────────────── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+    thead th {
+      background: #111828;
+      color: #4a6080;
+      padding: 4px 8px;
+      text-align: left;
+      font-weight: normal;
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #1e2d4a;
+    }
+    tbody tr:hover { background: #111828; }
+    tbody td {
+      padding: 4px 8px;
+      border-bottom: 1px solid #0f1828;
+      color: #c8d8f0;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+
+    /* ── Player rank badges ───────────────────────────────────────────── */
+    .rank-1 { color: #ffd060; font-weight: bold; }
+    .rank-2 { color: #c0c0c0; }
+    .rank-3 { color: #c08040; }
+    .rank-4 { color: #4a6080; }
+
+    /* ── Score bars ───────────────────────────────────────────────────── */
+    .score-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .score-bar {
+      flex: 1;
+      height: 6px;
+      background: #0a1020;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+    .bar-station { background: #3060a0; }
+    .bar-route   { background: #40a060; }
+    .bar-hub     { background: #c08020; }
+    .bar-total   { background: #6080c0; }
+
+    /* ── Win count chart ──────────────────────────────────────────────── */
+    #win-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      height: 80px;
+      padding: 0 10px 8px;
+    }
+    .win-bar-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      flex: 1;
+    }
+    .win-bar-val { font-size: 10px; color: #7090c0; }
+    .win-bar {
+      width: 100%;
+      background: #1a3a6a;
+      border-radius: 3px 3px 0 0;
+      min-height: 2px;
+      transition: height 0.3s;
+    }
+    .win-bar-lbl { font-size: 10px; color: #4a6080; }
+
+    /* ── Bonus contribution chart ─────────────────────────────────────── */
+    .contribution-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .contribution-label { width: 100px; font-size: 10px; color: #7090c0; }
+    .contribution-bar-wrap { flex: 1; height: 10px; background: #0a1020; border-radius: 3px; overflow: hidden; }
+    .contribution-bar-fill { height: 100%; border-radius: 3px; }
+    .contribution-pct { width: 40px; text-align: right; font-size: 10px; color: #4a6080; }
+
+    /* ── Top stations list ────────────────────────────────────────────── */
+    .station-freq-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 3px 0;
+      border-bottom: 1px solid #0f1828;
+    }
+    .station-freq-row:last-child { border-bottom: none; }
+    .station-freq-name { flex: 1; color: #c8d8f0; }
+    .station-freq-sub { font-size: 10px; color: #4a6080; }
+    .station-freq-count {
+      background: #1a2540;
+      color: #60a0e0;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 10px;
+    }
+
+    /* ── Status / empty state ─────────────────────────────────────────── */
+    .empty-state {
+      color: #4a6080;
+      text-align: center;
+      padding: 20px;
+      font-size: 11px;
+    }
+    .error-banner {
+      background: #2a0a10;
+      border: 1px solid #5a1020;
+      color: #e04060;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      margin-bottom: 6px;
+    }
+    #status-bar {
+      font-size: 10px;
+      color: #4a6080;
+      padding: 2px 0;
+    }
+    .running-indicator { color: #40c080; animation: blink 0.8s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* ── Progress bar ─────────────────────────────────────────────────── */
+    #progress-wrap {
+      background: #0a1020;
+      border: 1px solid #1e2d4a;
+      border-radius: 3px;
+      height: 6px;
+      overflow: hidden;
+      display: none;
+    }
+    #progress-fill {
+      height: 100%;
+      background: #3060a0;
+      border-radius: 3px;
+      transition: width 0.1s;
+      width: 0%;
+    }
+
+    /* ── Two-column grid for sections ─────────────────────────────────── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    /* ── Scrollable table container ───────────────────────────────────── */
+    .table-scroll { max-height: 220px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+
+<!-- ── Top bar ──────────────────────────────────────────────────────────── -->
+<div id="topbar">
+  <div style="display:flex;align-items:center;gap:6px;">
+    <span class="brand">GAME SIMULATOR</span>
+    <span class="subtitle">GUNO V6 Debug Tools</span>
+  </div>
+  <nav>
+    <a href="station_graph_viewer.html">Graph</a>
+    <a href="station_metrics_viewer.html">Metrics</a>
+    <a href="deck_viewer.html">Deck</a>
+    <a href="route_score_viewer.html">Route</a>
+    <a href="hub_bonus_viewer.html">Hub</a>
+    <a href="final_score_viewer.html">Final</a>
+  </nav>
+</div>
+
+<!-- ── Main layout ──────────────────────────────────────────────────────── -->
+<div id="main">
+
+  <!-- ── Left panel ─────────────────────────────────────────────────────── -->
+  <div id="left-panel">
+    <div>
+      <div class="panel-label">Simulation</div>
+      <div class="ctrl-group">
+        <label>Number of simulations</label>
+        <select id="sim-count">
+          <option value="1">1</option>
+          <option value="10" selected>10</option>
+          <option value="100">100</option>
+          <option value="500">500</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="ctrl-group">
+      <label>Seed (optional)</label>
+      <input type="text" id="seed-input" placeholder="e.g. 42 or abc">
+    </div>
+
+    <button class="btn primary" id="run-btn">▶ Run Simulation</button>
+    <button class="btn danger" id="reset-btn">✕ Reset</button>
+
+    <div id="progress-wrap"><div id="progress-fill"></div></div>
+    <div id="status-bar">Ready</div>
+
+    <div>
+      <div class="panel-label">Deck</div>
+      <div class="deck-info" id="deck-info">Loading...</div>
+    </div>
+
+    <div>
+      <div class="panel-label">Rules (v1)</div>
+      <div class="deck-info">
+        4 players<br>
+        10 cards each<br>
+        Deck: 40 cards<br>
+        Shuffle → deal → score<br>
+        <span>final_score_engine.js</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Right panel ────────────────────────────────────────────────────── -->
+  <div id="right-panel">
+
+    <div id="error-container"></div>
+
+    <!-- Summary cards -->
+    <div id="summary-cards">
+      <div class="stat-card">
+        <div class="val" id="sc-total">—</div>
+        <div class="lbl">Total Sims</div>
+      </div>
+      <div class="stat-card">
+        <div class="val" id="sc-avg-final">—</div>
+        <div class="lbl">Avg Final Score</div>
+      </div>
+      <div class="stat-card green">
+        <div class="val" id="sc-avg-route">—</div>
+        <div class="lbl">Avg Route Bonus</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="val" id="sc-avg-hub">—</div>
+        <div class="lbl">Avg Hub Bonus</div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="val" id="sc-top-winner">—</div>
+        <div class="lbl">Top Winner Slot</div>
+      </div>
+    </div>
+
+    <!-- Last simulation result -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Last Simulation Result</span>
+        <span class="badge" id="last-sim-badge">—</span>
+      </div>
+      <div class="section-body">
+        <div id="last-sim-content" class="empty-state">Run a simulation to see results.</div>
+      </div>
+    </div>
+
+    <!-- Win count chart + Bonus contribution -->
+    <div class="two-col">
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">Win Count by Player</span>
+        </div>
+        <div id="win-chart">
+          <div class="empty-state" style="width:100%;padding:10px;">No data yet.</div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">Bonus Contribution</span>
+        </div>
+        <div class="section-body" id="contribution-panel">
+          <div class="empty-state">No data yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aggregate statistics -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Aggregate Statistics</span>
+        <span class="badge" id="agg-badge">0 sims</span>
+      </div>
+      <div class="section-body">
+        <div id="agg-content" class="empty-state">No data yet.</div>
+      </div>
+    </div>
+
+    <!-- Top winning stations -->
+    <div class="two-col">
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">Top Winning Stations</span>
+          <span class="badge gold" id="top-stations-badge">—</span>
+        </div>
+        <div class="section-body" id="top-stations-panel">
+          <div class="empty-state">No data yet.</div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">Top Winning Routes</span>
+          <span class="badge green" id="top-routes-badge">—</span>
+        </div>
+        <div class="section-body" id="top-routes-panel">
+          <div class="empty-state">No data yet.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /right-panel -->
+</div><!-- /main -->
+
+<script type="module">
+  // v=3 cache-buster to bypass stale module cache
+  import { computeFinalScoreSync } from '../src/scoring/final_score_engine.js?v=3';
+
+  // ── Constants ──────────────────────────────────────────────────────────────
+  const NUM_PLAYERS = 4;
+  const CARDS_PER_PLAYER = 10;
+  const BASE_URL = new URL('../', location.href).href;
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  let deckData = null;
+  let metricsData = null;
+  let metricsMap = new Map();
+  let stationLinesData = null;
+  let linesMasterData = null;
+  let aggregateStats = null;
+  let isRunning = false;
+
+  // ── DOM refs ───────────────────────────────────────────────────────────────
+  const runBtn       = document.getElementById('run-btn');
+  const resetBtn     = document.getElementById('reset-btn');
+  const simCountSel  = document.getElementById('sim-count');
+  const seedInput    = document.getElementById('seed-input');
+  const statusBar    = document.getElementById('status-bar');
+  const progressWrap = document.getElementById('progress-wrap');
+  const progressFill = document.getElementById('progress-fill');
+  const deckInfoEl   = document.getElementById('deck-info');
+  const errorContainer = document.getElementById('error-container');
+
+  // ── Seeded PRNG (mulberry32) ───────────────────────────────────────────────
+  function hashStr(s) {
+    let h = 0x811c9dc5;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = (h * 0x01000193) >>> 0;
+    }
+    return h;
+  }
+  function makePRNG(seed) {
+    let s = (typeof seed === 'number') ? seed : hashStr(String(seed));
+    return function() {
+      s |= 0; s = s + 0x6D2B79F5 | 0;
+      let t = Math.imul(s ^ s >>> 15, 1 | s);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  function shuffleArray(arr, rng) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // ── Data loading ───────────────────────────────────────────────────────────
+  async function loadData() {
+    try {
+      const [deckRes, metricsRes, stationLinesRes, linesMasterRes] = await Promise.all([
+        fetch(BASE_URL + 'data/decks/deck_tokyo_v1.json'),
+        fetch(BASE_URL + 'data/derived/station_metrics_tokyo.json'),
+        fetch(BASE_URL + 'data/master/station_lines_tokyo.json'),
+        fetch(BASE_URL + 'data/master/lines_tokyo_master.json'),
+      ]);
+      if (!deckRes.ok)         throw new Error('deck_tokyo_v1.json: HTTP ' + deckRes.status);
+      if (!metricsRes.ok)      throw new Error('station_metrics_tokyo.json: HTTP ' + metricsRes.status);
+      if (!stationLinesRes.ok) throw new Error('station_lines_tokyo.json: HTTP ' + stationLinesRes.status);
+      if (!linesMasterRes.ok)  throw new Error('lines_tokyo_master.json: HTTP ' + linesMasterRes.status);
+
+      const deckJson = await deckRes.json();
+      deckData = deckJson.cards || deckJson;
+
+      const metricsJson = await metricsRes.json();
+      metricsData = Array.isArray(metricsJson) ? metricsJson : (metricsJson.stations || []);
+      metricsMap = new Map(metricsData.map(s => [s.station_global_id, s]));
+
+      stationLinesData = await stationLinesRes.json();
+      linesMasterData  = await linesMasterRes.json();
+
+      // Update deck info panel
+      const meta = deckJson.deck_meta || {};
+      deckInfoEl.innerHTML = `
+        <span>Deck:</span> ${meta.version || '1.0'}<br>
+        <span>Cards:</span> ${deckData.length}<br>
+        <span>Players:</span> ${NUM_PLAYERS}<br>
+        <span>Cards/player:</span> ${CARDS_PER_PLAYER}<br>
+        <span>Rarity:</span> S:${meta.rarity_distribution?.S||'?'} A:${meta.rarity_distribution?.A||'?'} B:${meta.rarity_distribution?.B||'?'} C:${meta.rarity_distribution?.C||'?'}
+      `;
+      setStatus('Data loaded. Ready.');
+    } catch (err) {
+      showError('Failed to load data: ' + err.message);
+      console.error('[GameSim] Load error:', err);
+    }
+  }
+
+  // ── Single simulation ──────────────────────────────────────────────────────
+  function runOneSim(rng) {
+    const shuffled = shuffleArray(deckData, rng);
+    const players = [];
+    for (let p = 0; p < NUM_PLAYERS; p++) {
+      const cards = shuffled.slice(p * CARDS_PER_PLAYER, (p + 1) * CARDS_PER_PLAYER);
+      const stationIds = cards.map(c => c.station_global_id);
+      const result = computeFinalScoreSync(stationIds, {
+        stationMetrics: metricsData,
+        stationLines: stationLinesData,
+        linesMaster: linesMasterData,
+      });
+      players.push({
+        player: p + 1,
+        cards,
+        stationIds,
+        ...result,
+      });
+    }
+    // Determine winner (highest final_score, tie → lower player index wins)
+    let winner = players[0];
+    for (let p = 1; p < players.length; p++) {
+      if (players[p].final_score > winner.final_score) winner = players[p];
+    }
+    return { players, winner };
+  }
+
+  // ── Run simulations ────────────────────────────────────────────────────────
+  async function runSimulations() {
+    if (!deckData || !metricsData) {
+      showError('Data not loaded yet. Please wait.');
+      return;
+    }
+    if (isRunning) return;
+    isRunning = true;
+    runBtn.disabled = true;
+    clearError();
+
+    const count = parseInt(simCountSel.value, 10);
+    const seedVal = seedInput.value.trim() || Date.now();
+
+    // Aggregate accumulators
+    const winCounts   = [0, 0, 0, 0];
+    const sumFinal    = [0, 0, 0, 0];
+    const sumStation  = [0, 0, 0, 0];
+    const sumRoute    = [0, 0, 0, 0];
+    const sumHub      = [0, 0, 0, 0];
+    const stationWinFreq = new Map();
+    const routeWinFreq   = new Map();
+    let lastSim = null;
+
+    progressWrap.style.display = 'block';
+
+    const BATCH = 10;
+    for (let i = 0; i < count; i += BATCH) {
+      const batchEnd = Math.min(i + BATCH, count);
+      for (let j = i; j < batchEnd; j++) {
+        const rng = makePRNG(String(seedVal) + '_' + j);
+        const sim = runOneSim(rng);
+        lastSim = sim;
+
+        const winnerIdx = sim.winner.player - 1;
+        winCounts[winnerIdx]++;
+
+        for (let p = 0; p < NUM_PLAYERS; p++) {
+          sumFinal[p]   += sim.players[p].final_score;
+          sumStation[p] += sim.players[p].station_score;
+          sumRoute[p]   += sim.players[p].route_bonus;
+          sumHub[p]     += sim.players[p].hub_bonus;
+        }
+
+        // Track winning stations
+        for (const sid of sim.winner.stationIds) {
+          stationWinFreq.set(sid, (stationWinFreq.get(sid) || 0) + 1);
+        }
+        // Track winning routes (bonus > 0)
+        for (const r of (sim.winner.route_details || [])) {
+          if (r.bonus > 0) {
+            routeWinFreq.set(r.line_name, (routeWinFreq.get(r.line_name) || 0) + 1);
+          }
+        }
+      }
+
+      // Update progress
+      const pct = Math.round((batchEnd / count) * 100);
+      progressFill.style.width = pct + '%';
+      setStatus(`Running... ${batchEnd} / ${count}`);
+      await new Promise(r => setTimeout(r, 0)); // yield to UI
+    }
+
+    progressWrap.style.display = 'none';
+    progressFill.style.width = '0%';
+
+    const totalSims = (aggregateStats ? aggregateStats.totalSims : 0) + count;
+    const prevStats = aggregateStats || {
+      totalSims: 0,
+      winCounts: [0,0,0,0],
+      sumFinal: [0,0,0,0],
+      sumStation: [0,0,0,0],
+      sumRoute: [0,0,0,0],
+      sumHub: [0,0,0,0],
+      stationWinFreq: new Map(),
+      routeWinFreq: new Map(),
+    };
+
+    // Merge
+    const mergedWinCounts  = winCounts.map((v,i) => v + prevStats.winCounts[i]);
+    const mergedSumFinal   = sumFinal.map((v,i) => v + prevStats.sumFinal[i]);
+    const mergedSumStation = sumStation.map((v,i) => v + prevStats.sumStation[i]);
+    const mergedSumRoute   = sumRoute.map((v,i) => v + prevStats.sumRoute[i]);
+    const mergedSumHub     = sumHub.map((v,i) => v + prevStats.sumHub[i]);
+
+    const mergedStationFreq = new Map(prevStats.stationWinFreq);
+    for (const [k, v] of stationWinFreq) {
+      mergedStationFreq.set(k, (mergedStationFreq.get(k) || 0) + v);
+    }
+    const mergedRouteFreq = new Map(prevStats.routeWinFreq);
+    for (const [k, v] of routeWinFreq) {
+      mergedRouteFreq.set(k, (mergedRouteFreq.get(k) || 0) + v);
+    }
+
+    aggregateStats = {
+      totalSims,
+      winCounts: mergedWinCounts,
+      sumFinal: mergedSumFinal,
+      sumStation: mergedSumStation,
+      sumRoute: mergedSumRoute,
+      sumHub: mergedSumHub,
+      stationWinFreq: mergedStationFreq,
+      routeWinFreq: mergedRouteFreq,
+    };
+
+    renderAll(lastSim);
+    setStatus(`Done. ${totalSims} total simulations.`);
+    isRunning = false;
+    runBtn.disabled = false;
+  }
+
+  // ── Render all panels ──────────────────────────────────────────────────────
+  function renderAll(lastSim) {
+    const s = aggregateStats;
+    const n = s.totalSims;
+    const avgFinal   = s.sumFinal.reduce((a,b)=>a+b,0) / (n * NUM_PLAYERS);
+    const avgRoute   = s.sumRoute.reduce((a,b)=>a+b,0) / (n * NUM_PLAYERS);
+    const avgHub     = s.sumHub.reduce((a,b)=>a+b,0) / (n * NUM_PLAYERS);
+    const topWinner  = s.winCounts.indexOf(Math.max(...s.winCounts)) + 1;
+
+    // Summary cards
+    document.getElementById('sc-total').textContent      = n;
+    document.getElementById('sc-avg-final').textContent  = avgFinal.toFixed(1);
+    document.getElementById('sc-avg-route').textContent  = '+' + avgRoute.toFixed(1);
+    document.getElementById('sc-avg-hub').textContent    = '+' + avgHub.toFixed(1);
+    document.getElementById('sc-top-winner').textContent = 'P' + topWinner;
+
+    // Last sim
+    renderLastSim(lastSim);
+    // Win chart
+    renderWinChart(s.winCounts, n);
+    // Bonus contribution
+    renderContribution(s, n);
+    // Aggregate stats
+    renderAggStats(s, n);
+    // Top stations
+    renderTopStations(s.stationWinFreq);
+    // Top routes
+    renderTopRoutes(s.routeWinFreq);
+  }
+
+  // ── Last simulation ────────────────────────────────────────────────────────
+  function renderLastSim(sim) {
+    if (!sim) return;
+    const badge = document.getElementById('last-sim-badge');
+    badge.textContent = 'Winner: P' + sim.winner.player;
+    badge.className = 'badge gold';
+
+    const maxScore = Math.max(...sim.players.map(p => p.final_score));
+
+    let html = '<table><thead><tr>' +
+      '<th>Player</th><th>Final Score</th><th>Station</th><th>Route</th><th>Hub</th><th>Rank</th>' +
+      '</tr></thead><tbody>';
+
+    const sorted = [...sim.players].sort((a,b) => b.final_score - a.final_score);
+    const rankMap = new Map(sorted.map((p,i) => [p.player, i+1]));
+
+    for (const p of sim.players) {
+      const rank = rankMap.get(p.player);
+      const rankClass = 'rank-' + rank;
+      const barPct = maxScore > 0 ? (p.final_score / maxScore * 100).toFixed(1) : 0;
+      html += `<tr>
+        <td class="${rankClass}">P${p.player}${p.player === sim.winner.player ? ' ★' : ''}</td>
+        <td>
+          <div class="score-bar-wrap">
+            <span style="min-width:45px">${p.final_score.toFixed(2)}</span>
+            <div class="score-bar"><div class="score-bar-fill bar-total" style="width:${barPct}%"></div></div>
+          </div>
+        </td>
+        <td>${p.station_score.toFixed(2)}</td>
+        <td style="color:#40c080">+${p.route_bonus}</td>
+        <td style="color:#f08040">+${p.hub_bonus}</td>
+        <td class="${rankClass}">#${rank}</td>
+      </tr>`;
+    }
+    html += '</tbody></table>';
+
+    // Score breakdown bars
+    html += '<div style="margin-top:10px;padding-top:8px;border-top:1px solid #1e2d4a;">';
+    html += '<div style="font-size:10px;color:#4a6080;margin-bottom:6px;">SCORE BREAKDOWN</div>';
+    for (const p of sim.players) {
+      const total = p.final_score;
+      const sPct = total > 0 ? (p.station_score / total * 100).toFixed(1) : 0;
+      const rPct = total > 0 ? (p.route_bonus / total * 100).toFixed(1) : 0;
+      const hPct = total > 0 ? (p.hub_bonus / total * 100).toFixed(1) : 0;
+      html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+        <span style="width:20px;font-size:10px;color:#7090c0">P${p.player}</span>
+        <div style="flex:1;height:8px;background:#0a1020;border-radius:3px;overflow:hidden;display:flex;">
+          <div style="width:${sPct}%;background:#3060a0;height:100%;" title="Station: ${p.station_score.toFixed(1)}"></div>
+          <div style="width:${rPct}%;background:#40a060;height:100%;" title="Route: +${p.route_bonus}"></div>
+          <div style="width:${hPct}%;background:#c08020;height:100%;" title="Hub: +${p.hub_bonus}"></div>
+        </div>
+        <span style="font-size:10px;color:#4a6080;width:50px;text-align:right">${total.toFixed(1)}</span>
+      </div>`;
+    }
+    html += '<div style="font-size:9px;color:#2a3a5a;margin-top:4px;">■ Station &nbsp; ■ Route &nbsp; ■ Hub</div>';
+    html += '</div>';
+
+    document.getElementById('last-sim-content').innerHTML = html;
+  }
+
+  // ── Win count chart ────────────────────────────────────────────────────────
+  function renderWinChart(winCounts, total) {
+    const maxWin = Math.max(...winCounts, 1);
+    const chartEl = document.getElementById('win-chart');
+    chartEl.innerHTML = '';
+    const colors = ['#4080c0', '#40a060', '#c08020', '#a04060'];
+    for (let i = 0; i < NUM_PLAYERS; i++) {
+      const pct = winCounts[i] / maxWin;
+      const barH = Math.max(2, Math.round(pct * 60));
+      const winPct = total > 0 ? (winCounts[i] / total * 100).toFixed(1) : '0.0';
+      const col = document.createElement('div');
+      col.className = 'win-bar-col';
+      col.innerHTML = `
+        <div class="win-bar-val">${winCounts[i]}</div>
+        <div class="win-bar" style="height:${barH}px;background:${colors[i]};"></div>
+        <div class="win-bar-lbl">P${i+1}<br><span style="color:#2a4060">${winPct}%</span></div>
+      `;
+      chartEl.appendChild(col);
+    }
+  }
+
+  // ── Bonus contribution ─────────────────────────────────────────────────────
+  function renderContribution(s, n) {
+    const avgStation = s.sumStation.reduce((a,b)=>a+b,0) / (n * NUM_PLAYERS);
+    const avgRoute   = s.sumRoute.reduce((a,b)=>a+b,0) / (n * NUM_PLAYERS);
+    const avgHub     = s.sumHub.reduce((a,b)=>a+b,0) / (n * NUM_PLAYERS);
+    const total = avgStation + avgRoute + avgHub;
+
+    const sPct = total > 0 ? (avgStation / total * 100).toFixed(1) : 0;
+    const rPct = total > 0 ? (avgRoute   / total * 100).toFixed(1) : 0;
+    const hPct = total > 0 ? (avgHub     / total * 100).toFixed(1) : 0;
+
+    const el = document.getElementById('contribution-panel');
+    el.innerHTML = `
+      <div class="contribution-row">
+        <div class="contribution-label">Station Score</div>
+        <div class="contribution-bar-wrap">
+          <div class="contribution-bar-fill" style="width:${sPct}%;background:#3060a0;"></div>
+        </div>
+        <div class="contribution-pct">${sPct}%</div>
+      </div>
+      <div class="contribution-row">
+        <div class="contribution-label">Route Bonus</div>
+        <div class="contribution-bar-wrap">
+          <div class="contribution-bar-fill" style="width:${rPct}%;background:#40a060;"></div>
+        </div>
+        <div class="contribution-pct">${rPct}%</div>
+      </div>
+      <div class="contribution-row">
+        <div class="contribution-label">Hub Bonus</div>
+        <div class="contribution-bar-wrap">
+          <div class="contribution-bar-fill" style="width:${hPct}%;background:#c08020;"></div>
+        </div>
+        <div class="contribution-pct">${hPct}%</div>
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#4a6080;">
+        Avg: Station ${avgStation.toFixed(1)} | Route +${avgRoute.toFixed(1)} | Hub +${avgHub.toFixed(1)}
+      </div>
+    `;
+  }
+
+  // ── Aggregate stats table ──────────────────────────────────────────────────
+  function renderAggStats(s, n) {
+    document.getElementById('agg-badge').textContent = n + ' sims';
+
+    let html = '<table><thead><tr>' +
+      '<th>Player</th><th>Wins</th><th>Win%</th><th>Avg Final</th><th>Avg Station</th><th>Avg Route</th><th>Avg Hub</th>' +
+      '</tr></thead><tbody>';
+
+    const maxWins = Math.max(...s.winCounts);
+    for (let i = 0; i < NUM_PLAYERS; i++) {
+      const wins = s.winCounts[i];
+      const winPct = n > 0 ? (wins / n * 100).toFixed(1) : '0.0';
+      const avgFinal   = n > 0 ? (s.sumFinal[i]   / n).toFixed(2) : '—';
+      const avgStation = n > 0 ? (s.sumStation[i]  / n).toFixed(2) : '—';
+      const avgRoute   = n > 0 ? (s.sumRoute[i]    / n).toFixed(1) : '—';
+      const avgHub     = n > 0 ? (s.sumHub[i]      / n).toFixed(1) : '—';
+      const isTop = wins === maxWins;
+      html += `<tr>
+        <td ${isTop ? 'style="color:#ffd060;font-weight:bold"' : ''}>P${i+1}${isTop ? ' ★' : ''}</td>
+        <td>${wins}</td>
+        <td>${winPct}%</td>
+        <td>${avgFinal}</td>
+        <td>${avgStation}</td>
+        <td style="color:#40c080">+${avgRoute}</td>
+        <td style="color:#f08040">+${avgHub}</td>
+      </tr>`;
+    }
+    html += '</tbody></table>';
+    document.getElementById('agg-content').innerHTML = html;
+  }
+
+  // ── Top winning stations ───────────────────────────────────────────────────
+  function renderTopStations(freqMap) {
+    const sorted = [...freqMap.entries()]
+      .sort((a,b) => b[1] - a[1])
+      .slice(0, 10);
+
+    document.getElementById('top-stations-badge').textContent = 'top 10';
+
+    if (sorted.length === 0) {
+      document.getElementById('top-stations-panel').innerHTML = '<div class="empty-state">No data.</div>';
+      return;
+    }
+    const maxFreq = sorted[0][1];
+    let html = '';
+    for (const [sid, cnt] of sorted) {
+      const metric = metricsMap.get(sid);
+      const name = metric ? metric.station_name : sid;
+      const slug = metric ? metric.station_slug || '' : '';
+      const barPct = maxFreq > 0 ? (cnt / maxFreq * 100).toFixed(1) : 0;
+      html += `<div class="station-freq-row">
+        <div class="station-freq-name">
+          ${name}<br>
+          <span class="station-freq-sub">${slug}</span>
+        </div>
+        <div style="flex:1;height:4px;background:#0a1020;border-radius:2px;overflow:hidden;margin:0 8px;">
+          <div style="width:${barPct}%;height:100%;background:#c08020;border-radius:2px;"></div>
+        </div>
+        <div class="station-freq-count">${cnt}×</div>
+      </div>`;
+    }
+    document.getElementById('top-stations-panel').innerHTML = html;
+  }
+
+  // ── Top winning routes ─────────────────────────────────────────────────────
+  function renderTopRoutes(freqMap) {
+    const sorted = [...freqMap.entries()]
+      .sort((a,b) => b[1] - a[1])
+      .slice(0, 8);
+
+    document.getElementById('top-routes-badge').textContent = 'top 8';
+
+    if (sorted.length === 0) {
+      document.getElementById('top-routes-panel').innerHTML = '<div class="empty-state">No data.</div>';
+      return;
+    }
+    const maxFreq = sorted[0][1];
+    let html = '';
+    for (const [name, cnt] of sorted) {
+      const barPct = maxFreq > 0 ? (cnt / maxFreq * 100).toFixed(1) : 0;
+      html += `<div class="station-freq-row">
+        <div class="station-freq-name">${name}</div>
+        <div style="flex:1;height:4px;background:#0a1020;border-radius:2px;overflow:hidden;margin:0 8px;">
+          <div style="width:${barPct}%;height:100%;background:#40a060;border-radius:2px;"></div>
+        </div>
+        <div class="station-freq-count">${cnt}×</div>
+      </div>`;
+    }
+    document.getElementById('top-routes-panel').innerHTML = html;
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  function setStatus(msg, running = false) {
+    statusBar.innerHTML = running
+      ? `<span class="running-indicator">●</span> ${msg}`
+      : msg;
+  }
+  function showError(msg) {
+    errorContainer.innerHTML = `<div class="error-banner">⚠ ${msg}</div>`;
+    console.error('[GameSim]', msg);
+  }
+  function clearError() {
+    errorContainer.innerHTML = '';
+  }
+
+  // ── Event listeners ────────────────────────────────────────────────────────
+  runBtn.addEventListener('click', () => runSimulations());
+  resetBtn.addEventListener('click', () => {
+    aggregateStats = null;
+    clearError();
+    setStatus('Reset. Ready.');
+    // Clear all panels
+    document.getElementById('sc-total').textContent      = '—';
+    document.getElementById('sc-avg-final').textContent  = '—';
+    document.getElementById('sc-avg-route').textContent  = '—';
+    document.getElementById('sc-avg-hub').textContent    = '—';
+    document.getElementById('sc-top-winner').textContent = '—';
+    document.getElementById('last-sim-content').innerHTML = '<div class="empty-state">Run a simulation to see results.</div>';
+    document.getElementById('last-sim-badge').textContent = '—';
+    document.getElementById('last-sim-badge').className = 'badge';
+    document.getElementById('win-chart').innerHTML = '<div class="empty-state" style="width:100%;padding:10px;">No data yet.</div>';
+    document.getElementById('contribution-panel').innerHTML = '<div class="empty-state">No data yet.</div>';
+    document.getElementById('agg-content').innerHTML = '<div class="empty-state">No data yet.</div>';
+    document.getElementById('agg-badge').textContent = '0 sims';
+    document.getElementById('top-stations-panel').innerHTML = '<div class="empty-state">No data yet.</div>';
+    document.getElementById('top-routes-panel').innerHTML = '<div class="empty-state">No data yet.</div>';
+    document.getElementById('top-stations-badge').textContent = '—';
+    document.getElementById('top-routes-badge').textContent = '—';
+  });
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+  setStatus('Loading data...');
+  loadData();
+</script>
+
+</body>
+</html>
