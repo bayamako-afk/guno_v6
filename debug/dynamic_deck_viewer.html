@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Deck Viewer — GUNO V6 Debug</title>
+  <style>
+    /* ── Base ─────────────────────────────────────────────────────────────── */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ───────────────────────────────────────────────────────────── */
+    #header {
+      background: #16213e;
+      border-bottom: 2px solid #0f3460;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    #header h1 { font-size: 16px; color: #e94560; font-weight: 700; }
+    #header .subtitle { font-size: 12px; color: #888; }
+    #header .nav-links { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+    #header .nav-links a {
+      font-size: 11px; color: #4ecdc4; text-decoration: none;
+      padding: 3px 8px; border: 1px solid #4ecdc4; border-radius: 3px;
+    }
+    #header .nav-links a:hover { background: #4ecdc4; color: #1a1a2e; }
+
+    /* ── Error banner ─────────────────────────────────────────────────────── */
+    #error-banner {
+      display: none;
+      background: #e94560;
+      color: #fff;
+      padding: 8px 16px;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    /* ── Layout ───────────────────────────────────────────────────────────── */
+    #main { display: flex; flex: 1; overflow: hidden; }
+
+    /* ── Left panel ───────────────────────────────────────────────────────── */
+    #left-panel {
+      width: 240px;
+      background: #16213e;
+      border-right: 1px solid #0f3460;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+    .panel-section {
+      padding: 10px 12px;
+      border-bottom: 1px solid #0f3460;
+    }
+    .panel-section h2 {
+      font-size: 10px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    /* ── Form controls ────────────────────────────────────────────────────── */
+    .form-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .form-row label {
+      font-size: 12px;
+      color: #aaa;
+    }
+    .form-row input[type="number"] {
+      width: 64px;
+      background: #0f3460;
+      border: 1px solid #1a4a7a;
+      border-radius: 3px;
+      color: #e0e0e0;
+      font-size: 12px;
+      padding: 3px 6px;
+      text-align: right;
+    }
+    .form-row input[type="number"]:focus {
+      outline: none;
+      border-color: #4ecdc4;
+    }
+
+    /* Rarity labels */
+    .form-row .label-legendary { color: #ffd700; }
+    .form-row .label-epic      { color: #a349ff; }
+    .form-row .label-rare      { color: #4e8cff; }
+    .form-row .label-common    { color: #8c8c8c; }
+
+    /* Validation message */
+    #validation-msg {
+      font-size: 11px;
+      padding: 6px 8px;
+      border-radius: 3px;
+      margin-top: 4px;
+    }
+    #validation-msg.ok      { background: rgba(78,205,196,0.15); color: #4ecdc4; }
+    #validation-msg.warning { background: rgba(233,69,96,0.15); color: #e94560; }
+
+    /* Buttons */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 7px 10px;
+      margin-bottom: 5px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.15s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-primary  { background: #e94560; color: #fff; }
+    .btn-secondary { background: #0f3460; color: #e0e0e0; border: 1px solid #1a4a7a; }
+    .btn-export   { background: #4ecdc4; color: #1a1a2e; }
+    .btn-copy     { background: #0f3460; color: #4ecdc4; border: 1px solid #4ecdc4; }
+
+    /* Preset buttons */
+    .preset-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+    }
+    .preset-btn {
+      padding: 5px 4px;
+      background: #0f3460;
+      border: 1px solid #1a4a7a;
+      border-radius: 3px;
+      color: #aaa;
+      font-size: 10px;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.15s;
+    }
+    .preset-btn:hover { background: #1a4a7a; color: #e0e0e0; }
+
+    /* Status */
+    #status {
+      font-size: 11px;
+      color: #4ecdc4;
+      padding: 8px 12px;
+    }
+    #status.error { color: #e94560; }
+
+    /* ── Right panel ──────────────────────────────────────────────────────── */
+    #right-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+    }
+
+    /* ── Summary cards row ────────────────────────────────────────────────── */
+    .summary-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .summary-card {
+      background: #16213e;
+      border: 1px solid #0f3460;
+      border-radius: 6px;
+      padding: 8px 12px;
+      min-width: 80px;
+      text-align: center;
+    }
+    .summary-card .sc-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+    .summary-card .sc-value { font-size: 20px; font-weight: 700; margin-top: 2px; }
+    .summary-card.total    .sc-value { color: #e0e0e0; }
+    .summary-card.legendary .sc-value { color: #ffd700; }
+    .summary-card.epic      .sc-value { color: #a349ff; }
+    .summary-card.rare      .sc-value { color: #4e8cff; }
+    .summary-card.common    .sc-value { color: #8c8c8c; }
+
+    /* ── Section ──────────────────────────────────────────────────────────── */
+    .section {
+      background: #16213e;
+      border: 1px solid #0f3460;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .section-header {
+      padding: 8px 12px;
+      background: #0f3460;
+      font-size: 11px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-header .badge {
+      background: #1a4a7a;
+      color: #e0e0e0;
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+    .section-body { padding: 10px 12px; }
+
+    /* ── Deck summary grid ────────────────────────────────────────────────── */
+    .deck-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 8px;
+    }
+    .ds-item {
+      background: #0f3460;
+      border-radius: 4px;
+      padding: 6px 10px;
+    }
+    .ds-item .ds-label { font-size: 10px; color: #888; }
+    .ds-item .ds-value { font-size: 14px; font-weight: 600; color: #e0e0e0; margin-top: 2px; }
+
+    /* ── Rarity distribution bars ─────────────────────────────────────────── */
+    .rarity-bars { display: flex; flex-direction: column; gap: 5px; }
+    .rarity-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .rarity-bar-label { width: 72px; font-size: 11px; font-weight: 600; }
+    .rarity-bar-label.legendary { color: #ffd700; }
+    .rarity-bar-label.epic      { color: #a349ff; }
+    .rarity-bar-label.rare      { color: #4e8cff; }
+    .rarity-bar-label.common    { color: #8c8c8c; }
+    .rarity-bar-track {
+      flex: 1;
+      height: 10px;
+      background: #0f3460;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .rarity-bar-fill {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.3s;
+    }
+    .rarity-bar-fill.legendary { background: #ffd700; }
+    .rarity-bar-fill.epic      { background: #a349ff; }
+    .rarity-bar-fill.rare      { background: #4e8cff; }
+    .rarity-bar-fill.common    { background: #8c8c8c; }
+    .rarity-bar-count { width: 28px; font-size: 11px; color: #aaa; text-align: right; }
+
+    /* ── Line distribution ────────────────────────────────────────────────── */
+    .line-bars { display: flex; flex-direction: column; gap: 4px; }
+    .line-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .line-bar-name { width: 80px; font-size: 11px; color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .line-bar-track {
+      flex: 1;
+      height: 8px;
+      background: #0f3460;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .line-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: #4ecdc4;
+      transition: width 0.3s;
+    }
+    .line-bar-count { width: 24px; font-size: 11px; color: #aaa; text-align: right; }
+
+    /* ── Cards table ──────────────────────────────────────────────────────── */
+    .cards-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .cards-table th {
+      background: #0f3460;
+      color: #888;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 6px 10px;
+      text-align: left;
+      position: sticky;
+      top: 0;
+    }
+    .cards-table td {
+      padding: 5px 10px;
+      border-bottom: 1px solid #0f3460;
+    }
+    .cards-table tr:hover td { background: rgba(255,255,255,0.04); }
+    .cards-table .col-id    { color: #555; font-family: monospace; font-size: 11px; }
+    .cards-table .col-name  { font-weight: 600; }
+    .cards-table .col-slug  { color: #555; font-size: 10px; }
+    .cards-table .col-score { text-align: right; font-family: monospace; }
+    .cards-table .col-rank  { text-align: center; color: #888; }
+    .cards-table .col-rarity { text-align: center; }
+
+    /* Rarity badge */
+    .rarity-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+    }
+    .rarity-badge.legendary { background: rgba(255,215,0,0.2); color: #ffd700; border: 1px solid #ffd700; }
+    .rarity-badge.epic      { background: rgba(163,73,255,0.2); color: #a349ff; border: 1px solid #a349ff; }
+    .rarity-badge.rare      { background: rgba(78,140,255,0.2); color: #4e8cff; border: 1px solid #4e8cff; }
+    .rarity-badge.common    { background: rgba(140,140,140,0.2); color: #8c8c8c; border: 1px solid #8c8c8c; }
+
+    /* Score bar */
+    .score-bar-wrap { display: flex; align-items: center; gap: 5px; }
+    .score-bar { height: 5px; border-radius: 3px; flex-shrink: 0; }
+    .score-val { font-family: monospace; font-size: 12px; }
+
+    /* Placeholder */
+    .placeholder {
+      color: #555;
+      font-size: 13px;
+      text-align: center;
+      padding: 40px 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div id="header">
+  <h1>DYNAMIC DECK VIEWER</h1>
+  <span class="subtitle">GUNO V6 Debug Tools</span>
+  <nav class="nav-links">
+    <a href="station_graph_viewer.html">Graph</a>
+    <a href="station_metrics_viewer.html">Metrics</a>
+    <a href="deck_viewer.html">Deck</a>
+    <a href="rarity_viewer.html">Rarity</a>
+    <a href="route_score_viewer.html">Route</a>
+    <a href="hub_bonus_viewer.html">Hub</a>
+    <a href="final_score_viewer.html">Final</a>
+    <a href="game_simulator.html">Sim</a>
+  </nav>
+</div>
+
+<!-- Error banner -->
+<div id="error-banner"></div>
+
+<!-- Main -->
+<div id="main">
+
+  <!-- Left panel -->
+  <div id="left-panel">
+
+    <div class="panel-section">
+      <h2>Deck Size</h2>
+      <div class="form-row">
+        <label>Total Cards</label>
+        <input type="number" id="input-deck-size" value="40" min="1" max="200">
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <h2>Rarity Targets</h2>
+      <div class="form-row">
+        <label class="label-legendary">Legendary</label>
+        <input type="number" id="input-legendary" value="1" min="0">
+      </div>
+      <div class="form-row">
+        <label class="label-epic">Epic</label>
+        <input type="number" id="input-epic" value="9" min="0">
+      </div>
+      <div class="form-row">
+        <label class="label-rare">Rare</label>
+        <input type="number" id="input-rare" value="10" min="0">
+      </div>
+      <div class="form-row">
+        <label class="label-common">Common</label>
+        <input type="number" id="input-common" value="20" min="0">
+      </div>
+      <div id="validation-msg" class="ok">Total: 40 / 40 ✓</div>
+    </div>
+
+    <div class="panel-section">
+      <h2>Presets</h2>
+      <div class="preset-grid">
+        <button class="preset-btn" onclick="applyPreset('standard')">Standard 40</button>
+        <button class="preset-btn" onclick="applyPreset('hub-heavy')">Hub Heavy</button>
+        <button class="preset-btn" onclick="applyPreset('common-heavy')">Common Heavy</button>
+        <button class="preset-btn" onclick="applyPreset('compact')">Compact 20</button>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <h2>Generate</h2>
+      <button class="btn btn-primary" id="btn-generate" onclick="generateDeck()">Generate Deck</button>
+      <button class="btn btn-secondary" onclick="resetDefaults()">Reset Defaults</button>
+    </div>
+
+    <div class="panel-section">
+      <h2>Export</h2>
+      <button class="btn btn-export" id="btn-export" onclick="exportDeck()" disabled>Export Deck JSON</button>
+      <button class="btn btn-copy"   id="btn-copy"   onclick="copyDeck()"   disabled>Copy Deck JSON</button>
+    </div>
+
+    <div id="status">Loading data…</div>
+
+  </div>
+
+  <!-- Right panel -->
+  <div id="right-panel">
+
+    <!-- Summary row -->
+    <div class="summary-row">
+      <div class="summary-card total">
+        <div class="sc-label">Deck Size</div>
+        <div class="sc-value" id="sc-total">—</div>
+      </div>
+      <div class="summary-card legendary">
+        <div class="sc-label">Legendary</div>
+        <div class="sc-value" id="sc-legendary">—</div>
+      </div>
+      <div class="summary-card epic">
+        <div class="sc-label">Epic</div>
+        <div class="sc-value" id="sc-epic">—</div>
+      </div>
+      <div class="summary-card rare">
+        <div class="sc-label">Rare</div>
+        <div class="sc-value" id="sc-rare">—</div>
+      </div>
+      <div class="summary-card common">
+        <div class="sc-label">Common</div>
+        <div class="sc-value" id="sc-common">—</div>
+      </div>
+    </div>
+
+    <!-- Deck summary -->
+    <div class="section" id="section-summary" style="display:none">
+      <div class="section-header">Deck Summary</div>
+      <div class="section-body">
+        <div class="deck-summary-grid" id="deck-summary-grid"></div>
+      </div>
+    </div>
+
+    <!-- Rarity distribution -->
+    <div class="section" id="section-rarity" style="display:none">
+      <div class="section-header">Rarity Distribution</div>
+      <div class="section-body">
+        <div class="rarity-bars" id="rarity-bars"></div>
+      </div>
+    </div>
+
+    <!-- Line distribution -->
+    <div class="section" id="section-lines" style="display:none">
+      <div class="section-header">Line Distribution <span class="badge" id="line-badge"></span></div>
+      <div class="section-body">
+        <div class="line-bars" id="line-bars"></div>
+      </div>
+    </div>
+
+    <!-- Cards table -->
+    <div class="section" id="section-cards" style="display:none">
+      <div class="section-header">Generated Cards <span class="badge" id="cards-badge"></span></div>
+      <div class="section-body" style="padding:0">
+        <div id="cards-table-wrap"></div>
+      </div>
+    </div>
+
+    <!-- Placeholder -->
+    <div id="placeholder" class="placeholder">Configure deck settings and click <strong>Generate Deck</strong> to begin.</div>
+
+  </div>
+
+</div>
+
+<script type="module">
+  import { generateDeck as _generateDeck } from '../src/generators/deck_generator.js?v=1';
+
+  // ── State ─────────────────────────────────────────────────────────────────
+  let currentDeck = null;
+  let linesData   = null;
+  let dataReady   = false;
+
+  const BASE_URL = new URL('../', location.href).href;
+
+  // ── Presets ───────────────────────────────────────────────────────────────
+  const PRESETS = {
+    'standard':     { deckSize: 40, Legendary: 1, Epic: 9,  Rare: 10, Common: 20 },
+    'hub-heavy':    { deckSize: 40, Legendary: 1, Epic: 12, Rare: 10, Common: 17 },
+    'common-heavy': { deckSize: 40, Legendary: 1, Epic: 5,  Rare: 4,  Common: 30 },
+    'compact':      { deckSize: 20, Legendary: 1, Epic: 4,  Rare: 5,  Common: 10 }
+  };
+
+  window.applyPreset = function(key) {
+    const p = PRESETS[key];
+    if (!p) return;
+    document.getElementById('input-deck-size').value = p.deckSize;
+    document.getElementById('input-legendary').value = p.Legendary;
+    document.getElementById('input-epic').value      = p.Epic;
+    document.getElementById('input-rare').value      = p.Rare;
+    document.getElementById('input-common').value    = p.Common;
+    validateInputs();
+  };
+
+  window.resetDefaults = function() { applyPreset('standard'); };
+
+  // ── Validation ────────────────────────────────────────────────────────────
+  function validateInputs() {
+    const deckSize  = parseInt(document.getElementById('input-deck-size').value) || 0;
+    const legendary = parseInt(document.getElementById('input-legendary').value) || 0;
+    const epic      = parseInt(document.getElementById('input-epic').value)      || 0;
+    const rare      = parseInt(document.getElementById('input-rare').value)      || 0;
+    const common    = parseInt(document.getElementById('input-common').value)    || 0;
+    const total     = legendary + epic + rare + common;
+    const msg       = document.getElementById('validation-msg');
+    const btn       = document.getElementById('btn-generate');
+
+    if (total === deckSize) {
+      msg.className = 'ok';
+      msg.textContent = `Total: ${total} / ${deckSize} ✓`;
+      btn.disabled = !dataReady;
+    } else {
+      msg.className = 'warning';
+      msg.textContent = `Total: ${total} / ${deckSize} — mismatch!`;
+      btn.disabled = true;
+    }
+    return total === deckSize;
+  }
+
+  // Attach listeners
+  ['input-deck-size','input-legendary','input-epic','input-rare','input-common'].forEach(id => {
+    document.getElementById(id).addEventListener('input', validateInputs);
+  });
+
+  // ── Generate ──────────────────────────────────────────────────────────────
+  window.generateDeck = async function() {
+    if (!validateInputs()) return;
+
+    const deckSize  = parseInt(document.getElementById('input-deck-size').value);
+    const legendary = parseInt(document.getElementById('input-legendary').value);
+    const epic      = parseInt(document.getElementById('input-epic').value);
+    const rare      = parseInt(document.getElementById('input-rare').value);
+    const common    = parseInt(document.getElementById('input-common').value);
+
+    const statusEl = document.getElementById('status');
+    statusEl.textContent = 'Generating…';
+    statusEl.className = '';
+
+    try {
+      const deck = await _generateDeck({
+        baseUrl: BASE_URL,
+        config: {
+          deckSize,
+          rarityTargets: { Legendary: legendary, Epic: epic, Rare: rare, Common: common }
+        }
+      });
+
+      currentDeck = deck;
+      renderDeck(deck);
+      document.getElementById('btn-export').disabled = false;
+      document.getElementById('btn-copy').disabled   = false;
+      statusEl.textContent = `Generated ${deck.cards.length} cards.`;
+    } catch (err) {
+      console.error('generateDeck error:', err);
+      statusEl.textContent = 'Generation failed.';
+      statusEl.className = 'error';
+      showError(`Generation failed: ${err.message}`);
+    }
+  };
+
+  // ── Render ────────────────────────────────────────────────────────────────
+  function renderDeck(deck) {
+    const cards = deck.cards;
+    const rarityCounts = { Legendary: 0, Epic: 0, Rare: 0, Common: 0 };
+    cards.forEach(c => rarityCounts[c.rarity]++);
+
+    const scores = cards.map(c => c.score_total);
+    const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+    const topCard  = cards[0];
+    const lowCard  = cards[cards.length - 1];
+
+    // Summary cards
+    document.getElementById('sc-total').textContent     = cards.length;
+    document.getElementById('sc-legendary').textContent = rarityCounts.Legendary;
+    document.getElementById('sc-epic').textContent      = rarityCounts.Epic;
+    document.getElementById('sc-rare').textContent      = rarityCounts.Rare;
+    document.getElementById('sc-common').textContent    = rarityCounts.Common;
+
+    // Deck summary grid
+    document.getElementById('deck-summary-grid').innerHTML = `
+      <div class="ds-item"><div class="ds-label">Total Cards</div><div class="ds-value">${cards.length}</div></div>
+      <div class="ds-item"><div class="ds-label">Avg Score</div><div class="ds-value">${avgScore.toFixed(2)}</div></div>
+      <div class="ds-item"><div class="ds-label">Top Card</div><div class="ds-value">${topCard.station_name}</div></div>
+      <div class="ds-item"><div class="ds-label">Lowest Card</div><div class="ds-value">${lowCard.station_name}</div></div>
+      <div class="ds-item"><div class="ds-label">Deck Name</div><div class="ds-value" style="font-size:11px">${deck.deck_meta.deck_name}</div></div>
+      <div class="ds-item"><div class="ds-label">Generator</div><div class="ds-value" style="font-size:11px">${deck.deck_meta.generator}</div></div>
+    `;
+
+    // Rarity bars
+    const rarityBarHtml = ['Legendary','Epic','Rare','Common'].map(r => {
+      const key = r.toLowerCase();
+      const count = rarityCounts[r];
+      const pct = (count / cards.length * 100).toFixed(1);
+      return `
+        <div class="rarity-bar-row">
+          <span class="rarity-bar-label ${key}">${r}</span>
+          <div class="rarity-bar-track">
+            <div class="rarity-bar-fill ${key}" style="width:${pct}%"></div>
+          </div>
+          <span class="rarity-bar-count">${count}</span>
+        </div>`;
+    }).join('');
+    document.getElementById('rarity-bars').innerHTML = rarityBarHtml;
+
+    // Line distribution (if lines data available)
+    renderLineDistribution(cards);
+
+    // Cards table (sorted by rank ascending)
+    const sortedCards = [...cards].sort((a, b) => a.rank - b.rank);
+    const MAX_SCORE = 20;
+    const rows = sortedCards.map(c => {
+      const key   = c.rarity.toLowerCase();
+      const pct   = Math.min(100, (c.score_total / MAX_SCORE) * 100).toFixed(1);
+      const color = { legendary: '#ffd700', epic: '#a349ff', rare: '#4e8cff', common: '#8c8c8c' }[key] || '#888';
+      return `
+        <tr>
+          <td class="col-id">${c.card_id}</td>
+          <td class="col-name">${c.station_name}<div class="col-slug">${c.station_slug}</div></td>
+          <td class="col-score">
+            <div class="score-bar-wrap">
+              <div class="score-bar" style="width:${pct}px;background:${color}"></div>
+              <span class="score-val">${c.score_total.toFixed(2)}</span>
+            </div>
+          </td>
+          <td class="col-rank">${c.rank}</td>
+          <td class="col-rarity"><span class="rarity-badge ${key}">${c.rarity}</span></td>
+        </tr>`;
+    }).join('');
+
+    document.getElementById('cards-table-wrap').innerHTML = `
+      <table class="cards-table">
+        <thead>
+          <tr>
+            <th>Card ID</th>
+            <th>Station</th>
+            <th class="col-score">Score</th>
+            <th class="col-rank">Rank</th>
+            <th class="col-rarity">Rarity</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+
+    document.getElementById('cards-badge').textContent = `${cards.length} cards`;
+
+    // Show sections
+    document.getElementById('placeholder').style.display = 'none';
+    document.getElementById('section-summary').style.display = '';
+    document.getElementById('section-rarity').style.display  = '';
+    document.getElementById('section-lines').style.display   = '';
+    document.getElementById('section-cards').style.display   = '';
+  }
+
+  function renderLineDistribution(cards) {
+    if (!linesData) {
+      document.getElementById('line-bars').innerHTML = '<p style="font-size:11px;color:#555">Line data not available.</p>';
+      document.getElementById('line-badge').textContent = '';
+      return;
+    }
+
+    // Build station → lines map
+    const stationToLines = {};
+    linesData.forEach(r => {
+      const sid = r.station_global_id;
+      if (!stationToLines[sid]) stationToLines[sid] = [];
+      if (r.line_name && !stationToLines[sid].includes(r.line_name)) {
+        stationToLines[sid].push(r.line_name);
+      }
+    });
+
+    const lineCounts = {};
+    cards.forEach(c => {
+      const lines = stationToLines[c.station_global_id] || [];
+      lines.forEach(line => {
+        lineCounts[line] = (lineCounts[line] || 0) + 1;
+      });
+    });
+
+    const sorted = Object.entries(lineCounts).sort((a, b) => b[1] - a[1]);
+    const maxCount = sorted[0]?.[1] || 1;
+
+    document.getElementById('line-badge').textContent = `${sorted.length} lines`;
+
+    document.getElementById('line-bars').innerHTML = sorted.map(([line, count]) => {
+      const pct = (count / maxCount * 100).toFixed(1);
+      return `
+        <div class="line-bar-row">
+          <span class="line-bar-name" title="${line}">${line}</span>
+          <div class="line-bar-track">
+            <div class="line-bar-fill" style="width:${pct}%"></div>
+          </div>
+          <span class="line-bar-count">${count}</span>
+        </div>`;
+    }).join('');
+  }
+
+  // ── Export ────────────────────────────────────────────────────────────────
+  window.exportDeck = function() {
+    if (!currentDeck) return;
+    const json = JSON.stringify(currentDeck, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `${currentDeck.deck_meta.deck_name}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  window.copyDeck = async function() {
+    if (!currentDeck) return;
+    const json = JSON.stringify(currentDeck, null, 2);
+    try {
+      await navigator.clipboard.writeText(json);
+      const btn = document.getElementById('btn-copy');
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = 'Copy Deck JSON'; }, 1500);
+    } catch (e) {
+      console.error('Copy failed:', e);
+    }
+  };
+
+  // ── Error ─────────────────────────────────────────────────────────────────
+  function showError(msg) {
+    const banner = document.getElementById('error-banner');
+    banner.style.display = 'block';
+    banner.textContent = msg;
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  const statusEl = document.getElementById('status');
+
+  try {
+    // Pre-load lines data for line distribution
+    const linesUrl = BASE_URL + 'data/master/station_lines_tokyo.json';
+    const res = await fetch(linesUrl);
+    if (res.ok) {
+      linesData = await res.json();
+    }
+    dataReady = true;
+    document.getElementById('btn-generate').disabled = false;
+    statusEl.textContent = 'Data loaded. Ready.';
+    validateInputs();
+  } catch (err) {
+    console.warn('Could not pre-load lines data:', err);
+    dataReady = true;
+    document.getElementById('btn-generate').disabled = false;
+    statusEl.textContent = 'Ready (no line data).';
+    validateInputs();
+  }
+</script>
+
+</body>
+</html>
