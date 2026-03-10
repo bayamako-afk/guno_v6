@@ -7,6 +7,7 @@
     "test:route": "node src/test_route_score.js",
     "test:hub": "node src/test_hub_bonus.js",
     "test:final": "node src/test_final_score_engine.js",
-    "test": "node src/test_route_score.js && node src/test_hub_bonus.js && node src/test_final_score_engine.js"
+    "test": "node src/test_route_score.js && node src/test_hub_bonus.js && node src/test_final_score_engine.js && node src/test_station_rarity.js",
+    "test:rarity": "node src/test_station_rarity.js"
   }
 }
