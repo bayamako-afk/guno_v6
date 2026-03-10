@@ -1,0 +1,1686 @@
+{
+  "nodes": [
+    {
+      "node_id": "ST_356813_1397666",
+      "station_global_id": "ST_356813_1397666",
+      "station_name": "東京",
+      "station_slug": "tokyo",
+      "lat": 35.681299,
+      "lon": 139.766604,
+      "line_count": 2,
+      "hub_degree_global": 2
+    },
+    {
+      "node_id": "ST_356920_1397711",
+      "station_global_id": "ST_356920_1397711",
+      "station_name": "神田",
+      "station_slug": "kanda",
+      "lat": 35.692023,
+      "lon": 139.771099,
+      "line_count": 2,
+      "hub_degree_global": 2
+    },
+    {
+      "node_id": "ST_356985_1397730",
+      "station_global_id": "ST_356985_1397730",
+      "station_name": "秋葉原",
+      "station_slug": "akihabara",
+      "lat": 35.698473,
+      "lon": 139.773048,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357071_1397747",
+      "station_global_id": "ST_357071_1397747",
+      "station_name": "御徒町",
+      "station_slug": "okachimachi",
+      "lat": 35.707078,
+      "lon": 139.774653,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357140_1397764",
+      "station_global_id": "ST_357140_1397764",
+      "station_name": "上野",
+      "station_slug": "ueno",
+      "lat": 35.713955,
+      "lon": 139.776369,
+      "line_count": 2,
+      "hub_degree_global": 2
+    },
+    {
+      "node_id": "ST_357213_1397783",
+      "station_global_id": "ST_357213_1397783",
+      "station_name": "鶯谷",
+      "station_slug": "uguisudani",
+      "lat": 35.721289,
+      "lon": 139.778324,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357279_1397705",
+      "station_global_id": "ST_357279_1397705",
+      "station_name": "日暮里",
+      "station_slug": "nippori",
+      "lat": 35.72793,
+      "lon": 139.770474,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357324_1397665",
+      "station_global_id": "ST_357324_1397665",
+      "station_name": "西日暮里",
+      "station_slug": "nishi-nippori",
+      "lat": 35.732406,
+      "lon": 139.766526,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357372_1397619",
+      "station_global_id": "ST_357372_1397619",
+      "station_name": "田端",
+      "station_slug": "tabata",
+      "lat": 35.737232,
+      "lon": 139.761872,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357365_1397469",
+      "station_global_id": "ST_357365_1397469",
+      "station_name": "駒込",
+      "station_slug": "komagome",
+      "lat": 35.736459,
+      "lon": 139.746929,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357332_1397389",
+      "station_global_id": "ST_357332_1397389",
+      "station_name": "巣鴨",
+      "station_slug": "sugamo",
+      "lat": 35.733171,
+      "lon": 139.738892,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357317_1397285",
+      "station_global_id": "ST_357317_1397285",
+      "station_name": "大塚",
+      "station_slug": "otsuka",
+      "lat": 35.731696,
+      "lon": 139.728547,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357299_1397107",
+      "station_global_id": "ST_357299_1397107",
+      "station_name": "池袋",
+      "station_slug": "ikebukuro",
+      "lat": 35.72986,
+      "lon": 139.710693,
+      "line_count": 2,
+      "hub_degree_global": 2
+    },
+    {
+      "node_id": "ST_357210_1397064",
+      "station_global_id": "ST_357210_1397064",
+      "station_name": "目白",
+      "station_slug": "mejiro",
+      "lat": 35.720992,
+      "lon": 139.706389,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357127_1397036",
+      "station_global_id": "ST_357127_1397036",
+      "station_name": "高田馬場",
+      "station_slug": "takadanobaba",
+      "lat": 35.712687,
+      "lon": 139.703636,
+      "line_count": 2,
+      "hub_degree_global": 2
+    },
+    {
+      "node_id": "ST_357014_1397003",
+      "station_global_id": "ST_357014_1397003",
+      "station_name": "新大久保",
+      "station_slug": "shin-okubo",
+      "lat": 35.701404,
+      "lon": 139.700252,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356896_1397002",
+      "station_global_id": "ST_356896_1397002",
+      "station_name": "新宿",
+      "station_slug": "shinjuku",
+      "lat": 35.68956,
+      "lon": 139.70016,
+      "line_count": 2,
+      "hub_degree_global": 2
+    },
+    {
+      "node_id": "ST_356833_1397022",
+      "station_global_id": "ST_356833_1397022",
+      "station_name": "代々木",
+      "station_slug": "yoyogi",
+      "lat": 35.683341,
+      "lon": 139.702169,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356702_1397024",
+      "station_global_id": "ST_356702_1397024",
+      "station_name": "原宿",
+      "station_slug": "harajuku",
+      "lat": 35.670174,
+      "lon": 139.702414,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356582_1397016",
+      "station_global_id": "ST_356582_1397016",
+      "station_name": "渋谷",
+      "station_slug": "shibuya",
+      "lat": 35.658186,
+      "lon": 139.701593,
+      "line_count": 3,
+      "hub_degree_global": 3
+    },
+    {
+      "node_id": "ST_356470_1397098",
+      "station_global_id": "ST_356470_1397098",
+      "station_name": "恵比寿",
+      "station_slug": "ebisu",
+      "lat": 35.64697,
+      "lon": 139.709841,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356331_1397160",
+      "station_global_id": "ST_356331_1397160",
+      "station_name": "目黒",
+      "station_slug": "meguro",
+      "lat": 35.633116,
+      "lon": 139.715981,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356261_1397238",
+      "station_global_id": "ST_356261_1397238",
+      "station_name": "五反田",
+      "station_slug": "gotanda",
+      "lat": 35.626092,
+      "lon": 139.723751,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356195_1397286",
+      "station_global_id": "ST_356195_1397286",
+      "station_name": "大崎",
+      "station_slug": "osaki",
+      "lat": 35.619495,
+      "lon": 139.728607,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356283_1397384",
+      "station_global_id": "ST_356283_1397384",
+      "station_name": "品川",
+      "station_slug": "shinagawa",
+      "lat": 35.628256,
+      "lon": 139.738445,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356352_1397405",
+      "station_global_id": "ST_356352_1397405",
+      "station_name": "高輪ゲートウェイ",
+      "station_slug": "takanawa-gateway",
+      "lat": 35.635154,
+      "lon": 139.740471,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356457_1397477",
+      "station_global_id": "ST_356457_1397477",
+      "station_name": "田町",
+      "station_slug": "tamachi",
+      "lat": 35.645742,
+      "lon": 139.747696,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356550_1397570",
+      "station_global_id": "ST_356550_1397570",
+      "station_name": "浜松町",
+      "station_slug": "hamamatsucho",
+      "lat": 35.655046,
+      "lon": 139.75704,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356659_1397582",
+      "station_global_id": "ST_356659_1397582",
+      "station_name": "新橋",
+      "station_slug": "shimbashi",
+      "lat": 35.665863,
+      "lon": 139.758173,
+      "line_count": 2,
+      "hub_degree_global": 2
+    },
+    {
+      "node_id": "ST_356747_1397627",
+      "station_global_id": "ST_356747_1397627",
+      "station_name": "有楽町",
+      "station_slug": "yurakucho",
+      "lat": 35.674662,
+      "lon": 139.762666,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356652_1397123",
+      "station_global_id": "ST_356652_1397123",
+      "station_name": "表参道",
+      "station_slug": "omotesando",
+      "lat": 35.6652,
+      "lon": 139.7123,
+      "line_count": 2,
+      "hub_degree_global": 2
+    },
+    {
+      "node_id": "ST_356720_1397161",
+      "station_global_id": "ST_356720_1397161",
+      "station_name": "青山一丁目",
+      "station_slug": "aoyama-itchome",
+      "lat": 35.672,
+      "lon": 139.7161,
+      "line_count": 2,
+      "hub_degree_global": 2
+    },
+    {
+      "node_id": "ST_356796_1397361",
+      "station_global_id": "ST_356796_1397361",
+      "station_name": "赤坂見附",
+      "station_slug": "akasaka-mitsuke",
+      "lat": 35.6796,
+      "lon": 139.7361,
+      "line_count": 2,
+      "hub_degree_global": 2
+    },
+    {
+      "node_id": "ST_356740_1397401",
+      "station_global_id": "ST_356740_1397401",
+      "station_name": "溜池山王",
+      "station_slug": "tameike-sanno",
+      "lat": 35.674,
+      "lon": 139.7401,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356672_1397497",
+      "station_global_id": "ST_356672_1397497",
+      "station_name": "虎ノ門",
+      "station_slug": "toranomon",
+      "lat": 35.6672,
+      "lon": 139.7497,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356714_1397649",
+      "station_global_id": "ST_356714_1397649",
+      "station_name": "銀座",
+      "station_slug": "ginza",
+      "lat": 35.6714,
+      "lon": 139.7649,
+      "line_count": 2,
+      "hub_degree_global": 2
+    },
+    {
+      "node_id": "ST_356762_1397713",
+      "station_global_id": "ST_356762_1397713",
+      "station_name": "京橋",
+      "station_slug": "kyobashi",
+      "lat": 35.6762,
+      "lon": 139.7713,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356826_1397745",
+      "station_global_id": "ST_356826_1397745",
+      "station_name": "日本橋",
+      "station_slug": "nihombashi",
+      "lat": 35.6826,
+      "lon": 139.7745,
+      "line_count": 2,
+      "hub_degree_global": 2
+    },
+    {
+      "node_id": "ST_356839_1397739",
+      "station_global_id": "ST_356839_1397739",
+      "station_name": "三越前",
+      "station_slug": "mitsukoshi-mae",
+      "lat": 35.6839,
+      "lon": 139.7739,
+      "line_count": 2,
+      "hub_degree_global": 2
+    },
+    {
+      "node_id": "ST_357026_1397726",
+      "station_global_id": "ST_357026_1397726",
+      "station_name": "末広町",
+      "station_slug": "suehirocho",
+      "lat": 35.7026,
+      "lon": 139.7726,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357077_1397745",
+      "station_global_id": "ST_357077_1397745",
+      "station_name": "上野広小路",
+      "station_slug": "ueno-hirokoji",
+      "lat": 35.7077,
+      "lon": 139.7745,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357165_1397825",
+      "station_global_id": "ST_357165_1397825",
+      "station_name": "稲荷町",
+      "station_slug": "inaricho",
+      "lat": 35.7165,
+      "lon": 139.7825,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357118_1397917",
+      "station_global_id": "ST_357118_1397917",
+      "station_name": "田原町",
+      "station_slug": "tawaracho",
+      "lat": 35.7118,
+      "lon": 139.7917,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357117_1397985",
+      "station_global_id": "ST_357117_1397985",
+      "station_name": "浅草",
+      "station_slug": "asakusa",
+      "lat": 35.7117,
+      "lon": 139.7985,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357237_1397280",
+      "station_global_id": "ST_357237_1397280",
+      "station_name": "新大塚",
+      "station_slug": "shin-otsuka",
+      "lat": 35.7237,
+      "lon": 139.728,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357196_1397283",
+      "station_global_id": "ST_357196_1397283",
+      "station_name": "茗荷谷",
+      "station_slug": "myogadani",
+      "lat": 35.7196,
+      "lon": 139.7283,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357074_1397519",
+      "station_global_id": "ST_357074_1397519",
+      "station_name": "後楽園",
+      "station_slug": "korakuen",
+      "lat": 35.7074,
+      "lon": 139.7519,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357079_1397614",
+      "station_global_id": "ST_357079_1397614",
+      "station_name": "本郷三丁目",
+      "station_slug": "hongo-sanchome",
+      "lat": 35.7079,
+      "lon": 139.7614,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356998_1397657",
+      "station_global_id": "ST_356998_1397657",
+      "station_name": "御茶ノ水",
+      "station_slug": "ochanomizu",
+      "lat": 35.6998,
+      "lon": 139.7657,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356939_1397671",
+      "station_global_id": "ST_356939_1397671",
+      "station_name": "淡路町",
+      "station_slug": "awajicho",
+      "lat": 35.6939,
+      "lon": 139.7671,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356842_1397630",
+      "station_global_id": "ST_356842_1397630",
+      "station_name": "大手町",
+      "station_slug": "otemachi",
+      "lat": 35.6842,
+      "lon": 139.763,
+      "line_count": 3,
+      "hub_degree_global": 3
+    },
+    {
+      "node_id": "ST_356742_1397498",
+      "station_global_id": "ST_356742_1397498",
+      "station_name": "霞ケ関",
+      "station_slug": "kasumigaseki",
+      "lat": 35.6742,
+      "lon": 139.7498,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356742_1397401",
+      "station_global_id": "ST_356742_1397401",
+      "station_name": "国会議事堂前",
+      "station_slug": "kokkai-gijidomae",
+      "lat": 35.6742,
+      "lon": 139.7401,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356866_1397302",
+      "station_global_id": "ST_356866_1397302",
+      "station_name": "四ツ谷",
+      "station_slug": "yotsuya",
+      "lat": 35.6866,
+      "lon": 139.7302,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356869_1397222",
+      "station_global_id": "ST_356869_1397222",
+      "station_name": "四谷三丁目",
+      "station_slug": "yotsuya-sanchome",
+      "lat": 35.6869,
+      "lon": 139.7222,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356869_1397090",
+      "station_global_id": "ST_356869_1397090",
+      "station_name": "新宿御苑前",
+      "station_slug": "shinjuku-gyoemmae",
+      "lat": 35.6869,
+      "lon": 139.709,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356896_1397040",
+      "station_global_id": "ST_356896_1397040",
+      "station_name": "新宿三丁目",
+      "station_slug": "shinjuku-sanchome",
+      "lat": 35.6896,
+      "lon": 139.704,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356927_1396946",
+      "station_global_id": "ST_356927_1396946",
+      "station_name": "西新宿",
+      "station_slug": "nishi-shinjuku",
+      "lat": 35.6927,
+      "lon": 139.6946,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357043_1396683",
+      "station_global_id": "ST_357043_1396683",
+      "station_name": "中野坂上",
+      "station_slug": "nakano-sakaue",
+      "lat": 35.7043,
+      "lon": 139.6683,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357079_1396657",
+      "station_global_id": "ST_357079_1396657",
+      "station_name": "中野",
+      "station_slug": "nakano",
+      "lat": 35.7079,
+      "lon": 139.6657,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357078_1396780",
+      "station_global_id": "ST_357078_1396780",
+      "station_name": "落合",
+      "station_slug": "ochiai",
+      "lat": 35.7078,
+      "lon": 139.678,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357083_1397199",
+      "station_global_id": "ST_357083_1397199",
+      "station_name": "早稲田",
+      "station_slug": "waseda",
+      "lat": 35.7083,
+      "lon": 139.7199,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357020_1397456",
+      "station_global_id": "ST_357020_1397456",
+      "station_name": "飯田橋",
+      "station_slug": "iidabashi",
+      "lat": 35.702,
+      "lon": 139.7456,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356944_1397503",
+      "station_global_id": "ST_356944_1397503",
+      "station_name": "九段下",
+      "station_slug": "kudanshita",
+      "lat": 35.6944,
+      "lon": 139.7503,
+      "line_count": 2,
+      "hub_degree_global": 2
+    },
+    {
+      "node_id": "ST_356898_1397583",
+      "station_global_id": "ST_356898_1397583",
+      "station_name": "竹橋",
+      "station_slug": "takebashi",
+      "lat": 35.6898,
+      "lon": 139.7583,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356786_1397797",
+      "station_global_id": "ST_356786_1397797",
+      "station_name": "茅場町",
+      "station_slug": "kayabacho",
+      "lat": 35.6786,
+      "lon": 139.7797,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356717_1397952",
+      "station_global_id": "ST_356717_1397952",
+      "station_name": "門前仲町",
+      "station_slug": "monzen-nakacho",
+      "lat": 35.6717,
+      "lon": 139.7952,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356718_1398175",
+      "station_global_id": "ST_356718_1398175",
+      "station_name": "木場",
+      "station_slug": "kiba",
+      "lat": 35.6718,
+      "lon": 139.8175,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356753_1398278",
+      "station_global_id": "ST_356753_1398278",
+      "station_name": "東陽町",
+      "station_slug": "toyocho",
+      "lat": 35.6753,
+      "lon": 139.8278,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356697_1398378",
+      "station_global_id": "ST_356697_1398378",
+      "station_name": "南砂町",
+      "station_slug": "minami-sunacho",
+      "lat": 35.6697,
+      "lon": 139.8378,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356583_1398694",
+      "station_global_id": "ST_356583_1398694",
+      "station_name": "西葛西",
+      "station_slug": "nishi-kasai",
+      "lat": 35.6583,
+      "lon": 139.8694,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356556_1398786",
+      "station_global_id": "ST_356556_1398786",
+      "station_name": "葛西",
+      "station_slug": "kasai",
+      "lat": 35.6556,
+      "lon": 139.8786,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356556_1398944",
+      "station_global_id": "ST_356556_1398944",
+      "station_name": "浦安",
+      "station_slug": "urayasu",
+      "lat": 35.6556,
+      "lon": 139.8944,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356694_1399064",
+      "station_global_id": "ST_356694_1399064",
+      "station_name": "南行徳",
+      "station_slug": "minami-gyotoku",
+      "lat": 35.6694,
+      "lon": 139.9064,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356703_1399144",
+      "station_global_id": "ST_356703_1399144",
+      "station_name": "行徳",
+      "station_slug": "gyotoku",
+      "lat": 35.6703,
+      "lon": 139.9144,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356722_1399269",
+      "station_global_id": "ST_356722_1399269",
+      "station_name": "妙典",
+      "station_slug": "myoden",
+      "lat": 35.6722,
+      "lon": 139.9269,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356833_1399408",
+      "station_global_id": "ST_356833_1399408",
+      "station_name": "原木中山",
+      "station_slug": "baraki-nakayama",
+      "lat": 35.6833,
+      "lon": 139.9408,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356975_1399444",
+      "station_global_id": "ST_356975_1399444",
+      "station_name": "西船橋",
+      "station_slug": "nishi-funabashi",
+      "lat": 35.6975,
+      "lon": 139.9444,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356738_1397401",
+      "station_global_id": "ST_356738_1397401",
+      "station_name": "永田町",
+      "station_slug": "nagatacho",
+      "lat": 35.6738,
+      "lon": 139.7401,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356837_1397458",
+      "station_global_id": "ST_356837_1397458",
+      "station_name": "半蔵門",
+      "station_slug": "hanzomon",
+      "lat": 35.6837,
+      "lon": 139.7458,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356958_1397577",
+      "station_global_id": "ST_356958_1397577",
+      "station_name": "神保町",
+      "station_slug": "jimbocho",
+      "lat": 35.6958,
+      "lon": 139.7577,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356826_1397837",
+      "station_global_id": "ST_356826_1397837",
+      "station_name": "水天宮前",
+      "station_slug": "suitengumae",
+      "lat": 35.6826,
+      "lon": 139.7837,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356789_1397975",
+      "station_global_id": "ST_356789_1397975",
+      "station_name": "清澄白河",
+      "station_slug": "kiyosumi-shirakawa",
+      "lat": 35.6789,
+      "lon": 139.7975,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356881_1398175",
+      "station_global_id": "ST_356881_1398175",
+      "station_name": "住吉",
+      "station_slug": "sumiyoshi",
+      "lat": 35.6881,
+      "lon": 139.8175,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_356963_1398133",
+      "station_global_id": "ST_356963_1398133",
+      "station_name": "錦糸町",
+      "station_slug": "kinshicho",
+      "lat": 35.6963,
+      "lon": 139.8133,
+      "line_count": 1,
+      "hub_degree_global": 1
+    },
+    {
+      "node_id": "ST_357100_1398133",
+      "station_global_id": "ST_357100_1398133",
+      "station_name": "押上",
+      "station_slug": "oshiage",
+      "lat": 35.71,
+      "lon": 139.8133,
+      "line_count": 1,
+      "hub_degree_global": 1
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "JY_ST_356813_1397666_ST_356920_1397711",
+      "from": "ST_356813_1397666",
+      "to": "ST_356920_1397711",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_356920_1397711_ST_356985_1397730",
+      "from": "ST_356920_1397711",
+      "to": "ST_356985_1397730",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_356985_1397730_ST_357071_1397747",
+      "from": "ST_356985_1397730",
+      "to": "ST_357071_1397747",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_357071_1397747_ST_357140_1397764",
+      "from": "ST_357071_1397747",
+      "to": "ST_357140_1397764",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_357140_1397764_ST_357213_1397783",
+      "from": "ST_357140_1397764",
+      "to": "ST_357213_1397783",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_357213_1397783_ST_357279_1397705",
+      "from": "ST_357213_1397783",
+      "to": "ST_357279_1397705",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_357279_1397705_ST_357324_1397665",
+      "from": "ST_357279_1397705",
+      "to": "ST_357324_1397665",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_357324_1397665_ST_357372_1397619",
+      "from": "ST_357324_1397665",
+      "to": "ST_357372_1397619",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_357365_1397469_ST_357372_1397619",
+      "from": "ST_357365_1397469",
+      "to": "ST_357372_1397619",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_357332_1397389_ST_357365_1397469",
+      "from": "ST_357332_1397389",
+      "to": "ST_357365_1397469",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_357317_1397285_ST_357332_1397389",
+      "from": "ST_357317_1397285",
+      "to": "ST_357332_1397389",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_357299_1397107_ST_357317_1397285",
+      "from": "ST_357299_1397107",
+      "to": "ST_357317_1397285",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_357210_1397064_ST_357299_1397107",
+      "from": "ST_357210_1397064",
+      "to": "ST_357299_1397107",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_357127_1397036_ST_357210_1397064",
+      "from": "ST_357127_1397036",
+      "to": "ST_357210_1397064",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_357014_1397003_ST_357127_1397036",
+      "from": "ST_357014_1397003",
+      "to": "ST_357127_1397036",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_356896_1397002_ST_357014_1397003",
+      "from": "ST_356896_1397002",
+      "to": "ST_357014_1397003",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_356833_1397022_ST_356896_1397002",
+      "from": "ST_356833_1397022",
+      "to": "ST_356896_1397002",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_356702_1397024_ST_356833_1397022",
+      "from": "ST_356702_1397024",
+      "to": "ST_356833_1397022",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_356582_1397016_ST_356702_1397024",
+      "from": "ST_356582_1397016",
+      "to": "ST_356702_1397024",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_356470_1397098_ST_356582_1397016",
+      "from": "ST_356470_1397098",
+      "to": "ST_356582_1397016",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_356331_1397160_ST_356470_1397098",
+      "from": "ST_356331_1397160",
+      "to": "ST_356470_1397098",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_356261_1397238_ST_356331_1397160",
+      "from": "ST_356261_1397238",
+      "to": "ST_356331_1397160",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_356195_1397286_ST_356261_1397238",
+      "from": "ST_356195_1397286",
+      "to": "ST_356261_1397238",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_356195_1397286_ST_356283_1397384",
+      "from": "ST_356195_1397286",
+      "to": "ST_356283_1397384",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_356283_1397384_ST_356352_1397405",
+      "from": "ST_356283_1397384",
+      "to": "ST_356352_1397405",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_356352_1397405_ST_356457_1397477",
+      "from": "ST_356352_1397405",
+      "to": "ST_356457_1397477",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_356457_1397477_ST_356550_1397570",
+      "from": "ST_356457_1397477",
+      "to": "ST_356550_1397570",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_356550_1397570_ST_356659_1397582",
+      "from": "ST_356550_1397570",
+      "to": "ST_356659_1397582",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_356659_1397582_ST_356747_1397627",
+      "from": "ST_356659_1397582",
+      "to": "ST_356747_1397627",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "JY_ST_356747_1397627_ST_356813_1397666",
+      "from": "ST_356747_1397627",
+      "to": "ST_356813_1397666",
+      "line_id": "JY",
+      "line_name": "山手線",
+      "operator_name": "JR東日本"
+    },
+    {
+      "edge_id": "G_ST_356582_1397016_ST_356652_1397123",
+      "from": "ST_356582_1397016",
+      "to": "ST_356652_1397123",
+      "line_id": "G",
+      "line_name": "銀座線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "G_ST_356652_1397123_ST_356720_1397161",
+      "from": "ST_356652_1397123",
+      "to": "ST_356720_1397161",
+      "line_id": "G",
+      "line_name": "銀座線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "G_ST_356720_1397161_ST_356796_1397361",
+      "from": "ST_356720_1397161",
+      "to": "ST_356796_1397361",
+      "line_id": "G",
+      "line_name": "銀座線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "G_ST_356740_1397401_ST_356796_1397361",
+      "from": "ST_356740_1397401",
+      "to": "ST_356796_1397361",
+      "line_id": "G",
+      "line_name": "銀座線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "G_ST_356672_1397497_ST_356740_1397401",
+      "from": "ST_356672_1397497",
+      "to": "ST_356740_1397401",
+      "line_id": "G",
+      "line_name": "銀座線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "G_ST_356659_1397582_ST_356672_1397497",
+      "from": "ST_356659_1397582",
+      "to": "ST_356672_1397497",
+      "line_id": "G",
+      "line_name": "銀座線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "G_ST_356659_1397582_ST_356714_1397649",
+      "from": "ST_356659_1397582",
+      "to": "ST_356714_1397649",
+      "line_id": "G",
+      "line_name": "銀座線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "G_ST_356714_1397649_ST_356762_1397713",
+      "from": "ST_356714_1397649",
+      "to": "ST_356762_1397713",
+      "line_id": "G",
+      "line_name": "銀座線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "G_ST_356762_1397713_ST_356826_1397745",
+      "from": "ST_356762_1397713",
+      "to": "ST_356826_1397745",
+      "line_id": "G",
+      "line_name": "銀座線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "G_ST_356826_1397745_ST_356839_1397739",
+      "from": "ST_356826_1397745",
+      "to": "ST_356839_1397739",
+      "line_id": "G",
+      "line_name": "銀座線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "G_ST_356839_1397739_ST_356920_1397711",
+      "from": "ST_356839_1397739",
+      "to": "ST_356920_1397711",
+      "line_id": "G",
+      "line_name": "銀座線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "G_ST_356920_1397711_ST_357026_1397726",
+      "from": "ST_356920_1397711",
+      "to": "ST_357026_1397726",
+      "line_id": "G",
+      "line_name": "銀座線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "G_ST_357026_1397726_ST_357077_1397745",
+      "from": "ST_357026_1397726",
+      "to": "ST_357077_1397745",
+      "line_id": "G",
+      "line_name": "銀座線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "G_ST_357077_1397745_ST_357140_1397764",
+      "from": "ST_357077_1397745",
+      "to": "ST_357140_1397764",
+      "line_id": "G",
+      "line_name": "銀座線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "G_ST_357140_1397764_ST_357165_1397825",
+      "from": "ST_357140_1397764",
+      "to": "ST_357165_1397825",
+      "line_id": "G",
+      "line_name": "銀座線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "G_ST_357118_1397917_ST_357165_1397825",
+      "from": "ST_357118_1397917",
+      "to": "ST_357165_1397825",
+      "line_id": "G",
+      "line_name": "銀座線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "G_ST_357117_1397985_ST_357118_1397917",
+      "from": "ST_357117_1397985",
+      "to": "ST_357118_1397917",
+      "line_id": "G",
+      "line_name": "銀座線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_357237_1397280_ST_357299_1397107",
+      "from": "ST_357237_1397280",
+      "to": "ST_357299_1397107",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_357196_1397283_ST_357237_1397280",
+      "from": "ST_357196_1397283",
+      "to": "ST_357237_1397280",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_357074_1397519_ST_357196_1397283",
+      "from": "ST_357074_1397519",
+      "to": "ST_357196_1397283",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_357074_1397519_ST_357079_1397614",
+      "from": "ST_357074_1397519",
+      "to": "ST_357079_1397614",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_356998_1397657_ST_357079_1397614",
+      "from": "ST_356998_1397657",
+      "to": "ST_357079_1397614",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_356939_1397671_ST_356998_1397657",
+      "from": "ST_356939_1397671",
+      "to": "ST_356998_1397657",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_356842_1397630_ST_356939_1397671",
+      "from": "ST_356842_1397630",
+      "to": "ST_356939_1397671",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_356813_1397666_ST_356842_1397630",
+      "from": "ST_356813_1397666",
+      "to": "ST_356842_1397630",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_356714_1397649_ST_356813_1397666",
+      "from": "ST_356714_1397649",
+      "to": "ST_356813_1397666",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_356714_1397649_ST_356742_1397498",
+      "from": "ST_356714_1397649",
+      "to": "ST_356742_1397498",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_356742_1397401_ST_356742_1397498",
+      "from": "ST_356742_1397401",
+      "to": "ST_356742_1397498",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_356742_1397401_ST_356796_1397361",
+      "from": "ST_356742_1397401",
+      "to": "ST_356796_1397361",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_356796_1397361_ST_356866_1397302",
+      "from": "ST_356796_1397361",
+      "to": "ST_356866_1397302",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_356866_1397302_ST_356869_1397222",
+      "from": "ST_356866_1397302",
+      "to": "ST_356869_1397222",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_356869_1397090_ST_356869_1397222",
+      "from": "ST_356869_1397090",
+      "to": "ST_356869_1397222",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_356869_1397090_ST_356896_1397040",
+      "from": "ST_356869_1397090",
+      "to": "ST_356896_1397040",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_356896_1397002_ST_356896_1397040",
+      "from": "ST_356896_1397002",
+      "to": "ST_356896_1397040",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_356896_1397002_ST_356927_1396946",
+      "from": "ST_356896_1397002",
+      "to": "ST_356927_1396946",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "M_ST_356927_1396946_ST_357043_1396683",
+      "from": "ST_356927_1396946",
+      "to": "ST_357043_1396683",
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_357078_1396780_ST_357079_1396657",
+      "from": "ST_357078_1396780",
+      "to": "ST_357079_1396657",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_357078_1396780_ST_357127_1397036",
+      "from": "ST_357078_1396780",
+      "to": "ST_357127_1397036",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_357083_1397199_ST_357127_1397036",
+      "from": "ST_357083_1397199",
+      "to": "ST_357127_1397036",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_357020_1397456_ST_357083_1397199",
+      "from": "ST_357020_1397456",
+      "to": "ST_357083_1397199",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_356944_1397503_ST_357020_1397456",
+      "from": "ST_356944_1397503",
+      "to": "ST_357020_1397456",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_356898_1397583_ST_356944_1397503",
+      "from": "ST_356898_1397583",
+      "to": "ST_356944_1397503",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_356842_1397630_ST_356898_1397583",
+      "from": "ST_356842_1397630",
+      "to": "ST_356898_1397583",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_356826_1397745_ST_356842_1397630",
+      "from": "ST_356826_1397745",
+      "to": "ST_356842_1397630",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_356786_1397797_ST_356826_1397745",
+      "from": "ST_356786_1397797",
+      "to": "ST_356826_1397745",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_356717_1397952_ST_356786_1397797",
+      "from": "ST_356717_1397952",
+      "to": "ST_356786_1397797",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_356717_1397952_ST_356718_1398175",
+      "from": "ST_356717_1397952",
+      "to": "ST_356718_1398175",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_356718_1398175_ST_356753_1398278",
+      "from": "ST_356718_1398175",
+      "to": "ST_356753_1398278",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_356697_1398378_ST_356753_1398278",
+      "from": "ST_356697_1398378",
+      "to": "ST_356753_1398278",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_356583_1398694_ST_356697_1398378",
+      "from": "ST_356583_1398694",
+      "to": "ST_356697_1398378",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_356556_1398786_ST_356583_1398694",
+      "from": "ST_356556_1398786",
+      "to": "ST_356583_1398694",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_356556_1398786_ST_356556_1398944",
+      "from": "ST_356556_1398786",
+      "to": "ST_356556_1398944",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_356556_1398944_ST_356694_1399064",
+      "from": "ST_356556_1398944",
+      "to": "ST_356694_1399064",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_356694_1399064_ST_356703_1399144",
+      "from": "ST_356694_1399064",
+      "to": "ST_356703_1399144",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_356703_1399144_ST_356722_1399269",
+      "from": "ST_356703_1399144",
+      "to": "ST_356722_1399269",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_356722_1399269_ST_356833_1399408",
+      "from": "ST_356722_1399269",
+      "to": "ST_356833_1399408",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "T_ST_356833_1399408_ST_356975_1399444",
+      "from": "ST_356833_1399408",
+      "to": "ST_356975_1399444",
+      "line_id": "T",
+      "line_name": "東西線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "Z_ST_356582_1397016_ST_356652_1397123",
+      "from": "ST_356582_1397016",
+      "to": "ST_356652_1397123",
+      "line_id": "Z",
+      "line_name": "半蔵門線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "Z_ST_356652_1397123_ST_356720_1397161",
+      "from": "ST_356652_1397123",
+      "to": "ST_356720_1397161",
+      "line_id": "Z",
+      "line_name": "半蔵門線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "Z_ST_356720_1397161_ST_356738_1397401",
+      "from": "ST_356720_1397161",
+      "to": "ST_356738_1397401",
+      "line_id": "Z",
+      "line_name": "半蔵門線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "Z_ST_356738_1397401_ST_356837_1397458",
+      "from": "ST_356738_1397401",
+      "to": "ST_356837_1397458",
+      "line_id": "Z",
+      "line_name": "半蔵門線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "Z_ST_356837_1397458_ST_356944_1397503",
+      "from": "ST_356837_1397458",
+      "to": "ST_356944_1397503",
+      "line_id": "Z",
+      "line_name": "半蔵門線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "Z_ST_356944_1397503_ST_356958_1397577",
+      "from": "ST_356944_1397503",
+      "to": "ST_356958_1397577",
+      "line_id": "Z",
+      "line_name": "半蔵門線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "Z_ST_356842_1397630_ST_356958_1397577",
+      "from": "ST_356842_1397630",
+      "to": "ST_356958_1397577",
+      "line_id": "Z",
+      "line_name": "半蔵門線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "Z_ST_356839_1397739_ST_356842_1397630",
+      "from": "ST_356839_1397739",
+      "to": "ST_356842_1397630",
+      "line_id": "Z",
+      "line_name": "半蔵門線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "Z_ST_356826_1397837_ST_356839_1397739",
+      "from": "ST_356826_1397837",
+      "to": "ST_356839_1397739",
+      "line_id": "Z",
+      "line_name": "半蔵門線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "Z_ST_356789_1397975_ST_356826_1397837",
+      "from": "ST_356789_1397975",
+      "to": "ST_356826_1397837",
+      "line_id": "Z",
+      "line_name": "半蔵門線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "Z_ST_356789_1397975_ST_356881_1398175",
+      "from": "ST_356789_1397975",
+      "to": "ST_356881_1398175",
+      "line_id": "Z",
+      "line_name": "半蔵門線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "Z_ST_356881_1398175_ST_356963_1398133",
+      "from": "ST_356881_1398175",
+      "to": "ST_356963_1398133",
+      "line_id": "Z",
+      "line_name": "半蔵門線",
+      "operator_name": "東京メトロ"
+    },
+    {
+      "edge_id": "Z_ST_356963_1398133_ST_357100_1398133",
+      "from": "ST_356963_1398133",
+      "to": "ST_357100_1398133",
+      "line_id": "Z",
+      "line_name": "半蔵門線",
+      "operator_name": "東京メトロ"
+    }
+  ],
+  "graph_statistics": {
+    "version": "1.1",
+    "total_nodes": 86,
+    "total_edges": 100,
+    "total_lines": 5,
+    "hub_nodes": 16,
+    "edges_per_line": {
+      "G": 17,
+      "JY": 30,
+      "M": 19,
+      "T": 21,
+      "Z": 13
+    },
+    "validation": {
+      "missing_node_refs": 0,
+      "self_loops": 0,
+      "duplicate_edges": 0,
+      "errors": []
+    }
+  }
+}

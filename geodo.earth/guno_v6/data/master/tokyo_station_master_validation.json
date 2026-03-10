@@ -1,0 +1,132 @@
+{
+  "version": "1.1",
+  "generated_at": "2026-03-08",
+  "summary": {
+    "total_unique_stations": 86,
+    "total_station_line_relations": 104,
+    "total_lines": 5
+  },
+  "issues": {
+    "duplicate_station_global_ids": [],
+    "missing_coordinates": [],
+    "missing_line_station_code": [],
+    "broken_order_on_line": [],
+    "suspicious_station_merges": [],
+    "stations_with_empty_line_ids": [],
+    "prefecture_mismatch": [],
+    "stations_outside_tokyo": [
+      {
+        "station_global_id": "ST_356556_1398944",
+        "station_name": "浦安",
+        "station_name_en": "Urayasu",
+        "prefecture_code": "12",
+        "prefecture_name": "千葉県",
+        "lat": 35.6556,
+        "lon": 139.8944
+      },
+      {
+        "station_global_id": "ST_356694_1399064",
+        "station_name": "南行徳",
+        "station_name_en": "Minami-gyotoku",
+        "prefecture_code": "12",
+        "prefecture_name": "千葉県",
+        "lat": 35.6694,
+        "lon": 139.9064
+      },
+      {
+        "station_global_id": "ST_356703_1399144",
+        "station_name": "行徳",
+        "station_name_en": "Gyotoku",
+        "prefecture_code": "12",
+        "prefecture_name": "千葉県",
+        "lat": 35.6703,
+        "lon": 139.9144
+      },
+      {
+        "station_global_id": "ST_356722_1399269",
+        "station_name": "妙典",
+        "station_name_en": "Myoden",
+        "prefecture_code": "12",
+        "prefecture_name": "千葉県",
+        "lat": 35.6722,
+        "lon": 139.9269
+      },
+      {
+        "station_global_id": "ST_356833_1399408",
+        "station_name": "原木中山",
+        "station_name_en": "Baraki-Nakayama",
+        "prefecture_code": "12",
+        "prefecture_name": "千葉県",
+        "lat": 35.6833,
+        "lon": 139.9408
+      },
+      {
+        "station_global_id": "ST_356975_1399444",
+        "station_name": "西船橋",
+        "station_name_en": "Nishi-Funabashi",
+        "prefecture_code": "12",
+        "prefecture_name": "千葉県",
+        "lat": 35.6975,
+        "lon": 139.9444
+      }
+    ]
+  },
+  "lines_detail": [
+    {
+      "line_id": "JY",
+      "line_name": "山手線",
+      "station_count": 30,
+      "prefectures": [
+        "東京都"
+      ]
+    },
+    {
+      "line_id": "G",
+      "line_name": "銀座線",
+      "station_count": 18,
+      "prefectures": [
+        "東京都"
+      ]
+    },
+    {
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "station_count": 20,
+      "prefectures": [
+        "東京都"
+      ]
+    },
+    {
+      "line_id": "T",
+      "line_name": "東西線",
+      "station_count": 22,
+      "prefectures": [
+        "東京都",
+        "千葉県"
+      ]
+    },
+    {
+      "line_id": "Z",
+      "line_name": "半蔵門線",
+      "station_count": 14,
+      "prefectures": [
+        "東京都"
+      ]
+    }
+  ],
+  "assumptions": [
+    "JY station coordinates sourced from jr-east-yamanote_stations.geojson (OSM Overpass).",
+    "Metro line coordinates (G/M/T/Z) sourced from embedded OSM/ekidata public data.",
+    "station_global_id generated from lat/lon rounded to 4 decimal places.",
+    "Stations sharing the same name AND approximate coordinates are merged into one record.",
+    "銀座線 full 18-station route included; GUNO game DB uses 10-station subset.",
+    "丸ノ内線 main line 20 stations included (branch line Mb excluded in v1).",
+    "東西線 full 22-station route included.",
+    "半蔵門線 full 14-station route included.",
+    "[v1.1 FIX1] Chiba-located stations on Tozai Line corrected to prefecture_code=12 (千葉県).",
+    "[v1.1 FIX2] Tozai Line prefectures field updated to include 千葉県.",
+    "[v1.1 FIX3] Prefecture validation added: prefecture_mismatch and stations_outside_tokyo.",
+    "[v1.1 FIX4] Marunouchi Line M12 corrected from 溜池山王 to 国会議事堂前.",
+    "[v1.1 FIX5] Tozai Line coordinate accuracy improved (Chiba section from OSM)."
+  ]
+}

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GUNO V6 — Station Graph Viewer</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      font-size: 12px;
+      background: #111827;
+      color: #d1d5db;
+    }
+
+    /* ── Layout ─────────────────────────────── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    #toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: #1f2937;
+      border-bottom: 1px solid #374151;
+      flex-shrink: 0;
+    }
+
+    #toolbar h1 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #f9fafb;
+      letter-spacing: 0.04em;
+    }
+
+    .badge {
+      background: #374151;
+      color: #9ca3af;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    #toolbar-status {
+      margin-left: auto;
+      font-size: 11px;
+      color: #6b7280;
+    }
+    #toolbar-status.ok  { color: #34d399; }
+    #toolbar-status.err { color: #f87171; }
+
+    /* ── Map controls ────────────────────────── */
+    .ctrl-btn {
+      padding: 4px 10px;
+      font-size: 11px;
+      background: #374151;
+      color: #d1d5db;
+      border: 1px solid #4b5563;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .ctrl-btn:hover { background: #4b5563; }
+    .ctrl-btn.active { background: #2563eb; border-color: #3b82f6; color: #fff; }
+
+    /* ── Body split ──────────────────────────── */
+    #body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    #map {
+      flex: 1;
+      height: 100%;
+    }
+
+    /* ── Sidebar ─────────────────────────────── */
+    #sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      background: #1f2937;
+      border-left: 1px solid #374151;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section {
+      padding: 10px 12px;
+      border-bottom: 1px solid #374151;
+    }
+
+    .section-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+
+    /* Statistics */
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 3px 0;
+    }
+    .stat-label { color: #9ca3af; font-size: 11px; }
+    .stat-value { font-size: 13px; font-weight: 700; color: #f9fafb; }
+
+    /* Inspector */
+    #inspector-content {
+      font-size: 11px;
+      color: #9ca3af;
+      line-height: 1.7;
+    }
+    #inspector-content .field-name  { color: #6b7280; }
+    #inspector-content .field-value { color: #f9fafb; font-weight: 600; }
+    #inspector-content .hub-badge {
+      display: inline-block;
+      background: #7c3aed;
+      color: #fff;
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      margin-left: 4px;
+    }
+
+    /* Line legend */
+    .line-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 0;
+    }
+    .line-swatch {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .line-name  { font-size: 11px; color: #d1d5db; }
+    .line-edges { margin-left: auto; font-size: 10px; color: #6b7280; }
+
+    /* Loading overlay */
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(17,24,39,0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      gap: 14px;
+    }
+    #overlay.hidden { display: none; }
+    #overlay p { color: #9ca3af; font-size: 13px; }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid #374151;
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Error banner */
+    #error-banner {
+      display: none;
+      position: fixed;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #7f1d1d;
+      color: #fca5a5;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 12px;
+      z-index: 9998;
+    }
+  </style>
+</head>
+<body>
+
+<div id="overlay">
+  <div class="spinner"></div>
+  <p>Loading station graph…</p>
+</div>
+
+<div id="error-banner">Failed to load station graph</div>
+
+<div id="app">
+
+  <!-- Toolbar -->
+  <div id="toolbar">
+    <h1>GUNO V6 — Station Graph Viewer</h1>
+    <span class="badge">debug</span>
+    <button class="ctrl-btn" id="btn-fit">Fit to Graph</button>
+    <button class="ctrl-btn active" id="btn-edges">Toggle Edges</button>
+    <button class="ctrl-btn" id="btn-labels">Toggle Labels</button>
+    <span id="toolbar-status">Initializing…</span>
+  </div>
+
+  <!-- Body -->
+  <div id="body">
+    <div id="map"></div>
+
+    <div id="sidebar">
+
+      <!-- Statistics -->
+      <div class="section">
+        <div class="section-title">Graph Statistics</div>
+        <div class="stat-row">
+          <span class="stat-label">Total nodes</span>
+          <span class="stat-value" id="s-nodes">—</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Total edges</span>
+          <span class="stat-value" id="s-edges">—</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Total lines</span>
+          <span class="stat-value" id="s-lines">—</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Hub nodes</span>
+          <span class="stat-value" id="s-hubs">—</span>
+        </div>
+      </div>
+
+      <!-- Station Inspector -->
+      <div class="section">
+        <div class="section-title">Station Inspector</div>
+        <div id="inspector-content">
+          <span style="color:#6b7280;font-size:11px">Click a station to inspect</span>
+        </div>
+      </div>
+
+      <!-- Line Legend -->
+      <div class="section">
+        <div class="section-title">Lines</div>
+        <div id="line-legend"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Configuration ────────────────────────────────────────────────────────────
+
+const GRAPH_URL = '../data/graph/station_graph_tokyo.json';
+
+const LINE_COLORS = {
+  JY: '#84cc16',
+  G:  '#f97316',
+  M:  '#ef4444',
+  T:  '#06b6d4',
+  Z:  '#a855f7',
+};
+
+const DEFAULT_COLOR = '#94a3b8';
+
+// ── State ────────────────────────────────────────────────────────────────────
+
+let map;
+let graph;
+let nodeIndex = new Map();   // node_id → node
+let nodeMarkers = [];        // { marker, node }
+let edgePolylines = [];      // L.Polyline[]
+let labelMarkers = [];       // L.Marker[]
+let edgeBounds;
+
+let edgesVisible = true;
+let labelsVisible = false;
+
+// ── Map init ─────────────────────────────────────────────────────────────────
+
+function initMap() {
+  map = L.map('map', {
+    center: [35.6895, 139.6917],
+    zoom: 11,
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap contributors © CARTO',
+    maxZoom: 19,
+  }).addTo(map);
+}
+
+// ── Load graph ───────────────────────────────────────────────────────────────
+
+async function loadGraph() {
+  console.log('[Viewer] Fetching graph');
+  const res = await fetch(GRAPH_URL);
+  if (!res.ok) throw new Error(`HTTP ${res.status} — ${GRAPH_URL}`);
+  graph = await res.json();
+  console.log('[Viewer] nodes:', graph.nodes.length);
+  console.log('[Viewer] edges:', graph.edges.length);
+}
+
+// ── Render nodes ─────────────────────────────────────────────────────────────
+
+function renderNodes() {
+  // Build index first
+  graph.nodes.forEach(n => nodeIndex.set(n.node_id, n));
+
+  graph.nodes.forEach(n => {
+    const isHub = n.hub_degree_global > 1;
+    const radius = isHub ? 10 : 7;
+    const color  = isHub ? '#e879f9' : '#f1f5f9';
+
+    const marker = L.circleMarker([n.lat, n.lon], {
+      radius,
+      fillColor: color,
+      color: '#111827',
+      weight: isHub ? 2 : 1,
+      fillOpacity: 0.95,
+      bubblingMouseEvents: false,
+    }).addTo(map);
+
+    marker.on('click', (e) => { L.DomEvent.stopPropagation(e); inspectStation(n); });
+    nodeMarkers.push({ marker, node: n });
+
+    // Label (hidden by default)
+    const icon = L.divIcon({
+      className: '',
+      html: `<div style="
+        background:rgba(31,41,55,0.88);
+        color:#f9fafb;
+        font-size:10px;
+        padding:1px 5px;
+        border-radius:3px;
+        white-space:nowrap;
+        border:1px solid #374151;
+        pointer-events:none;
+      ">${n.station_name}</div>`,
+      iconAnchor: [-10, 10],
+    });
+    const lm = L.marker([n.lat, n.lon], { icon, interactive: false, zIndexOffset: -100 });
+    labelMarkers.push(lm);
+  });
+}
+
+// ── Render edges ─────────────────────────────────────────────────────────────
+
+function renderEdges() {
+  const latlngs = [];
+
+  graph.edges.forEach(e => {
+    const fromNode = nodeIndex.get(e.from);
+    const toNode   = nodeIndex.get(e.to);
+    if (!fromNode || !toNode) return;
+
+    const color = LINE_COLORS[e.line_id] || DEFAULT_COLOR;
+    const pl = L.polyline(
+      [[fromNode.lat, fromNode.lon], [toNode.lat, toNode.lon]],
+      { color, weight: 2.5, opacity: 0.8, interactive: false }
+    ).addTo(map);
+
+    edgePolylines.push(pl);
+    latlngs.push([fromNode.lat, fromNode.lon], [toNode.lat, toNode.lon]);
+  });
+
+  if (latlngs.length > 0) {
+    edgeBounds = L.latLngBounds(latlngs);
+  }
+}
+
+// ── Statistics panel ─────────────────────────────────────────────────────────
+
+function renderStats() {
+  const stats = graph.graph_statistics || {};
+  document.getElementById('s-nodes').textContent = stats.total_nodes ?? graph.nodes.length;
+  document.getElementById('s-edges').textContent = stats.total_edges ?? graph.edges.length;
+  document.getElementById('s-lines').textContent = stats.total_lines ?? '—';
+  document.getElementById('s-hubs').textContent  = stats.hub_nodes   ?? graph.nodes.filter(n => n.hub_degree_global > 1).length;
+}
+
+// ── Line legend ───────────────────────────────────────────────────────────────
+
+function renderLegend() {
+  const edgesPerLine = (graph.graph_statistics || {}).edges_per_line || {};
+  const container = document.getElementById('line-legend');
+
+  Object.entries(LINE_COLORS).forEach(([lid, color]) => {
+    const div = document.createElement('div');
+    div.className = 'line-item';
+    div.innerHTML = `
+      <div class="line-swatch" style="background:${color}"></div>
+      <span class="line-name">${lid}</span>
+      <span class="line-edges">${edgesPerLine[lid] ?? ''}e</span>
+    `;
+    container.appendChild(div);
+  });
+}
+
+// ── Station inspector ─────────────────────────────────────────────────────────
+
+function inspectStation(n) {
+  const hubBadge = n.hub_degree_global > 1
+    ? `<span class="hub-badge">HUB ×${n.hub_degree_global}</span>`
+    : '';
+
+  document.getElementById('inspector-content').innerHTML = `
+    <div><span class="field-name">name: </span><span class="field-value">${n.station_name}</span>${hubBadge}</div>
+    <div><span class="field-name">slug: </span><span class="field-value">${n.station_slug}</span></div>
+    <div><span class="field-name">node_id: </span><span class="field-value" style="font-size:10px">${n.node_id}</span></div>
+    <div><span class="field-name">lat: </span><span class="field-value">${n.lat}</span></div>
+    <div><span class="field-name">lon: </span><span class="field-value">${n.lon}</span></div>
+    <div><span class="field-name">line_count: </span><span class="field-value">${n.line_count}</span></div>
+    <div><span class="field-name">hub_degree: </span><span class="field-value">${n.hub_degree_global}</span></div>
+  `;
+}
+
+// ── Toolbar controls ──────────────────────────────────────────────────────────
+
+document.getElementById('btn-fit').addEventListener('click', () => {
+  if (edgeBounds) map.fitBounds(edgeBounds, { padding: [40, 40] });
+});
+
+document.getElementById('btn-edges').addEventListener('click', function () {
+  edgesVisible = !edgesVisible;
+  this.classList.toggle('active', edgesVisible);
+  edgePolylines.forEach(pl => {
+    if (edgesVisible) pl.addTo(map); else map.removeLayer(pl);
+  });
+});
+
+document.getElementById('btn-labels').addEventListener('click', function () {
+  labelsVisible = !labelsVisible;
+  this.classList.toggle('active', labelsVisible);
+  labelMarkers.forEach(lm => {
+    if (labelsVisible) lm.addTo(map); else map.removeLayer(lm);
+  });
+});
+
+// ── Status helpers ────────────────────────────────────────────────────────────
+
+function setStatus(msg, type) {
+  const el = document.getElementById('toolbar-status');
+  el.textContent = msg;
+  el.className = type || '';
+}
+
+// ── Bootstrap ─────────────────────────────────────────────────────────────────
+
+(async () => {
+  try {
+    initMap();
+    await loadGraph();
+    renderStats();
+    renderNodes();   // must run first to populate nodeIndex
+    renderEdges();
+    renderLegend();
+
+    if (edgeBounds) map.fitBounds(edgeBounds, { padding: [40, 40] });
+
+    setStatus(`Loaded — ${graph.nodes.length} nodes, ${graph.edges.length} edges`, 'ok');
+    console.log('Station graph loaded successfully');
+  } catch (err) {
+    console.error('[Viewer] Error:', err);
+    setStatus('Failed to load station graph', 'err');
+    document.getElementById('error-banner').style.display = 'block';
+  } finally {
+    document.getElementById('overlay').classList.add('hidden');
+  }
+})();
+</script>
+</body>
+</html>
