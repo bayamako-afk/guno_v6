@@ -21,9 +21,12 @@ const DEFAULT_LINES_MASTER_PATH  = '../../data/master/lines_tokyo_master.json';
 
 function resolveDataUrls(baseUrl) {
   if (baseUrl) {
+    // baseUrl is expected to be the project root (e.g. 'https://example.com/guno_v6/')
+    // Append data paths directly to avoid '../' traversal issues
+    const base = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
     return {
-      stationLinesUrl: new URL('../data/master/station_lines_tokyo.json', baseUrl).href,
-      linesMasterUrl:  new URL('../data/master/lines_tokyo_master.json', baseUrl).href
+      stationLinesUrl: base + 'data/master/station_lines_tokyo.json',
+      linesMasterUrl:  base + 'data/master/lines_tokyo_master.json'
     };
   }
   return {
