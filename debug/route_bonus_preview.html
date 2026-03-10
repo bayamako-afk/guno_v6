@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Route Bonus Preview — GUNO V6 Debug</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 13px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Top bar ── */
+    #topbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 12px;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      flex-shrink: 0;
+    }
+    #topbar .title {
+      font-weight: 700;
+      font-size: 13px;
+      color: #58a6ff;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    #topbar .subtitle { color: #8b949e; font-size: 12px; }
+    .nav-links { margin-left: auto; display: flex; gap: 4px; flex-wrap: wrap; }
+    .nav-links a {
+      color: #8b949e;
+      text-decoration: none;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1px solid #30363d;
+    }
+    .nav-links a:hover { background: #21262d; color: #c9d1d9; }
+    .nav-links a.active { background: #1f6feb22; color: #58a6ff; border-color: #1f6feb55; }
+
+    /* ── Layout ── */
+    #layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Left panel ── */
+    #left-panel {
+      width: 210px;
+      min-width: 210px;
+      background: #161b22;
+      border-right: 1px solid #30363d;
+      padding: 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .panel-section-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label { font-size: 11px; color: #8b949e; }
+    .form-group input[type="number"],
+    .form-group select {
+      background: #0d1117;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      padding: 4px 6px;
+      font-size: 12px;
+      width: 100%;
+    }
+    .form-group input[type="number"]:focus,
+    .form-group select:focus { outline: none; border-color: #58a6ff; }
+
+    .toggle-group { display: flex; flex-direction: column; gap: 6px; }
+    .toggle-item { display: flex; align-items: center; gap: 7px; cursor: pointer; }
+    .toggle-item input[type="checkbox"] {
+      width: 13px; height: 13px;
+      cursor: pointer; accent-color: #58a6ff;
+    }
+    .toggle-item span { font-size: 11px; color: #c9d1d9; }
+
+    /* Summary cards */
+    .summary-cards { display: flex; flex-direction: column; gap: 6px; }
+    .summary-card {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 6px 8px;
+    }
+    .summary-card .sc-label { font-size: 10px; color: #8b949e; margin-bottom: 2px; }
+    .summary-card .sc-value { font-size: 16px; font-weight: 700; }
+    .summary-card .sc-sub { font-size: 10px; color: #8b949e; margin-top: 1px; }
+
+    /* Formula box */
+    .formula-box {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 11px;
+      color: #8b949e;
+      line-height: 1.7;
+    }
+    .formula-box .formula-line { color: #58a6ff; font-family: monospace; font-size: 11px; }
+    .formula-box .formula-example { color: #3fb950; font-family: monospace; font-size: 10px; margin-top: 4px; }
+
+    /* Reset button */
+    .btn-reset {
+      background: #21262d;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      padding: 5px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+    }
+    .btn-reset:hover { background: #2d333b; }
+
+    /* ── Right panel ── */
+    #right-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ── Section ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .section-header h2 { font-size: 13px; font-weight: 700; color: #e6edf3; }
+    .section-header .badge {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      background: #21262d;
+      color: #8b949e;
+      border: 1px solid #30363d;
+    }
+
+    /* ── Table ── */
+    .table-wrap {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      background: #21262d;
+      color: #8b949e;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 7px 10px;
+      text-align: left;
+      border-bottom: 1px solid #30363d;
+    }
+    tbody tr { border-bottom: 1px solid #21262d; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #1c2128; }
+    tbody td { padding: 8px 10px; font-size: 12px; vertical-align: middle; }
+
+    /* ── Bar cells ── */
+    .bar-cell { min-width: 140px; }
+    .bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .bar-track {
+      flex: 1;
+      height: 8px;
+      background: #21262d;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .bar-value { font-size: 11px; font-weight: 600; min-width: 36px; text-align: right; }
+
+    .bar-bonus { background: linear-gradient(90deg, #238636, #3fb950); }
+    .bar-bonus-val { color: #3fb950; }
+    .bar-diff-pos { background: linear-gradient(90deg, #d29922, #f0883e); }
+    .bar-diff-neg { background: linear-gradient(90deg, #1f6feb, #58a6ff); }
+    .bar-diff-pos-val { color: #f0883e; }
+    .bar-diff-neg-val { color: #58a6ff; }
+
+    /* ── Line color dot ── */
+    .line-dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      flex-shrink: 0;
+    }
+    .line-name-cell { display: flex; align-items: center; }
+    .line-name-en { font-size: 10px; color: #8b949e; margin-left: 4px; }
+
+    /* ── Rank badge ── */
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .rank-1 { background: #b8860b; color: #fff; }
+    .rank-2 { background: #6e7681; color: #fff; }
+    .rank-3 { background: #7d4e1e; color: #fff; }
+    .rank-other { background: #21262d; color: #8b949e; }
+
+    /* ── Loop badge ── */
+    .loop-badge {
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 8px;
+      background: #1f6feb22;
+      color: #58a6ff;
+      border: 1px solid #1f6feb55;
+      margin-left: 4px;
+    }
+
+    /* ── Modifier badge ── */
+    .mod-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .mod-pos { background: #3d2a0a; color: #f0883e; }
+    .mod-neg { background: #0d1f3c; color: #58a6ff; }
+    .mod-zero { background: #21262d; color: #8b949e; }
+
+    /* ── Final bonus badge ── */
+    .final-badge {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: #0d2a18;
+      color: #3fb950;
+      border: 1px solid #238636;
+    }
+
+    /* ── Mini chart ── */
+    #chart-section {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 14px;
+    }
+    #chart-section h3 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+    .chart-bars { display: flex; flex-direction: column; gap: 8px; }
+    .chart-row { display: flex; align-items: center; gap: 10px; }
+    .chart-label { font-size: 11px; color: #c9d1d9; min-width: 120px; text-align: right; }
+    .chart-track {
+      flex: 1;
+      height: 20px;
+      background: #21262d;
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+    .chart-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #238636, #3fb950);
+      transition: width 0.4s ease;
+      display: flex;
+      align-items: center;
+      padding-left: 6px;
+    }
+    .chart-fill-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .chart-val { font-size: 11px; font-weight: 700; color: #3fb950; min-width: 30px; }
+
+    /* ── Status bar ── */
+    #statusbar {
+      padding: 4px 12px;
+      background: #161b22;
+      border-top: 1px solid #30363d;
+      font-size: 11px;
+      color: #8b949e;
+      flex-shrink: 0;
+    }
+    #statusbar .status-ok { color: #3fb950; }
+    #statusbar .status-err { color: #f85149; }
+
+    /* ── Error banner ── */
+    #error-banner {
+      display: none;
+      background: #3d1f1f;
+      border: 1px solid #f85149;
+      border-radius: 6px;
+      padding: 10px 14px;
+      color: #f85149;
+      font-size: 12px;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div id="topbar">
+  <span class="title">Route Bonus Preview</span>
+  <span class="subtitle">GUNO V6 Debug Tools</span>
+  <nav class="nav-links">
+    <a href="station_graph_viewer.html">Graph</a>
+    <a href="station_metrics_viewer.html">Metrics</a>
+    <a href="line_metrics_viewer.html">Lines</a>
+    <a href="deck_viewer.html">Deck</a>
+    <a href="rarity_viewer.html">Rarity</a>
+    <a href="route_score_viewer.html">Route</a>
+    <a href="hub_bonus_viewer.html">Hub</a>
+    <a href="final_score_viewer.html">Final</a>
+    <a href="game_simulator.html">Sim</a>
+    <a href="dynamic_deck_viewer.html">DynDeck</a>
+    <a href="route_bonus_preview.html" class="active">BonusPreview</a>
+  </nav>
+</div>
+
+<!-- Error banner -->
+<div id="error-banner"></div>
+
+<!-- Layout -->
+<div id="layout">
+
+  <!-- Left panel -->
+  <div id="left-panel">
+
+    <div>
+      <div class="panel-section-title">Summary</div>
+      <div class="summary-cards">
+        <div class="summary-card">
+          <div class="sc-label">Total Lines</div>
+          <div class="sc-value" id="sc-total">—</div>
+        </div>
+        <div class="summary-card">
+          <div class="sc-label">Highest Route Bonus</div>
+          <div class="sc-value" id="sc-highest" style="color:#3fb950;">—</div>
+          <div class="sc-sub" id="sc-highest-name">—</div>
+        </div>
+        <div class="summary-card">
+          <div class="sc-label">Lowest Route Bonus</div>
+          <div class="sc-value" id="sc-lowest" style="color:#f0883e;">—</div>
+          <div class="sc-sub" id="sc-lowest-name">—</div>
+        </div>
+        <div class="summary-card">
+          <div class="sc-label">Average Route Bonus</div>
+          <div class="sc-value" id="sc-avg" style="color:#58a6ff;">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel-section-title">Controls</div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="form-group">
+          <label for="base-bonus">Base Route Bonus</label>
+          <input type="number" id="base-bonus" value="20" min="0" max="100" step="1">
+        </div>
+
+        <div class="form-group">
+          <label for="diff-factor">Difficulty Factor</label>
+          <input type="number" id="diff-factor" value="0.5" min="-5" max="5" step="0.1">
+        </div>
+
+        <div class="toggle-group">
+          <label class="toggle-item">
+            <input type="checkbox" id="use-difficulty" checked>
+            <span>Include Difficulty Modifier</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label for="sort-by">Sort By</label>
+          <select id="sort-by">
+            <option value="final_bonus">Final Bonus ↓</option>
+            <option value="difficulty">Difficulty (abs) ↓</option>
+            <option value="line_strength">Strength ↓</option>
+            <option value="station_count">Station Count ↓</option>
+          </select>
+        </div>
+
+        <button class="btn-reset" id="btn-reset">Reset Defaults</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel-section-title">Formula</div>
+      <div class="formula-box">
+        <div>final_bonus =</div>
+        <div class="formula-line" id="formula-display">base + round(diff × factor)</div>
+        <div class="formula-example" id="formula-example">e.g. 20 + round(-8.4 × 0.5) = 16</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Right panel -->
+  <div id="right-panel">
+
+    <!-- Route Bonus Preview Table -->
+    <div>
+      <div class="section-header">
+        <h2>Route Bonus Preview</h2>
+        <span class="badge" id="badge-lines">— lines</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Line Name</th>
+              <th>Stations</th>
+              <th>Transfers</th>
+              <th>Difficulty</th>
+              <th>Base Bonus</th>
+              <th>Modifier</th>
+              <th>Final Bonus</th>
+              <th style="min-width:140px;">Bonus Bar</th>
+            </tr>
+          </thead>
+          <tbody id="bonus-table-body">
+            <tr><td colspan="9" style="text-align:center;color:#8b949e;padding:20px;">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bar chart -->
+    <div id="chart-section">
+      <h3>Route Completion Bonus by Line</h3>
+      <div class="chart-bars" id="chart-bars"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Status bar -->
+<div id="statusbar">
+  <span id="status-text">Loading line metrics…</span>
+</div>
+
+<script>
+  // ── Line colors ──────────────────────────────────────────────────────────────
+  const LINE_COLORS = {
+    'G':  '#f9a825',  // Ginza Line
+    'M':  '#e53935',  // Marunouchi Line
+    'T':  '#00838f',  // Tozai Line
+    'Z':  '#6a1b9a',  // Hanzomon Line
+    'JY': '#4caf50',  // Yamanote Line
+  };
+  function lineColor(id) {
+    return LINE_COLORS[id] || '#8b949e';
+  }
+
+  // ── State ────────────────────────────────────────────────────────────────────
+  let linesData = [];
+
+  // ── DOM refs ─────────────────────────────────────────────────────────────────
+  const baseBonusInput  = document.getElementById('base-bonus');
+  const diffFactorInput = document.getElementById('diff-factor');
+  const useDiffCheck    = document.getElementById('use-difficulty');
+  const sortBySelect    = document.getElementById('sort-by');
+  const btnReset        = document.getElementById('btn-reset');
+  const formulaDisplay  = document.getElementById('formula-display');
+  const formulaExample  = document.getElementById('formula-example');
+
+  // ── Helpers ──────────────────────────────────────────────────────────────────
+  function getBaseBonus()  { return parseFloat(baseBonusInput.value)  || 20; }
+  function getDiffFactor() { return parseFloat(diffFactorInput.value) || 0.5; }
+  function useDiff()       { return useDiffCheck.checked; }
+
+  function calcFinalBonus(line) {
+    const base   = getBaseBonus();
+    const factor = getDiffFactor();
+    const mod    = useDiff() ? Math.round(line.line_difficulty * factor) : 0;
+    return { base, mod, final: base + mod };
+  }
+
+  function updateFormula() {
+    const base   = getBaseBonus();
+    const factor = getDiffFactor();
+    if (useDiff()) {
+      formulaDisplay.textContent = `base + round(difficulty × ${factor})`;
+      formulaExample.textContent = `e.g. ${base} + round(-8.4 × ${factor}) = ${base + Math.round(-8.4 * factor)}`;
+    } else {
+      formulaDisplay.textContent = `base (difficulty modifier disabled)`;
+      formulaExample.textContent = `e.g. ${base} (flat)`;
+    }
+  }
+
+  // ── Render ───────────────────────────────────────────────────────────────────
+  function renderAll() {
+    if (!linesData.length) return;
+
+    updateFormula();
+
+    // Compute bonuses
+    const rows = linesData.map(line => {
+      const { base, mod, final } = calcFinalBonus(line);
+      return { ...line, base, mod, final };
+    });
+
+    // Sort
+    const sortKey = sortBySelect.value;
+    rows.sort((a, b) => {
+      if (sortKey === 'final_bonus')   return b.final - a.final;
+      if (sortKey === 'difficulty')    return Math.abs(b.line_difficulty) - Math.abs(a.line_difficulty);
+      if (sortKey === 'line_strength') return b.line_strength - a.line_strength;
+      if (sortKey === 'station_count') return b.station_count - a.station_count;
+      return 0;
+    });
+
+    // Summary cards
+    const finals = rows.map(r => r.final);
+    const maxFinal = Math.max(...finals);
+    const minFinal = Math.min(...finals);
+    const avgFinal = finals.reduce((a, b) => a + b, 0) / finals.length;
+    const highRow  = rows.find(r => r.final === maxFinal);
+    const lowRow   = rows.find(r => r.final === minFinal);
+
+    document.getElementById('sc-total').textContent   = rows.length;
+    document.getElementById('sc-highest').textContent = maxFinal;
+    document.getElementById('sc-highest-name').textContent = highRow ? highRow.line_name : '—';
+    document.getElementById('sc-lowest').textContent  = minFinal;
+    document.getElementById('sc-lowest-name').textContent  = lowRow  ? lowRow.line_name  : '—';
+    document.getElementById('sc-avg').textContent     = avgFinal.toFixed(1);
+    document.getElementById('badge-lines').textContent = `${rows.length} lines`;
+
+    // Table
+    const tbody = document.getElementById('bonus-table-body');
+    tbody.innerHTML = '';
+    const maxFinalAbs = Math.max(...rows.map(r => Math.abs(r.final)));
+    const maxDiffAbs  = Math.max(...rows.map(r => Math.abs(r.line_difficulty)));
+
+    rows.forEach((row, i) => {
+      const rank = i + 1;
+      const rankClass = rank <= 3 ? `rank-${rank}` : 'rank-other';
+      const color = lineColor(row.line_id);
+      const isLoop = row.is_loop;
+
+      // Difficulty bar
+      const diffPct = maxDiffAbs > 0 ? (Math.abs(row.line_difficulty) / maxDiffAbs * 100).toFixed(1) : 0;
+      const diffPos = row.line_difficulty > 0;
+      const diffBarClass = diffPos ? 'bar-diff-pos' : 'bar-diff-neg';
+      const diffValClass = diffPos ? 'bar-diff-pos-val' : 'bar-diff-neg-val';
+      const diffSign = row.line_difficulty > 0 ? '+' : '';
+
+      // Modifier badge
+      let modBadgeClass = 'mod-zero';
+      if (row.mod > 0) modBadgeClass = 'mod-pos';
+      else if (row.mod < 0) modBadgeClass = 'mod-neg';
+      const modSign = row.mod > 0 ? '+' : '';
+
+      // Final bonus bar
+      const finalPct = maxFinalAbs > 0 ? (row.final / maxFinalAbs * 100).toFixed(1) : 0;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><span class="rank-badge ${rankClass}">${rank}</span></td>
+        <td>
+          <div class="line-name-cell">
+            <span class="line-dot" style="background:${color};"></span>
+            <span>${row.line_name}</span>
+            ${isLoop ? '<span class="loop-badge">LOOP</span>' : ''}
+          </div>
+        </td>
+        <td>${row.station_count}</td>
+        <td>${row.transfer_station_count}</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-track" style="max-width:80px;">
+              <div class="bar-fill ${diffBarClass}" style="width:${diffPct}%;"></div>
+            </div>
+            <span class="bar-value ${diffValClass}">${diffSign}${row.line_difficulty.toFixed(1)}</span>
+          </div>
+        </td>
+        <td style="color:#8b949e;">${row.base}</td>
+        <td><span class="mod-badge ${modBadgeClass}">${modSign}${row.mod}</span></td>
+        <td><span class="final-badge">${row.final}</span></td>
+        <td class="bar-cell">
+          <div class="bar-wrap">
+            <div class="bar-track">
+              <div class="bar-fill bar-bonus" style="width:${finalPct}%;"></div>
+            </div>
+            <span class="bar-value bar-bonus-val">${row.final}</span>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Chart
+    renderChart(rows, maxFinalAbs);
+  }
+
+  function renderChart(rows, maxVal) {
+    const container = document.getElementById('chart-bars');
+    container.innerHTML = '';
+    // Sort by final bonus for chart
+    const sorted = [...rows].sort((a, b) => b.final - a.final);
+    sorted.forEach(row => {
+      const pct = maxVal > 0 ? (row.final / maxVal * 100).toFixed(1) : 0;
+      const color = lineColor(row.line_id);
+      const div = document.createElement('div');
+      div.className = 'chart-row';
+      div.innerHTML = `
+        <div class="chart-label">${row.line_name}</div>
+        <div class="chart-track">
+          <div class="chart-fill" style="width:${pct}%;background:linear-gradient(90deg,${color}99,${color});">
+            <span class="chart-fill-label">${row.final}</span>
+          </div>
+        </div>
+        <div class="chart-val">${row.final}</div>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  // ── Load data ────────────────────────────────────────────────────────────────
+  async function loadData() {
+    const base = new URL('../', location.href).href;
+    const url  = base + 'data/derived/line_metrics_tokyo.json';
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${url}`);
+      const json = await res.json();
+      linesData = json.lines || [];
+      if (!linesData.length) throw new Error('No lines found in JSON');
+      const meta = json.dataset_meta || {};
+      document.getElementById('status-text').innerHTML =
+        `<span class="status-ok">Loaded ${linesData.length} lines</span> | generated ${meta.generated_at || '—'}`;
+      renderAll();
+    } catch (err) {
+      console.error('[route_bonus_preview] Load error:', err);
+      const banner = document.getElementById('error-banner');
+      banner.style.display = 'block';
+      banner.textContent = `Error loading line metrics: ${err.message}`;
+      document.getElementById('status-text').innerHTML =
+        `<span class="status-err">Error: ${err.message}</span>`;
+    }
+  }
+
+  // ── Event listeners ──────────────────────────────────────────────────────────
+  baseBonusInput.addEventListener('input',  renderAll);
+  diffFactorInput.addEventListener('input', renderAll);
+  useDiffCheck.addEventListener('change',   renderAll);
+  sortBySelect.addEventListener('change',   renderAll);
+
+  btnReset.addEventListener('click', () => {
+    baseBonusInput.value  = 20;
+    diffFactorInput.value = 0.5;
+    useDiffCheck.checked  = true;
+    sortBySelect.value    = 'final_bonus';
+    renderAll();
+  });
+
+  // ── Init ─────────────────────────────────────────────────────────────────────
+  loadData();
+</script>
+</body>
+</html>
