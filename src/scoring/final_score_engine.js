@@ -14,8 +14,8 @@
  *   const result = computeFinalScoreSync(playerStations, { stationMetrics, stationLines, linesMaster });
  */
 
-import { computeRouteScore, computeRouteScoreSync } from './route_completion_score.js';
-import { computeHubBonus, computeHubBonusSync } from './network_hub_bonus.js';
+import { computeRouteScore, computeRouteScoreSync } from './route_completion_score.js?v=2';
+import { computeHubBonus, computeHubBonusSync } from './network_hub_bonus.js?v=2';
 
 // ---------------------------------------------------------------------------
 // Path resolution
