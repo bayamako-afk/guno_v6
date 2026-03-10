@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hub Bonus Viewer — GUNO V6 Debug</title>
+  <style>
+    /* ── Base ─────────────────────────────────────────────────────────────── */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ───────────────────────────────────────────────────────────── */
+    #header {
+      background: #16213e;
+      border-bottom: 2px solid #0f3460;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    #header h1 { font-size: 16px; color: #e94560; font-weight: 700; }
+    #header .subtitle { font-size: 12px; color: #888; }
+    #header .nav-links { margin-left: auto; display: flex; gap: 8px; }
+    #header .nav-links a {
+      font-size: 11px; color: #4ecdc4; text-decoration: none;
+      padding: 3px 8px; border: 1px solid #4ecdc4; border-radius: 3px;
+    }
+    #header .nav-links a:hover { background: #4ecdc4; color: #1a1a2e; }
+
+    /* ── Layout ───────────────────────────────────────────────────────────── */
+    #main { display: flex; flex: 1; overflow: hidden; }
+
+    /* ── Left panel ───────────────────────────────────────────────────────── */
+    #input-panel {
+      width: 280px;
+      background: #16213e;
+      border-right: 1px solid #0f3460;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+    .panel-section {
+      padding: 12px;
+      border-bottom: 1px solid #0f3460;
+    }
+    .panel-section h2 {
+      font-size: 11px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    textarea#station-input {
+      width: 100%;
+      height: 160px;
+      background: #0f3460;
+      border: 1px solid #1a4a7a;
+      color: #e0e0e0;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      padding: 8px;
+      border-radius: 4px;
+      resize: vertical;
+      outline: none;
+    }
+    textarea#station-input:focus { border-color: #4ecdc4; }
+
+    #station-count {
+      font-size: 11px;
+      color: #4ecdc4;
+      margin-top: 6px;
+    }
+    #input-hint {
+      font-size: 10px;
+      color: #666;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* ── Buttons ──────────────────────────────────────────────────────────── */
+    #calc-btn {
+      width: 100%;
+      padding: 10px;
+      background: #e94560;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      letter-spacing: 0.5px;
+    }
+    #calc-btn:hover { background: #c73652; }
+
+    .quick-fill-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .quick-btn {
+      padding: 6px 8px;
+      background: #0f3460;
+      color: #4ecdc4;
+      border: 1px solid #1a4a7a;
+      border-radius: 3px;
+      font-size: 11px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .quick-btn:hover { background: #1a4a7a; }
+    .quick-btn.clear-btn { color: #e94560; border-color: #e94560; }
+    .quick-btn.clear-btn:hover { background: #2a1a1a; }
+
+    /* ── Bonus Rule Table ─────────────────────────────────────────────────── */
+    .rule-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .rule-table td { padding: 4px 6px; border-bottom: 1px solid #0f3460; }
+    .rule-table td:last-child { text-align: right; font-weight: 700; }
+    .bonus-gold  { color: #ffd700; }
+    .bonus-orange { color: #ff8c00; }
+    .bonus-blue  { color: #4ecdc4; }
+    .bonus-gray  { color: #666; }
+
+    /* ── Right panel ──────────────────────────────────────────────────────── */
+    #result-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Summary bar ──────────────────────────────────────────────────────── */
+    #summary-bar {
+      background: #16213e;
+      border-bottom: 1px solid #0f3460;
+      padding: 10px 16px;
+      display: flex;
+      gap: 32px;
+      flex-shrink: 0;
+    }
+    .summary-item { display: flex; flex-direction: column; align-items: center; }
+    .summary-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+    .summary-value { font-size: 22px; font-weight: 700; color: #ffd700; margin-top: 2px; }
+    #val-count { color: #4ecdc4; }
+    #val-input { color: #e0e0e0; }
+
+    /* ── Table area ───────────────────────────────────────────────────────── */
+    #table-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    #table-area h3 {
+      font-size: 12px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    #hub-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    #hub-table th {
+      background: #0f3460;
+      color: #888;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 8px 10px;
+      text-align: left;
+      position: sticky;
+      top: 0;
+    }
+    #hub-table th:last-child { text-align: center; }
+    #hub-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #0f3460;
+      vertical-align: middle;
+    }
+    #hub-table tr:hover td { background: #1e2a4a; }
+
+    .station-cell { display: flex; flex-direction: column; gap: 2px; }
+    .station-name-jp { font-size: 13px; font-weight: 600; color: #e0e0e0; }
+    .station-slug    { font-size: 10px; color: #666; }
+
+    .score-bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .score-bar-bg {
+      width: 80px;
+      height: 6px;
+      background: #0f3460;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .score-bar-fill { height: 100%; border-radius: 3px; }
+
+    .badge-bonus {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      min-width: 40px;
+    }
+    .badge-5 { background: #3a2a00; color: #ffd700; border: 1px solid #ffd700; }
+    .badge-3 { background: #3a1800; color: #ff8c00; border: 1px solid #ff8c00; }
+    .badge-1 { background: #003a3a; color: #4ecdc4; border: 1px solid #4ecdc4; }
+
+    /* ── Empty / Error state ──────────────────────────────────────────────── */
+    #empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #444;
+      font-size: 13px;
+      gap: 8px;
+    }
+    #empty-state .hint { font-size: 11px; color: #555; }
+
+    #error-banner {
+      display: none;
+      background: #3a0010;
+      border: 1px solid #e94560;
+      color: #e94560;
+      padding: 10px 16px;
+      font-size: 12px;
+      margin: 12px 16px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────────── -->
+<div id="header">
+  <h1>HUB BONUS VIEWER</h1>
+  <span class="subtitle">GUNO V6 Debug Tools</span>
+  <div class="nav-links">
+    <a href="station_graph_viewer.html">Graph</a>
+    <a href="station_metrics_viewer.html">Metrics</a>
+    <a href="deck_viewer.html">Deck</a>
+    <a href="route_score_viewer.html">Route</a>
+  </div>
+</div>
+
+<!-- ── Main ───────────────────────────────────────────────────────────────── -->
+<div id="main">
+
+  <!-- Left panel -->
+  <div id="input-panel">
+
+    <div class="panel-section">
+      <h2>Station Input</h2>
+      <textarea id="station-input" placeholder="Enter station_global_id, one per line&#10;Example:&#10;ST_356842_1397630&#10;ST_356582_1397016"></textarea>
+      <div id="station-count">0 stations</div>
+      <div id="input-hint">Enter one station_global_id per line.<br>Only stations with score ≥ 8 earn a bonus.</div>
+      <button id="calc-btn">Calculate Hub Bonus</button>
+    </div>
+
+    <div class="panel-section">
+      <h2>Quick Fill</h2>
+      <div class="quick-fill-grid">
+        <button class="quick-btn" id="btn-top5">Top 5 Hubs</button>
+        <button class="quick-btn" id="btn-top10">Top 10 Hubs</button>
+        <button class="quick-btn" id="btn-random5">Random 5</button>
+        <button class="quick-btn clear-btn" id="btn-clear">Clear</button>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <h2>Bonus Rules (v1)</h2>
+      <table class="rule-table">
+        <tr><td>score ≥ 12</td><td class="bonus-gold">+5</td></tr>
+        <tr><td>score ≥ 10</td><td class="bonus-orange">+3</td></tr>
+        <tr><td>score ≥ 8</td><td class="bonus-blue">+1</td></tr>
+        <tr><td>score &lt; 8</td><td class="bonus-gray">—</td></tr>
+      </table>
+    </div>
+
+  </div><!-- /input-panel -->
+
+  <!-- Right panel -->
+  <div id="result-panel">
+
+    <!-- Summary bar -->
+    <div id="summary-bar">
+      <div class="summary-item">
+        <span class="summary-label">Hub Bonus</span>
+        <span class="summary-value" id="val-bonus">+0</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Hub Stations</span>
+        <span class="summary-value" id="val-count">0</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Stations Input</span>
+        <span class="summary-value" id="val-input">0</span>
+      </div>
+    </div>
+
+    <!-- Error banner -->
+    <div id="error-banner"></div>
+
+    <!-- Table area -->
+    <div id="table-area">
+      <div id="empty-state">
+        <span>Enter station IDs on the left and press</span>
+        <span class="hint"><strong>Calculate Hub Bonus</strong></span>
+      </div>
+
+      <div id="result-content" style="display:none">
+        <h3>Hub Station Breakdown</h3>
+        <table id="hub-table">
+          <thead>
+            <tr>
+              <th>Station</th>
+              <th>Score</th>
+              <th>Rank</th>
+              <th>Lines</th>
+              <th>Hub Score</th>
+              <th>Bonus</th>
+            </tr>
+          </thead>
+          <tbody id="hub-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /result-panel -->
+
+</div><!-- /main -->
+
+<script type="module">
+  import { computeHubBonus, getHubBonusValue } from '../src/scoring/network_hub_bonus.js';
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  let allMetrics = [];   // full station metrics array
+  const MAX_SCORE = 20;  // for progress bar scaling
+
+  // ── Load metrics for Quick Fill ────────────────────────────────────────────
+  async function loadMetrics() {
+    try {
+      const res = await fetch('../data/derived/station_metrics_tokyo.json');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      allMetrics = data.stations || data;
+      console.log('[HubViewer] Metrics loaded:', allMetrics.length, 'stations');
+    } catch (e) {
+      console.error('[HubViewer] Failed to load metrics for Quick Fill:', e.message);
+    }
+  }
+
+  // ── Parse textarea ─────────────────────────────────────────────────────────
+  function parseInput() {
+    const lines = document.getElementById('station-input').value
+      .split('\n')
+      .map(l => l.trim())
+      .filter(l => l.length > 0);
+    document.getElementById('station-count').textContent = `${lines.length} station${lines.length !== 1 ? 's' : ''}`;
+    document.getElementById('val-input').textContent = lines.length;
+    return lines;
+  }
+
+  // ── Render results ─────────────────────────────────────────────────────────
+  function renderResults(result) {
+    document.getElementById('val-bonus').textContent = `+${result.hub_bonus}`;
+    document.getElementById('val-count').textContent = result.hub_stations.length;
+
+    const tbody = document.getElementById('hub-tbody');
+    tbody.innerHTML = '';
+
+    if (result.hub_stations.length === 0) {
+      document.getElementById('empty-state').style.display = 'flex';
+      document.getElementById('empty-state').innerHTML =
+        '<span>No hub stations found.</span><span class="hint">Try stations with score ≥ 8.</span>';
+      document.getElementById('result-content').style.display = 'none';
+      return;
+    }
+
+    document.getElementById('empty-state').style.display = 'none';
+    document.getElementById('result-content').style.display = 'block';
+
+    for (const s of result.hub_stations) {
+      const pct = Math.min(100, (s.score_total / MAX_SCORE) * 100).toFixed(1);
+      const barColor = s.bonus >= 5 ? '#ffd700' : s.bonus >= 3 ? '#ff8c00' : '#4ecdc4';
+      const badgeClass = s.bonus >= 5 ? 'badge-5' : s.bonus >= 3 ? 'badge-3' : 'badge-1';
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>
+          <div class="station-cell">
+            <span class="station-name-jp">${s.station_name}</span>
+            <span class="station-slug">${s.station_slug || s.station_global_id}</span>
+          </div>
+        </td>
+        <td>
+          <div class="score-bar-wrap">
+            <span>${s.score_total.toFixed(2)}</span>
+            <div class="score-bar-bg">
+              <div class="score-bar-fill" style="width:${pct}%;background:${barColor}"></div>
+            </div>
+          </div>
+        </td>
+        <td>#${s.rank}</td>
+        <td>${s.line_count ?? '—'}</td>
+        <td>${s.hub_score !== undefined ? s.hub_score.toFixed(3) : '—'}</td>
+        <td style="text-align:center">
+          <span class="badge-bonus ${badgeClass}">+${s.bonus}</span>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+
+  // ── Show error ─────────────────────────────────────────────────────────────
+  function showError(msg) {
+    const banner = document.getElementById('error-banner');
+    banner.textContent = msg;
+    banner.style.display = 'block';
+    console.error('[HubViewer] Error:', msg);
+  }
+
+  function clearError() {
+    document.getElementById('error-banner').style.display = 'none';
+  }
+
+  // ── Calculate ──────────────────────────────────────────────────────────────
+  async function calculate() {
+    clearError();
+    const stations = parseInput();
+    console.log('[HubViewer] Calculate clicked. stations:', stations.length);
+
+    if (stations.length === 0) {
+      document.getElementById('val-bonus').textContent = '+0';
+      document.getElementById('val-count').textContent = '0';
+      document.getElementById('empty-state').style.display = 'flex';
+      document.getElementById('result-content').style.display = 'none';
+      return;
+    }
+
+    try {
+      const result = await computeHubBonus(stations, { baseUrl: '../' });
+      console.log('[HubViewer] Result:', result);
+      renderResults(result);
+    } catch (e) {
+      showError(`Failed to compute hub bonus: ${e.message}`);
+    }
+  }
+
+  // ── Quick Fill ─────────────────────────────────────────────────────────────
+  function fillStations(gids) {
+    document.getElementById('station-input').value = gids.join('\n');
+    parseInput();
+  }
+
+  document.getElementById('btn-top5').addEventListener('click', () => {
+    const top5 = allMetrics.slice(0, 5).map(s => s.station_global_id);
+    fillStations(top5);
+  });
+
+  document.getElementById('btn-top10').addEventListener('click', () => {
+    const top10 = allMetrics.slice(0, 10).map(s => s.station_global_id);
+    fillStations(top10);
+  });
+
+  document.getElementById('btn-random5').addEventListener('click', () => {
+    const shuffled = [...allMetrics].sort(() => Math.random() - 0.5);
+    const rand5 = shuffled.slice(0, 5).map(s => s.station_global_id);
+    fillStations(rand5);
+  });
+
+  document.getElementById('btn-clear').addEventListener('click', () => {
+    document.getElementById('station-input').value = '';
+    parseInput();
+    document.getElementById('val-bonus').textContent = '+0';
+    document.getElementById('val-count').textContent = '0';
+    document.getElementById('empty-state').style.display = 'flex';
+    document.getElementById('empty-state').innerHTML =
+      '<span>Enter station IDs on the left and press</span><span class="hint"><strong>Calculate Hub Bonus</strong></span>';
+    document.getElementById('result-content').style.display = 'none';
+    clearError();
+  });
+
+  // ── Events ─────────────────────────────────────────────────────────────────
+  document.getElementById('calc-btn').addEventListener('click', calculate);
+  document.getElementById('station-input').addEventListener('input', parseInput);
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+  (async () => {
+    await loadMetrics();
+    parseInput();
+    console.log('[HubViewer] Ready.');
+  })();
+</script>
+</body>
+</html>
