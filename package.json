@@ -1,0 +1,9 @@
+{
+  "name": "guno-v6",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "GUNO V6 station data and debug tools",
+  "scripts": {
+    "test:route": "node src/test_route_score.js"
+  }
+}

@@ -13,8 +13,6 @@
  *   const { computeRouteScore } = require('./route_completion_score.js');
  */
 
-'use strict';
-
 // ── Data paths ───────────────────────────────────────────────────────────────
 // Default paths are relative to this file's location (src/scoring/ → ../../data/master/)
 // When calling from debug/, pass baseUrl: location.href to resolve correctly.
@@ -287,14 +285,5 @@ function computeRouteScoreSync(playerStations, stationLines, linesMaster) {
   };
 }
 
-// ── Exports ───────────────────────────────────────────────────────────────────
-if (typeof module !== 'undefined' && module.exports) {
-  // Node.js CommonJS
-  module.exports = { computeRouteScore, computeRouteScoreSync, getBonusValues };
-} else if (typeof window !== 'undefined') {
-  // Browser global fallback (non-module script tag)
-  window.RouteCompletionScore = { computeRouteScore, computeRouteScoreSync, getBonusValues };
-}
-
-// ES module named exports
+// ── Exports (ES module) ──────────────────────────────────────────────────────
 export { computeRouteScore, computeRouteScoreSync, getBonusValues };

@@ -1,20 +1,22 @@
 /**
  * test_route_score.js
- * Unit tests for route_completion_score.js (Node.js / CommonJS)
+ * Unit tests for route_completion_score.js (Node.js / ES module)
  */
 
-'use strict';
+import { readFileSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { computeRouteScoreSync, getBonusValues } from './scoring/route_completion_score.js';
 
-const fs = require('fs');
-const path = require('path');
-const { computeRouteScoreSync, getBonusValues } = require('./route_completion_score.js');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = dirname(__filename);
 
 // Load data
 const stationLines = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '../data/master/station_lines_tokyo.json'), 'utf8')
+  readFileSync(join(__dirname, '../data/master/station_lines_tokyo.json'), 'utf8')
 );
 const linesMaster = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '../data/master/lines_tokyo_master.json'), 'utf8')
+  readFileSync(join(__dirname, '../data/master/lines_tokyo_master.json'), 'utf8')
 );
 
 // Build helper: get all station_global_ids for a given line_id

@@ -298,7 +298,9 @@
 
     <div class="panel-section">
       <h2>Station Input</h2>
-      <textarea id="station-input" placeholder="Enter station_global_id, one per line:&#10;ST_356582_1397016&#10;ST_356590_1397040&#10;ST_356602_1397060"></textarea>
+      <textarea id="station-input" placeholder="Enter station_global_id, one per line">ST_356582_1397016
+ST_356590_1397040
+ST_356602_1397060</textarea>
       <div id="station-count">0 stations</div>
       <div class="input-hint">Enter one station_global_id per line.<br>Transfer stations count toward all connected lines.</div>
       <button id="calc-btn">Calculate Score</button>
@@ -595,6 +597,13 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
+  }
+
+  // ── Initial count update ──────────────────────────────────────────────────
+  // Update count on page load (textarea may have initial value)
+  {
+    const ids = parseInput();
+    countEl.textContent = ids.length + ' station' + (ids.length !== 1 ? 's' : '');
   }
 
   console.log('[RouteScoreViewer] Initialized. Import path: ../src/scoring/route_completion_score.js');
