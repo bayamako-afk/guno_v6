@@ -1,0 +1,100 @@
+{
+  "dataset_meta": {
+    "version": "1.0",
+    "region": "tokyo",
+    "generated_at": "2026-03-10T05:59:04Z",
+    "source_files": [
+      "data/master/lines_tokyo_master.json",
+      "data/master/station_lines_tokyo.json",
+      "data/derived/station_metrics_tokyo.json"
+    ],
+    "formula": {
+      "line_strength": "station_count*0.5 + transfer_count*2.0 + hub_score_sum*0.3 + avg_score*0.5",
+      "line_difficulty": "station_count*0.4 - transfer_count*1.5 - terminal_count*0.3"
+    },
+    "total_lines": 5
+  },
+  "validation": {
+    "total_lines_processed": 5,
+    "missing_station_metrics": [],
+    "lines_with_zero_transfers": [],
+    "lines_with_zero_terminals": []
+  },
+  "lines": [
+    {
+      "line_id": "JY",
+      "line_name": "山手線",
+      "line_name_en": "Yamanote Line",
+      "operator_name": "JR東日本",
+      "color": "#9ACD32",
+      "is_loop": true,
+      "station_count": 30,
+      "transfer_station_count": 8,
+      "terminal_count": 0,
+      "hub_score_sum": 39.0,
+      "avg_station_score": 7.1946,
+      "line_strength": 46.2973,
+      "line_difficulty": 0.0
+    },
+    {
+      "line_id": "G",
+      "line_name": "銀座線",
+      "line_name_en": "Ginza Line",
+      "operator_name": "東京メトロ",
+      "color": "#FF9500",
+      "is_loop": false,
+      "station_count": 18,
+      "transfer_station_count": 10,
+      "terminal_count": 2,
+      "hub_score_sum": 29.0,
+      "avg_station_score": 8.741,
+      "line_strength": 42.0705,
+      "line_difficulty": -8.4
+    },
+    {
+      "line_id": "M",
+      "line_name": "丸ノ内線",
+      "line_name_en": "Marunouchi Line",
+      "operator_name": "東京メトロ",
+      "color": "#F62E36",
+      "is_loop": false,
+      "station_count": 20,
+      "transfer_station_count": 6,
+      "terminal_count": 2,
+      "hub_score_sum": 27.0,
+      "avg_station_score": 7.532,
+      "line_strength": 33.866,
+      "line_difficulty": -1.6
+    },
+    {
+      "line_id": "T",
+      "line_name": "東西線",
+      "line_name_en": "Tozai Line",
+      "operator_name": "東京メトロ",
+      "color": "#009BBF",
+      "is_loop": false,
+      "station_count": 22,
+      "transfer_station_count": 4,
+      "terminal_count": 2,
+      "hub_score_sum": 27.0,
+      "avg_station_score": 7.4836,
+      "line_strength": 30.8418,
+      "line_difficulty": 2.2
+    },
+    {
+      "line_id": "Z",
+      "line_name": "半蔵門線",
+      "line_name_en": "Hanzomon Line",
+      "operator_name": "東京メトロ",
+      "color": "#8F76D6",
+      "is_loop": false,
+      "station_count": 14,
+      "transfer_station_count": 6,
+      "terminal_count": 2,
+      "hub_score_sum": 22.0,
+      "avg_station_score": 8.4199,
+      "line_strength": 29.81,
+      "line_difficulty": -4.0
+    }
+  ]
+}

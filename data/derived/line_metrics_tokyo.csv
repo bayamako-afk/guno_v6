@@ -1,0 +1,6 @@
+line_id,line_name,line_name_en,operator_name,station_count,transfer_station_count,terminal_count,hub_score_sum,avg_station_score,line_strength,line_difficulty
+JY,山手線,Yamanote Line,JR東日本,30,8,0,39.0,7.1946,46.2973,0.0
+G,銀座線,Ginza Line,東京メトロ,18,10,2,29.0,8.741,42.0705,-8.4
+M,丸ノ内線,Marunouchi Line,東京メトロ,20,6,2,27.0,7.532,33.866,-1.6
+T,東西線,Tozai Line,東京メトロ,22,4,2,27.0,7.4836,30.8418,2.2
+Z,半蔵門線,Hanzomon Line,東京メトロ,14,6,2,22.0,8.4199,29.81,-4.0
