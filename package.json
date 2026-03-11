@@ -7,8 +7,9 @@
     "test:route": "node src/test_route_score.js",
     "test:hub": "node src/test_hub_bonus.js",
     "test:final": "node src/test_final_score_engine.js",
-    "test": "node src/test_route_score.js && node src/test_hub_bonus.js && node src/test_final_score_engine.js && node src/test_station_rarity.js && node src/test_deck_generator.js",
+    "test": "node src/test_route_score.js && node src/test_hub_bonus.js && node src/test_final_score_engine.js && node src/test_station_rarity.js && node src/test_deck_generator.js && node src/test_play_engine.js",
     "test:rarity": "node src/test_station_rarity.js",
-    "test:deck": "node src/test_deck_generator.js"
+    "test:deck": "node src/test_deck_generator.js",
+    "test:play": "node src/test_play_engine.js"
   }
 }
