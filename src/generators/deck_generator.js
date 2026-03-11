@@ -35,7 +35,11 @@ export function generateDeckSync(stationMetrics, stationLines = null, config = {
   const targets = { ...finalConfig.rarityTargets };
 
   // 1. Classify all stations
-  const allStations = classifyAllStationsSync(stationMetrics);
+  // Accept both array (legacy) and {stations:[...]} object formats
+  const metricsInput = Array.isArray(stationMetrics)
+    ? { stations: stationMetrics }
+    : stationMetrics;
+  const allStations = classifyAllStationsSync(metricsInput);
   if (!allStations || allStations.length === 0) {
     throw new Error("Failed to classify stations. Metrics data may be invalid.");
   }

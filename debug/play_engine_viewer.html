@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Play Engine Viewer — GUNO V6 Debug</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ── Top nav ── */
+    .topbar {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .topbar .brand { color: #58a6ff; font-weight: 700; font-size: 12px; letter-spacing: .5px; text-transform: uppercase; }
+    .topbar .sub   { color: #8b949e; font-size: 11px; }
+    .topbar nav    { margin-left: auto; display: flex; gap: 4px; flex-wrap: wrap; }
+    .topbar nav a  {
+      color: #8b949e; text-decoration: none; font-size: 11px; padding: 2px 7px;
+      border-radius: 4px; border: 1px solid transparent;
+    }
+    .topbar nav a:hover { color: #c9d1d9; border-color: #30363d; }
+    .topbar nav a.active { color: #58a6ff; border-color: #1f6feb; background: #0d2044; }
+
+    /* ── Layout ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 0;
+      height: calc(100vh - 36px);
+    }
+
+    /* ── Left panel ── */
+    .left-panel {
+      background: #161b22;
+      border-right: 1px solid #30363d;
+      padding: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* ── Right panel ── */
+    .right-panel {
+      overflow-y: auto;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* ── Section headers ── */
+    .section-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: #8b949e;
+      border-bottom: 1px solid #21262d;
+      padding-bottom: 4px;
+      margin-bottom: 8px;
+    }
+
+    /* ── Summary cards ── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+    .summary-card {
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+    .summary-card .label { font-size: 10px; color: #8b949e; }
+    .summary-card .value { font-size: 18px; font-weight: 700; color: #c9d1d9; }
+    .summary-card .sub   { font-size: 10px; color: #6e7681; }
+    .summary-card.highlight { border-color: #1f6feb; }
+    .summary-card.highlight .value { color: #58a6ff; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 6px 12px;
+      border-radius: 5px;
+      border: 1px solid #30363d;
+      background: #21262d;
+      color: #c9d1d9;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+      width: 100%;
+      margin-bottom: 4px;
+    }
+    .btn:hover { background: #30363d; border-color: #8b949e; }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+    .btn.primary { background: #1f6feb; border-color: #388bfd; color: #fff; }
+    .btn.primary:hover:not(:disabled) { background: #388bfd; }
+    .btn.success { background: #238636; border-color: #2ea043; color: #fff; }
+    .btn.success:hover:not(:disabled) { background: #2ea043; }
+    .btn.warning { background: #9e6a03; border-color: #d29922; color: #fff; }
+    .btn.warning:hover:not(:disabled) { background: #d29922; }
+    .btn.danger  { background: #da3633; border-color: #f85149; color: #fff; }
+    .btn.danger:hover:not(:disabled)  { background: #f85149; }
+
+    /* ── Status bar ── */
+    .status-bar {
+      background: #161b22;
+      border: 1px solid #21262d;
+      border-radius: 5px;
+      padding: 6px 10px;
+      font-size: 11px;
+      color: #8b949e;
+    }
+    .status-bar.running { color: #58a6ff; border-color: #1f6feb; }
+    .status-bar.done    { color: #3fb950; border-color: #238636; }
+    .status-bar.error   { color: #f85149; border-color: #da3633; }
+
+    /* ── Tables ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th {
+      background: #161b22;
+      color: #8b949e;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      padding: 6px 10px;
+      text-align: left;
+      border-bottom: 1px solid #21262d;
+      white-space: nowrap;
+    }
+    td {
+      padding: 6px 10px;
+      border-bottom: 1px solid #21262d;
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #161b22; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .badge-legendary { background: #3a2a00; color: #f0c040; border: 1px solid #9e6a03; }
+    .badge-epic      { background: #2a1b3a; color: #c084fc; border: 1px solid #7c3aed; }
+    .badge-rare      { background: #1b2a3a; color: #60a5fa; border: 1px solid #2563eb; }
+    .badge-common    { background: #1a1f26; color: #8b949e; border: 1px solid #30363d; }
+
+    /* ── Current card display ── */
+    .current-card {
+      background: #0d1117;
+      border: 2px solid #388bfd;
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .current-card .card-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: #c9d1d9;
+    }
+    .current-card .card-score {
+      font-size: 14px;
+      color: #58a6ff;
+      font-weight: 600;
+    }
+    .current-card .card-id {
+      font-size: 10px;
+      color: #6e7681;
+      font-family: monospace;
+    }
+    .current-card .card-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    /* ── Player panels grid ── */
+    .player-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .player-panel {
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+    .player-panel.active {
+      border-color: #388bfd;
+      background: #0d1a2e;
+    }
+    .player-panel .p-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .player-panel .p-id {
+      font-size: 13px;
+      font-weight: 700;
+      color: #58a6ff;
+    }
+    .player-panel.active .p-id { color: #79c0ff; }
+    .player-panel .p-turn-badge {
+      font-size: 9px;
+      background: #1f6feb;
+      color: #fff;
+      padding: 1px 5px;
+      border-radius: 8px;
+      display: none;
+    }
+    .player-panel.active .p-turn-badge { display: inline; }
+    .player-panel .p-stat {
+      font-size: 11px;
+      color: #8b949e;
+      margin-bottom: 2px;
+    }
+    .player-panel .p-stat span { color: #c9d1d9; font-weight: 600; }
+    .player-panel .p-stations {
+      margin-top: 6px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+    }
+    .station-chip {
+      font-size: 10px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      padding: 1px 5px;
+      color: #c9d1d9;
+    }
+    .player-panel .p-score {
+      margin-top: 6px;
+      font-size: 11px;
+      color: #3fb950;
+      font-weight: 600;
+    }
+
+    /* ── Playable cards ── */
+    .playable-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .playable-chip {
+      background: #1b3a2a;
+      border: 1px solid #238636;
+      border-radius: 5px;
+      padding: 3px 8px;
+      font-size: 11px;
+      color: #56d364;
+    }
+    .playable-chip .chip-score {
+      color: #8b949e;
+      font-size: 10px;
+    }
+    .no-playable {
+      font-size: 11px;
+      color: #8b949e;
+      font-style: italic;
+    }
+
+    /* ── Turn log ── */
+    .turn-log {
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-family: monospace;
+      font-size: 11px;
+      max-height: 220px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .log-line { color: #8b949e; }
+    .log-line .turn-num { color: #6e7681; }
+    .log-line .player-ref { color: #58a6ff; font-weight: 700; }
+    .log-line .action-played { color: #3fb950; }
+    .log-line .action-drew   { color: #d29922; }
+    .log-line .action-passed { color: #8b949e; }
+    .log-line .station-ref   { color: #c9d1d9; }
+    .log-line.log-gameover   { color: #f85149; font-weight: 700; }
+    .log-line.log-winner     { color: #f0c040; font-weight: 700; }
+
+    /* ── Final result ── */
+    .final-result {
+      background: #0d1117;
+      border: 2px solid #238636;
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .final-result .winner-banner {
+      font-size: 16px;
+      font-weight: 700;
+      color: #f0c040;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    /* ── Delay slider ── */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #8b949e;
+    }
+    .slider-row input[type=range] {
+      flex: 1;
+      accent-color: #1f6feb;
+    }
+    .slider-row .slider-val { color: #c9d1d9; font-weight: 600; min-width: 36px; text-align: right; }
+
+    /* ── Divider ── */
+    .divider { border: none; border-top: 1px solid #21262d; }
+
+    /* ── Section box ── */
+    .section-box {
+      background: #161b22;
+      border: 1px solid #21262d;
+      border-radius: 6px;
+      padding: 10px 12px;
+    }
+
+    /* ── Score bar ── */
+    .score-bar-wrap { display: flex; align-items: center; gap: 6px; }
+    .score-bar {
+      height: 6px;
+      border-radius: 3px;
+      background: #1f6feb;
+      min-width: 2px;
+    }
+
+    /* ── Winner row highlight ── */
+    .winner-row td { background: #1a2a0d !important; color: #3fb950 !important; }
+    .winner-row td .badge { border-color: #2ea043; }
+  </style>
+</head>
+<body>
+
+<!-- ── Top nav ── -->
+<div class="topbar">
+  <span class="brand">GUNO V6</span>
+  <span class="sub">Play Engine Viewer</span>
+  <nav>
+    <a href="station_graph_viewer.html">Graph</a>
+    <a href="station_metrics_viewer.html">Metrics</a>
+    <a href="line_metrics_viewer.html">Lines</a>
+    <a href="deck_viewer.html">Deck</a>
+    <a href="route_score_viewer.html">Route</a>
+    <a href="hub_bonus_viewer.html">Hub</a>
+    <a href="final_score_viewer.html">Final Score</a>
+    <a href="rarity_viewer.html">Rarity</a>
+    <a href="dynamic_deck_viewer.html">Dyn Deck</a>
+    <a href="route_bonus_preview.html">Route Bonus</a>
+    <a href="game_simulator.html">Sim v1</a>
+    <a href="game_simulator_v2.html">Sim v2</a>
+    <a href="play_engine_viewer.html" class="active">Play Engine</a>
+  </nav>
+</div>
+
+<!-- ── Main layout ── -->
+<div class="layout">
+
+  <!-- ── LEFT PANEL ── -->
+  <div class="left-panel">
+
+    <div>
+      <div class="section-title">Controls</div>
+      <button class="btn primary" id="btn-new-game">▶ Start New Game</button>
+      <button class="btn success" id="btn-play-turn" disabled>⏭ Play 1 Turn</button>
+      <button class="btn warning" id="btn-auto-play" disabled>⚡ Auto Play</button>
+      <button class="btn danger"  id="btn-stop-auto" disabled>⏹ Stop Auto</button>
+      <button class="btn"         id="btn-reset" disabled>↺ Reset</button>
+    </div>
+
+    <div>
+      <div class="section-title">Auto Speed</div>
+      <div class="slider-row">
+        <span>Delay</span>
+        <input type="range" id="delay-slider" min="50" max="1000" step="50" value="300">
+        <span class="slider-val" id="delay-val">300ms</span>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div>
+      <div class="section-title">Status</div>
+      <div class="status-bar" id="status-bar">Waiting to start…</div>
+    </div>
+
+    <hr class="divider">
+
+    <div>
+      <div class="section-title">Play Rules (v1)</div>
+      <div style="font-size:10px;color:#6e7681;line-height:1.7;">
+        <b style="color:#8b949e;">Condition A</b><br>Same line<br>
+        <b style="color:#8b949e;">Condition B</b><br>Adjacent station<br>
+        <b style="color:#8b949e;">Condition C</b><br>Same station<br>
+        <br>
+        <b style="color:#8b949e;">End</b><br>Hand = 0<br>or Turn ≥ 100
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── RIGHT PANEL ── -->
+  <div class="right-panel">
+
+    <!-- Summary cards -->
+    <div class="summary-grid">
+      <div class="summary-card" id="sc-turn">
+        <div class="label">Turn</div>
+        <div class="value" id="sc-turn-val">—</div>
+        <div class="sub">of 100 max</div>
+      </div>
+      <div class="summary-card highlight" id="sc-player">
+        <div class="label">Current Player</div>
+        <div class="value" id="sc-player-val">—</div>
+        <div class="sub" id="sc-player-sub">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Deck Remaining</div>
+        <div class="value" id="sc-deck-val">—</div>
+        <div class="sub">cards</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Discard Pile</div>
+        <div class="value" id="sc-discard-val">—</div>
+        <div class="sub">cards</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Game Status</div>
+        <div class="value" id="sc-status-val">—</div>
+        <div class="sub" id="sc-status-sub">—</div>
+      </div>
+    </div>
+
+    <!-- Current Card -->
+    <div class="section-box">
+      <div class="section-title">Current Card (Top of Discard)</div>
+      <div id="current-card-area">
+        <div style="color:#6e7681;font-size:11px;">No game started.</div>
+      </div>
+    </div>
+
+    <!-- Playable Cards for current player -->
+    <div class="section-box">
+      <div class="section-title">Playable Cards — <span id="playable-player-label" style="color:#58a6ff;">—</span></div>
+      <div id="playable-cards-area" class="playable-grid">
+        <div class="no-playable">No game started.</div>
+      </div>
+    </div>
+
+    <!-- Player Panels -->
+    <div class="section-box">
+      <div class="section-title">Players</div>
+      <div class="player-grid" id="player-panels">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- Turn Log -->
+    <div class="section-box">
+      <div class="section-title">Turn Log</div>
+      <div class="turn-log" id="turn-log">
+        <div class="log-line" style="color:#6e7681;">No game started.</div>
+      </div>
+    </div>
+
+    <!-- Final Result (hidden until game ends) -->
+    <div class="section-box" id="final-result-section" style="display:none;">
+      <div class="section-title">Final Result</div>
+      <div class="final-result">
+        <div class="winner-banner" id="winner-banner">—</div>
+        <div class="table-wrap">
+          <table id="final-table">
+            <thead>
+              <tr>
+                <th>Player</th>
+                <th>Stations</th>
+                <th>Station Score</th>
+                <th>Route Bonus</th>
+                <th>Hub Bonus</th>
+                <th>Final Score</th>
+              </tr>
+            </thead>
+            <tbody id="final-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  // ── Resolve base URL ──
+  const BASE_URL = new URL('../', location.href).href;
+
+  // ── Import modules ──
+  let createInitialGameState, canPlayCard, playTurn, scoreFinishedGame;
+  let generateDeckSync;
+  let classifyAllStationsSync;
+
+  try {
+    const playMod = await import(`${BASE_URL}src/core/play_engine.js?v=1`);
+    createInitialGameState = playMod.createInitialGameState;
+    canPlayCard            = playMod.canPlayCard;
+    playTurn               = playMod.playTurn;
+    scoreFinishedGame      = playMod.scoreFinishedGame;
+
+    const deckMod = await import(`${BASE_URL}src/generators/deck_generator.js?v=5`);
+    generateDeckSync = deckMod.generateDeckSync;
+
+    const rarityMod = await import(`${BASE_URL}src/scoring/station_rarity.js?v=3`);
+    classifyAllStationsSync = rarityMod.classifyAllStationsSync;
+  } catch (err) {
+    showError('Module load failed: ' + err.message);
+    console.error(err);
+  }
+
+  // ── Fetch data ──
+  let stationMetrics, stationLines, stationGraph, linesMaster;
+  let rarityMap = {};
+
+  try {
+    const [metricsRes, linesRes, graphRes, masterRes] = await Promise.all([
+      fetch(`${BASE_URL}data/derived/station_metrics_tokyo.json`),
+      fetch(`${BASE_URL}data/master/station_lines_tokyo.json`),
+      fetch(`${BASE_URL}data/graph/station_graph_tokyo.json`),
+      fetch(`${BASE_URL}data/master/lines_tokyo_master.json`)
+    ]);
+    stationMetrics = await metricsRes.json();
+    stationLines   = await linesRes.json();
+    stationGraph   = await graphRes.json();
+    linesMaster    = await masterRes.json();
+
+    // Build rarity map - classifyAllStationsSync expects {stations:[...]} object
+    const metricsObj = Array.isArray(stationMetrics) ? { stations: stationMetrics } : stationMetrics;
+    const classified = classifyAllStationsSync(metricsObj);
+    for (const s of classified) {
+      rarityMap[s.station_global_id] = s.rarity;
+    }
+
+    setStatus('Data loaded. Ready.', '');
+  } catch (err) {
+    showError('Data load failed: ' + err.message);
+    console.error(err);
+  }
+
+  // ── Game state ──
+  let gameState = null;
+  let autoTimer = null;
+  let scoringData = null;
+  let stationNameMap = {};
+
+  // Build station name map from metrics
+  function buildStationNameMap() {
+    const arr = Array.isArray(stationMetrics) ? stationMetrics : (stationMetrics.stations || []);
+    for (const s of arr) {
+      stationNameMap[s.station_global_id] = s.station_name || s.station_global_id;
+    }
+  }
+
+  // ── Buttons ──
+  const btnNewGame  = document.getElementById('btn-new-game');
+  const btnPlayTurn = document.getElementById('btn-play-turn');
+  const btnAutoPlay = document.getElementById('btn-auto-play');
+  const btnStopAuto = document.getElementById('btn-stop-auto');
+  const btnReset    = document.getElementById('btn-reset');
+  const delaySlider = document.getElementById('delay-slider');
+  const delayVal    = document.getElementById('delay-val');
+
+  delaySlider.addEventListener('input', () => {
+    delayVal.textContent = delaySlider.value + 'ms';
+  });
+
+  btnNewGame.addEventListener('click', startNewGame);
+  btnPlayTurn.addEventListener('click', doPlayTurn);
+  btnAutoPlay.addEventListener('click', startAutoPlay);
+  btnStopAuto.addEventListener('click', stopAutoPlay);
+  btnReset.addEventListener('click', resetGame);
+
+  // ── Start new game ──
+  function startNewGame() {
+    try {
+      buildStationNameMap();
+
+      // Generate deck
+      const metricsArr = Array.isArray(stationMetrics) ? stationMetrics : (stationMetrics.stations || []);
+      const linesArr = Array.isArray(stationLines) ? stationLines : (stationLines.stations || stationLines);
+      const deck = generateDeckSync(metricsArr, linesArr, {
+        deckSize: 40,
+        targets: { Legendary: 1, Epic: 9, Rare: 3, Common: 27 }
+      });
+      const deckCards = deck.cards;
+
+      const players = [
+        { id: 'P1' }, { id: 'P2' }, { id: 'P3' }, { id: 'P4' }
+      ];
+
+      gameState = createInitialGameState(deckCards, players);
+      scoringData = { stationMetrics, stationLines, linesMaster };
+
+      // Clear log
+      document.getElementById('turn-log').innerHTML = '';
+      document.getElementById('final-result-section').style.display = 'none';
+
+      appendLog(`<span class="action-played">Game started.</span> Deck: ${deckCards.length} cards. 5 dealt per player.`, 'log-gameover');
+
+      renderState();
+      setStatus('Game in progress…', 'running');
+
+      btnPlayTurn.disabled = false;
+      btnAutoPlay.disabled = false;
+      btnReset.disabled    = false;
+      btnStopAuto.disabled = true;
+    } catch (err) {
+      showError('Failed to start game: ' + err.message);
+      console.error(err);
+    }
+  }
+
+  // ── Play 1 turn ──
+  function doPlayTurn() {
+    if (!gameState || gameState.gameOver) return;
+
+    const prevTurn    = gameState.turnCount;
+    const prevPlayer  = gameState.players[gameState.turnIndex];
+    const prevCard    = gameState.currentCard;
+
+    // Find playable cards before turn
+    const playableCards = prevPlayer.hand.filter(card =>
+      canPlayCard(prevCard, card, stationGraph, stationLines)
+    );
+
+    // Execute turn
+    gameState = playTurn(gameState, { stationGraph, stationLines });
+
+    // Determine what happened
+    const newCard = gameState.currentCard;
+    const cardChanged = newCard && prevCard && newCard.card_id !== prevCard.card_id;
+
+    let logClass = '';
+    let logMsg = '';
+    const turnNum = prevTurn + 1;
+
+    if (cardChanged) {
+      logMsg = `<span class="turn-num">Turn ${turnNum}:</span> <span class="player-ref">${prevPlayer.id}</span> <span class="action-played">played</span> <span class="station-ref">${newCard.station_name}</span> <span style="color:#6e7681;">(score ${newCard.score_total?.toFixed(2)})</span>`;
+    } else if (playableCards.length === 0) {
+      logMsg = `<span class="turn-num">Turn ${turnNum}:</span> <span class="player-ref">${prevPlayer.id}</span> <span class="action-drew">drew 1 card</span>`;
+    } else {
+      logMsg = `<span class="turn-num">Turn ${turnNum}:</span> <span class="player-ref">${prevPlayer.id}</span> <span class="action-passed">passed</span>`;
+    }
+    appendLog(logMsg, logClass);
+
+    if (gameState.gameOver) {
+      handleGameOver();
+    } else {
+      renderState();
+    }
+  }
+
+  // ── Auto play ──
+  function startAutoPlay() {
+    if (!gameState || gameState.gameOver) return;
+    btnAutoPlay.disabled = true;
+    btnStopAuto.disabled = false;
+    btnPlayTurn.disabled = true;
+    setStatus('Auto playing…', 'running');
+    scheduleAutoTurn();
+  }
+
+  function scheduleAutoTurn() {
+    const delay = parseInt(delaySlider.value, 10);
+    autoTimer = setTimeout(() => {
+      if (!gameState || gameState.gameOver) {
+        stopAutoPlay();
+        return;
+      }
+      doPlayTurn();
+      if (!gameState.gameOver) {
+        scheduleAutoTurn();
+      } else {
+        stopAutoPlay();
+      }
+    }, delay);
+  }
+
+  function stopAutoPlay() {
+    if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+    btnAutoPlay.disabled = gameState?.gameOver ?? true;
+    btnStopAuto.disabled = true;
+    btnPlayTurn.disabled = gameState?.gameOver ?? true;
+    if (!gameState?.gameOver) setStatus('Auto stopped.', '');
+  }
+
+  // ── Reset ──
+  function resetGame() {
+    stopAutoPlay();
+    gameState = null;
+    document.getElementById('turn-log').innerHTML = '<div class="log-line" style="color:#6e7681;">Game reset.</div>';
+    document.getElementById('final-result-section').style.display = 'none';
+    document.getElementById('current-card-area').innerHTML = '<div style="color:#6e7681;font-size:11px;">No game started.</div>';
+    document.getElementById('playable-cards-area').innerHTML = '<div class="no-playable">No game started.</div>';
+    document.getElementById('playable-player-label').textContent = '—';
+    document.getElementById('player-panels').innerHTML = '';
+    ['sc-turn-val','sc-player-val','sc-player-sub','sc-deck-val','sc-discard-val','sc-status-val','sc-status-sub'].forEach(id => {
+      document.getElementById(id).textContent = '—';
+    });
+    btnPlayTurn.disabled = true;
+    btnAutoPlay.disabled = true;
+    btnStopAuto.disabled = true;
+    btnReset.disabled    = true;
+    setStatus('Reset. Ready.', '');
+  }
+
+  // ── Render state ──
+  function renderState() {
+    if (!gameState) return;
+
+    const s = gameState;
+    const currentPlayer = s.players[s.turnIndex];
+
+    // Summary cards
+    document.getElementById('sc-turn-val').textContent    = s.turnCount;
+    document.getElementById('sc-player-val').textContent  = currentPlayer.id;
+    document.getElementById('sc-player-sub').textContent  = `Hand: ${currentPlayer.hand.length}`;
+    document.getElementById('sc-deck-val').textContent    = s.deck.length;
+    document.getElementById('sc-discard-val').textContent = s.discardPile.length;
+    document.getElementById('sc-status-val').textContent  = s.gameOver ? 'OVER' : 'PLAYING';
+    document.getElementById('sc-status-sub').textContent  = s.winner ? `Winner: ${s.winner}` : '';
+
+    // Current card
+    renderCurrentCard(s.currentCard);
+
+    // Playable cards
+    renderPlayableCards(currentPlayer, s.currentCard);
+
+    // Player panels
+    renderPlayerPanels(s);
+  }
+
+  function rarityBadge(rarity) {
+    const r = (rarity || 'Common').toLowerCase();
+    return `<span class="badge badge-${r}">${rarity || 'Common'}</span>`;
+  }
+
+  function renderCurrentCard(card) {
+    const el = document.getElementById('current-card-area');
+    if (!card) {
+      el.innerHTML = '<div style="color:#6e7681;font-size:11px;">No card.</div>';
+      return;
+    }
+    const rarity = rarityMap[card.station_global_id] || 'Common';
+    el.innerHTML = `
+      <div class="current-card">
+        <div class="card-info">
+          <div class="card-name">${card.station_name || '—'}</div>
+          <div class="card-score">Score: ${(card.score_total || 0).toFixed(2)}</div>
+          <div style="margin-top:3px;">${rarityBadge(rarity)}</div>
+          <div class="card-id">${card.station_global_id || ''}</div>
+        </div>
+      </div>`;
+  }
+
+  function renderPlayableCards(player, currentCard) {
+    const el = document.getElementById('playable-cards-area');
+    document.getElementById('playable-player-label').textContent = player.id;
+
+    if (!currentCard) {
+      el.innerHTML = '<div class="no-playable">No current card.</div>';
+      return;
+    }
+
+    const playable = player.hand.filter(card =>
+      canPlayCard(currentCard, card, stationGraph, stationLines)
+    );
+
+    if (playable.length === 0) {
+      el.innerHTML = `<div class="no-playable">No playable cards — will draw.</div>`;
+      return;
+    }
+
+    el.innerHTML = playable
+      .sort((a, b) => (b.score_total || 0) - (a.score_total || 0))
+      .map(card => `
+        <div class="playable-chip">
+          ${card.station_name}
+          <span class="chip-score">${(card.score_total || 0).toFixed(1)}</span>
+        </div>`)
+      .join('');
+  }
+
+  function renderPlayerPanels(s) {
+    const el = document.getElementById('player-panels');
+    el.innerHTML = s.players.map((p, i) => {
+      const isActive = i === s.turnIndex && !s.gameOver;
+      const stationNames = p.ownedStations
+        .map(id => stationNameMap[id] || id)
+        .slice(0, 8); // show up to 8
+      const moreCount = p.ownedStations.length - stationNames.length;
+
+      return `
+        <div class="player-panel ${isActive ? 'active' : ''}">
+          <div class="p-header">
+            <span class="p-id">${p.id}</span>
+            <span class="p-turn-badge">TURN</span>
+          </div>
+          <div class="p-stat">Hand: <span>${p.hand.length}</span></div>
+          <div class="p-stat">Stations: <span>${p.ownedStations.length}</span></div>
+          <div class="p-stations">
+            ${stationNames.map(n => `<span class="station-chip">${n}</span>`).join('')}
+            ${moreCount > 0 ? `<span class="station-chip" style="color:#6e7681;">+${moreCount}</span>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── Handle game over ──
+  function handleGameOver() {
+    renderState();
+    setStatus('Game over!', 'done');
+    btnPlayTurn.disabled = true;
+    btnAutoPlay.disabled = true;
+
+    // Score all players
+    const results = scoreFinishedGame(gameState, scoringData);
+
+    // Determine winner
+    let winner = gameState.winner;
+    if (!winner) {
+      const sorted = [...results].sort((a, b) => b.finalScore - a.finalScore);
+      winner = sorted[0].playerId;
+    }
+
+    appendLog(`Game over after ${gameState.turnCount} turns. Winner: ${winner}`, 'log-winner');
+
+    // Show final result
+    document.getElementById('final-result-section').style.display = '';
+    document.getElementById('winner-banner').textContent = `🏆 Winner: ${winner} (${gameState.turnCount} turns)`;
+
+    const tbody = document.getElementById('final-tbody');
+    const maxScore = Math.max(...results.map(r => r.finalScore));
+    tbody.innerHTML = results
+      .sort((a, b) => b.finalScore - a.finalScore)
+      .map((r, idx) => {
+        const isWinner = r.playerId === winner;
+        const barW = maxScore > 0 ? Math.round((r.finalScore / maxScore) * 120) : 0;
+        return `
+          <tr class="${isWinner ? 'winner-row' : ''}">
+            <td><b style="color:${isWinner ? '#f0c040' : '#58a6ff'};">${r.playerId}</b>${isWinner ? ' 🏆' : ''}</td>
+            <td>${r.stationCount}</td>
+            <td>${r.stationScore.toFixed(2)}</td>
+            <td>${r.routeBonus > 0 ? '+' + r.routeBonus : r.routeBonus}</td>
+            <td>${r.hubBonus > 0 ? '+' + r.hubBonus : r.hubBonus}</td>
+            <td>
+              <div class="score-bar-wrap">
+                <b>${r.finalScore.toFixed(2)}</b>
+                <div class="score-bar" style="width:${barW}px;"></div>
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
+  }
+
+  // ── Turn log ──
+  function appendLog(html, extraClass) {
+    const log = document.getElementById('turn-log');
+    const div = document.createElement('div');
+    div.className = 'log-line' + (extraClass ? ' ' + extraClass : '');
+    div.innerHTML = html;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  // ── Status ──
+  function setStatus(msg, type) {
+    const el = document.getElementById('status-bar');
+    el.textContent = msg;
+    el.className = 'status-bar' + (type ? ' ' + type : '');
+  }
+
+  function showError(msg) {
+    setStatus('Error: ' + msg, 'error');
+    const errDiv = document.createElement('div');
+    errDiv.style.cssText = 'background:#3d0000;border:1px solid #f85149;color:#f85149;padding:10px 14px;border-radius:6px;font-size:12px;margin:10px;';
+    errDiv.textContent = '⚠ ' + msg;
+    document.querySelector('.right-panel').prepend(errDiv);
+  }
+</script>
+</body>
+</html>
